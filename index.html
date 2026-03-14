@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MPSDataCenter — Progress Dashboard</title>
+<style>
+:root{--blue:#1976D2;--blue-light:#E3F2FD;--green:#2E7D32;--green-light:#E8F5E9;--amber:#E65100;--amber-light:#FFF3E0;--red:#C62828;--red-light:#FFEBEE;--dark:#0A2B57;--gray:#64748B;--border:#E2E8F0;--bg:#F8FAFC;--white:#FFFFFF;--r:14px;--rs:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--dark)}
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;min-height:64px;position:sticky;top:0;z-index:100;gap:1rem;flex-wrap:wrap}
+.nav-brand{font-size:1rem;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:.4rem;white-space:nowrap}
+.nav-controls{display:flex;align-items:flex-end;gap:.6rem;flex-wrap:wrap;padding:.5rem 0}
+.field-grp{display:flex;flex-direction:column;gap:3px}
+.field-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);font-weight:600}
+.inp{font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--dark);outline:none;height:32px}
+.inp:focus{border-color:var(--blue)}
+.inp-repo{width:195px}
+.inp-token{width:210px;font-family:monospace;letter-spacing:1px}
+.tok-wrap{position:relative;display:flex;align-items:center}
+.tok-eye{position:absolute;right:8px;cursor:pointer;font-size:12px;color:var(--gray);user-select:none;line-height:1}
+.btn-sync{font-size:12px;padding:0 16px;height:32px;border:none;border-radius:var(--rs);background:var(--blue);color:#fff;cursor:pointer;font-weight:600;align-self:flex-end;white-space:nowrap}
+.btn-sync:hover{background:#1565c0}
+.sync-status{font-size:11px;color:var(--gray);align-self:flex-end;padding-bottom:6px;white-space:nowrap}
+.tok-hint{font-size:10px;color:var(--gray);margin-top:1px}
+main{max-width:1200px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.page-header{margin-bottom:1.5rem}
+.page-header h1{font-size:1.3rem;font-weight:700}
+.page-header p{font-size:.82rem;color:var(--gray);margin-top:.2rem}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.9rem;margin-bottom:1.1rem}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.3rem}
+.card-lbl{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-bottom:.35rem}
+.card-val{font-size:1.9rem;font-weight:700;line-height:1}
+.card-sub{font-size:.72rem;color:var(--gray);margin-top:.25rem}
+.c-blue{border-top:3px solid var(--blue)}.c-green{border-top:3px solid var(--green)}.c-amber{border-top:3px solid var(--amber)}.c-red{border-top:3px solid var(--red)}
+.prog-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.3rem;margin-bottom:1.1rem}
+.prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem}
+.prog-title{font-size:.85rem;font-weight:600}
+.prog-pct{font-size:1.4rem;font-weight:700;color:var(--blue)}
+.prog-track{background:var(--bg);border-radius:100px;height:12px;overflow:hidden;margin-bottom:.35rem}
+.prog-fill{height:12px;border-radius:100px;background:var(--blue);transition:width 1s ease}
+.prog-labels{display:flex;justify-content:space-between;font-size:.7rem;color:var(--gray)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.1rem}
+.panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.3rem}
+.panel-title{font-size:.85rem;font-weight:600;margin-bottom:.85rem}
+.chart-wrap{position:relative;height:175px}
+.commit-item{display:flex;align-items:flex-start;gap:.6rem;padding:.45rem 0;border-top:1px solid var(--bg)}
+.commit-item:first-child{border-top:none}
+.avatar{width:26px;height:26px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--blue);flex-shrink:0;margin-top:1px}
+.commit-msg{font-size:.78rem;color:var(--dark);font-weight:500;line-height:1.3}
+.commit-meta{font-size:.7rem;color:var(--gray);margin-top:2px}
+.feat-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.3rem;margin-bottom:1.1rem}
+.feat-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem;flex-wrap:wrap;gap:.5rem}
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+th{text-align:left;font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--gray);padding:.45rem .65rem;border-bottom:2px solid var(--border)}
+td{padding:.55rem .65rem;border-bottom:1px solid var(--bg);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#F0F7FF}
+tr{cursor:pointer}
+.badge{display:inline-block;padding:2px 9px;border-radius:100px;font-size:.68rem;font-weight:600}
+.done{background:var(--green-light);color:#1b5e20}.wip{background:var(--amber-light);color:#bf360c}.pend{background:var(--red-light);color:#b71c1c}
+.tl{padding-left:.9rem}
+.tl-item{position:relative;padding:.4rem 0 .4rem 1.3rem;border-left:2px solid var(--border)}
+.tl-item:last-child{border-left:2px solid transparent}
+.tl-dot{position:absolute;left:-5px;top:.65rem;width:8px;height:8px;border-radius:50%}
+.tl-dot-d{background:var(--green)}.tl-dot-t{background:var(--amber)}
+.tl-period{font-size:.68rem;font-weight:600;color:var(--gray)}
+.tl-task{font-size:.78rem;color:var(--dark);margin-top:1px}
+.info-box{background:var(--blue-light);border:1px solid #BBDEFB;border-radius:var(--rs);padding:.65rem .9rem;font-size:.76rem;color:#0d47a1;margin-bottom:.8rem}
+footer{text-align:center;font-size:.72rem;color:var(--gray);padding:1.25rem;border-top:1px solid var(--border);margin-top:.5rem}
+footer a{color:var(--blue);text-decoration:none}
+@media(max-width:768px){.cards{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.nav-controls{gap:.4rem}.inp-repo,.inp-token{width:140px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 10h16M4 14h8M4 18h6"/><rect x="14" y="12" width="8" height="8" rx="1.5"/></svg>
+    MPSDataCenter
+  </div>
+  <div class="nav-controls">
+    <div class="field-grp">
+      <div class="field-lbl">GitHub Repo</div>
+      <input class="inp inp-repo" id="repoInput" placeholder="owner/nama-repo" autocomplete="off">
+    </div>
+    <div class="field-grp">
+      <div class="field-lbl">Personal Access Token <span id="tokSaved" style="color:var(--green);font-weight:500;display:none">&#10003; tersimpan</span></div>
+      <div class="tok-wrap">
+        <input class="inp inp-token" id="tokenInput" type="password" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+        <span class="tok-eye" onclick="toggleTok()" id="tokEye">&#128065;</span>
+      </div>
+    </div>
+    <button class="btn-sync" onclick="fetchGitHub()">&#8635; Sync</button>
+    <span class="sync-status" id="syncStatus"></span>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header">
+    <h1>Progress Dashboard — MPSDataCenter</h1>
+    <p id="lastUpdated">Masukkan repo + token lalu klik Sync &middot; Status fitur bisa diubah langsung di tabel (tersimpan di browser)</p>
+  </div>
+
+  <div class="info-box" id="tokenInfo">
+    <strong>Token diperlukan</strong> karena repo ini private. Token disimpan hanya di browser kamu (localStorage) — tidak dikirim ke server manapun selain api.github.com.
+  </div>
+
+  <div class="cards">
+    <div class="card c-blue"><div class="card-lbl">Total Fitur</div><div class="card-val" id="cTotal">—</div><div class="card-sub">item tracked</div></div>
+    <div class="card c-green"><div class="card-lbl">Selesai</div><div class="card-val" id="cDone" style="color:var(--green)">—</div><div class="card-sub" id="cPct">— % dari total</div></div>
+    <div class="card c-amber"><div class="card-lbl">In Progress</div><div class="card-val" id="cWip" style="color:var(--amber)">—</div><div class="card-sub">sedang dikerjakan</div></div>
+    <div class="card c-red"><div class="card-lbl">Pending</div><div class="card-val" id="cPend" style="color:var(--red)">—</div><div class="card-sub">belum dimulai</div></div>
+  </div>
+
+  <div class="prog-panel">
+    <div class="prog-head">
+      <span class="prog-title">Progress keseluruhan</span>
+      <span class="prog-pct" id="pctLabel">0%</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="progBar" style="width:0%"></div></div>
+    <div class="prog-labels"><span>0%</span><span>Target Go-Live: Mei 2025</span><span>100%</span></div>
+  </div>
+
+  <div class="row2">
+    <div class="panel">
+      <div class="panel-title">Commit activity — 30 hari terakhir</div>
+      <div class="chart-wrap"><canvas id="commitChart"></canvas></div>
+      <p id="chartStatus" style="font-size:.7rem;color:var(--gray);text-align:center;margin-top:.4rem">Sync untuk melihat commit activity</p>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Recent commits</div>
+      <div id="commitList"><p style="font-size:.78rem;color:var(--gray)">Sync GitHub untuk melihat commit terbaru.</p></div>
+    </div>
+  </div>
+
+  <div class="feat-panel">
+    <div class="feat-head">
+      <span class="panel-title" style="margin:0">Status fitur</span>
+      <span style="font-size:.72rem;color:var(--gray)">Klik baris untuk toggle status &middot; auto-save di browser</span>
+    </div>
+    <table><thead><tr>
+      <th style="width:34%">Fitur / Halaman</th>
+      <th style="width:17%">Kategori</th>
+      <th style="width:14%">Status</th>
+      <th style="width:11%">Prioritas</th>
+      <th>Catatan</th>
+    </tr></thead><tbody id="featBody"></tbody></table>
+  </div>
+
+  <div class="row2">
+    <div class="panel"><div class="panel-title">Timeline — sudah selesai</div><div class="tl" id="tlDone"></div></div>
+    <div class="panel"><div class="panel-title">Target ke depan</div><div class="tl" id="tlTarget"></div></div>
+  </div>
+</main>
+
+<footer>
+  MPSDataCenter Progress Dashboard &middot; <strong>Risky Hidayat</strong> &middot;
+  <a href="https://github.com" target="_blank">github.com</a>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+/* ================================================================
+   EDIT BAGIAN INI UNTUK UPDATE STATUS FITUR
+   ================================================================ */
+const PROJECT = { repo: "" };  // optional: isi owner/repo default
+
+const FEATURES = [
+  // [nama, kategori, status, prioritas, catatan]
+  ["Login + Rate Limiter",            "Autentikasi",  "Selesai",     "Tinggi",  "5x fail → lockout 15 menit"],
+  ["Register + Email Verification",   "Autentikasi",  "Selesai",     "Tinggi",  "Self-service + admin approval"],
+  ["Locked & Access Denied pages",    "Autentikasi",  "Selesai",     "Medium",  ""],
+  ["Security Middleware (5x)",        "Keamanan",     "Selesai",     "Tinggi",  "Headers, RateLimit, Lockout, Log, Exception"],
+  ["Activity Log Tracking",           "Keamanan",     "Selesai",     "Tinggi",  "Semua HTTP request tercatat"],
+  ["Admin Dashboard",                 "Admin Panel",  "Selesai",     "Tinggi",  "6 stat cards + activity feed"],
+  ["Recommendation List (Admin)",     "Admin Panel",  "Selesai",     "Tinggi",  "Filter, sort, paginate"],
+  ["Add Data + OCR Pipeline",         "Admin Panel",  "Selesai",     "Tinggi",  "IronOCR primary + PdfPig fallback"],
+  ["Edit Data",                       "Admin Panel",  "Selesai",     "Tinggi",  "Replace PDF optional"],
+  ["Access Logs Monitor",             "Admin Panel",  "Selesai",     "Medium",  "Lock/unlock user, history modal"],
+  ["Register Admin & Editor",         "Admin Panel",  "Selesai",     "Medium",  ""],
+  ["Settings (profile, export)",      "Admin Panel",  "Selesai",     "Medium",  ""],
+  ["Log Sheet",                       "Admin Panel",  "In Progress", "Tinggi",  "Binding data belum final"],
+  ["Editor Dashboard",                "Editor Panel", "Selesai",     "Tinggi",  "4 stat cards"],
+  ["Recommendation (Editor)",         "Editor Panel", "Selesai",     "Tinggi",  "CRUD penuh"],
+  ["Add Data & Edit Data (Editor)",   "Editor Panel", "Selesai",     "Tinggi",  "Shared logic dengan Admin"],
+  ["User Dashboard",                  "User Panel",   "Selesai",     "Medium",  "Read-only"],
+  ["Recommendation (User)",           "User Panel",   "Selesai",     "Medium",  "View + download PDF only"],
+  ["Log Sheet (User)",                "User Panel",   "In Progress", "Medium",  "Perlu data binding"],
+  ["Excel Export Service",            "Backend",      "In Progress", "Tinggi",  "Interface done, impl partial"],
+  ["OCR Service",                     "Backend",      "Selesai",     "Tinggi",  "Primary + fallback"],
+  ["Role-based Authorization",        "Backend",      "Selesai",     "Tinggi",  "Admin / Editor / User"],
+  ["AccessLog Repository & Service",  "Backend",      "Selesai",     "Medium",  "Repository pattern"],
+  ["MainData Page",                   "Backend",      "Pending",     "Medium",  "Placeholder"],
+  ["SearchController",                "Backend",      "Pending",     "Rendah",  "Belum terintegrasi ke UI"],
+];
+
+const TL_DONE = [
+  ["Feb 2025 M1", "Setup project: ASP.NET Core MVC, EF Core, Identity, SQL Server"],
+  ["Feb 2025 M2", "Autentikasi lengkap + semua middleware keamanan (5x)"],
+  ["Feb 2025 M3", "Models & repository: RecommendationModel, AccessLog, PaginatedList"],
+  ["Feb 2025 M4", "Role-based routing: Admin, Editor, User controller + sidebar"],
+  ["Mar 2025 M1", "OCR pipeline: IronOCR + PdfPig fallback, SaveData flow"],
+  ["Mar 2025 M1", "Redesign Dashboard: Admin (6 card), Editor (4), User (4)"],
+  ["Mar 2025 M2", "Redesign Access Logs + Recommendation semua role"],
+  ["Mar 2025 M2", "AddData drag-drop + OCR preview card + EditData replace PDF"],
+];
+
+const TL_TARGET = [
+  ["Mar 2025 M3", "Finalisasi Log Sheet: data binding + export Excel"],
+  ["Mar 2025 M3", "MainData page: implementasi penuh"],
+  ["Apr 2025 M1", "SearchController + Excel Export Service selesai"],
+  ["Apr 2025 M2", "End-to-end testing + code review & refactoring"],
+  ["Apr 2025 M3", "Deployment ke server produksi + UAT"],
+  ["Mei 2025",    "Go-Live & handover dokumentasi"],
+];
+/* ================================================================ */
+
+const CYCLE = {"Selesai":"In Progress","In Progress":"Pending","Pending":"Selesai"};
+let statuses = {};
+
+function loadState(){
+  try { statuses = JSON.parse(localStorage.getItem("mpsStat")||"{}"); } catch(e){ statuses={}; }
+  FEATURES.forEach((f,i)=>{ if(!statuses[i]) statuses[i]=f[2]; });
+}
+function saveState(){ localStorage.setItem("mpsStat",JSON.stringify(statuses)); }
+
+function recalc(){
+  const vals=Object.values(statuses), n=FEATURES.length;
+  const done=vals.filter(s=>s==="Selesai").length;
+  const wip=vals.filter(s=>s==="In Progress").length;
+  const pend=vals.filter(s=>s==="Pending").length;
+  const pct=Math.round(done/n*100);
+  document.getElementById("cTotal").textContent=n;
+  document.getElementById("cDone").textContent=done;
+  document.getElementById("cPct").textContent=pct+"% dari total";
+  document.getElementById("cWip").textContent=wip;
+  document.getElementById("cPend").textContent=pend;
+  document.getElementById("pctLabel").textContent=pct+"%";
+  document.getElementById("progBar").style.width=pct+"%";
+  document.title="MPSDataCenter — "+pct+"% selesai";
+}
+
+function bc(s){ return s==="Selesai"?"done":s==="In Progress"?"wip":"pend"; }
+function renderTable(){
+  document.getElementById("featBody").innerHTML=FEATURES.map((f,i)=>{
+    const s=statuses[i];
+    return `<tr onclick="toggle(${i})">
+      <td style="font-weight:500">${f[0]}</td>
+      <td style="color:var(--gray)">${f[1]}</td>
+      <td><span class="badge ${bc(s)}">${s}</span></td>
+      <td><span class="badge ${f[3]==="Tinggi"?"done":f[3]==="Medium"?"wip":"pend"}">${f[3]}</span></td>
+      <td style="color:var(--gray);font-size:.72rem">${f[4]}</td>
+    </tr>`;
+  }).join("");
+}
+function toggle(i){ statuses[i]=CYCLE[statuses[i]]; saveState(); renderTable(); recalc(); }
+
+function renderTimeline(){
+  document.getElementById("tlDone").innerHTML=TL_DONE.map(([p,t])=>
+    `<div class="tl-item"><div class="tl-dot tl-dot-d"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`
+  ).join("");
+  document.getElementById("tlTarget").innerHTML=TL_TARGET.map(([p,t])=>
+    `<div class="tl-item"><div class="tl-dot tl-dot-t"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`
+  ).join("");
+}
+
+/* ── TOKEN UI */
+function toggleTok(){
+  const inp=document.getElementById("tokenInput");
+  const eye=document.getElementById("tokEye");
+  if(inp.type==="password"){ inp.type="text"; eye.textContent="🙈"; }
+  else { inp.type="password"; eye.textContent="👁"; }
+}
+
+function saveToken(tok){
+  if(tok) localStorage.setItem("mpsToken",tok);
+  const saved=document.getElementById("tokSaved");
+  saved.style.display="inline";
+  setTimeout(()=>saved.style.display="none",2500);
+}
+
+/* ── CHART */
+let commitChart=null;
+function buildChart(labels,data){
+  if(commitChart) commitChart.destroy();
+  const ctx=document.getElementById("commitChart").getContext("2d");
+  commitChart=new Chart(ctx,{
+    type:"bar",
+    data:{ labels, datasets:[{label:"Commits",data,backgroundColor:"#BBDEFB",borderRadius:3,borderSkipped:false}] },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{font:{size:9},maxRotation:45,color:"#888"},grid:{display:false}},
+        y:{ticks:{font:{size:9},color:"#888",stepSize:1},beginAtZero:true,grid:{color:"rgba(0,0,0,0.05)"}}
+      }
+    }
+  });
+}
+
+/* ── GITHUB FETCH */
+async function fetchGitHub(){
+  const repo=document.getElementById("repoInput").value.trim();
+  const token=document.getElementById("tokenInput").value.trim();
+
+  if(!repo||!repo.includes("/")){
+    document.getElementById("syncStatus").textContent="⚠ Format repo: owner/nama-repo";
+    return;
+  }
+  if(!token){
+    document.getElementById("syncStatus").textContent="⚠ Token diperlukan untuk repo private";
+    document.getElementById("tokenInput").focus();
+    return;
+  }
+
+  document.getElementById("syncStatus").textContent="Mengambil data...";
+  document.getElementById("chartStatus").textContent="";
+
+  const headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json"};
+  const since=new Date(Date.now()-30*86400000).toISOString();
+
+  try{
+    const res=await fetch(`https://api.github.com/repos/${repo}/commits?per_page=100&since=${since}`,{headers});
+    if(res.status===401) throw new Error("Token tidak valid atau expired");
+    if(res.status===403) throw new Error("Token tidak punya akses ke repo ini");
+    if(res.status===404) throw new Error("Repo tidak ditemukan");
+    if(!res.ok) throw new Error("GitHub API error: "+res.status);
+
+    const commits=await res.json();
+
+    /* build chart */
+    const map={};
+    for(let i=29;i>=0;i--){
+      const d=new Date(); d.setDate(d.getDate()-i);
+      map[d.toISOString().slice(0,10)]=0;
+    }
+    commits.forEach(c=>{
+      const k=c.commit.author.date.slice(0,10);
+      if(map[k]!==undefined) map[k]++;
+    });
+    buildChart(Object.keys(map).map(k=>k.slice(5)),Object.values(map));
+    document.getElementById("chartStatus").textContent=commits.length+" commits dalam 30 hari terakhir";
+
+    /* recent commits */
+    document.getElementById("commitList").innerHTML=commits.slice(0,5).map(c=>{
+      const msg=c.commit.message.split("\n")[0].slice(0,52);
+      const name=c.commit.author.name||"?";
+      const initials=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+      const dt=new Date(c.commit.author.date);
+      const diffH=Math.floor((Date.now()-dt)/3600000);
+      const when=diffH<1?"baru saja":diffH<24?diffH+"j lalu":Math.floor(diffH/24)+"hr lalu";
+      return `<div class="commit-item">
+        <div class="avatar">${initials}</div>
+        <div>
+          <div class="commit-msg">${msg}</div>
+          <div class="commit-meta">${when} &middot; ${c.sha.slice(0,7)} &middot; ${name}</div>
+        </div>
+      </div>`;
+    }).join("");
+
+    /* save prefs */
+    localStorage.setItem("mpsRepo",repo);
+    saveToken(token);
+    document.getElementById("tokenInfo").style.display="none";
+
+    const ts=new Date().toLocaleString("id-ID");
+    document.getElementById("syncStatus").textContent="✓ "+ts;
+    document.getElementById("lastUpdated").textContent=
+      "Last sync: "+ts+" · "+commits.length+" commits (30 hari)";
+
+  }catch(e){
+    document.getElementById("syncStatus").textContent="✗ "+e.message;
+    document.getElementById("chartStatus").textContent=e.message;
+  }
+}
+
+/* ── INIT */
+loadState(); recalc(); renderTable(); renderTimeline();
+const sr=localStorage.getItem("mpsRepo")||PROJECT.repo;
+const st=localStorage.getItem("mpsToken")||"";
+if(sr) document.getElementById("repoInput").value=sr;
+if(st){
+  document.getElementById("tokenInput").value=st;
+  document.getElementById("tokSaved").style.display="inline";
+  document.getElementById("tokenInfo").style.display="none";
+}
+</script>
+</body>
+</html>
