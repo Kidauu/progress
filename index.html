@@ -350,12 +350,12 @@ async function fetchGitHub(){
 
     /* recent commits */
     document.getElementById("commitList").innerHTML=commits.slice(0,5).map(c=>{
-      const msg=c.commit.message.split("\n")[0].slice(0,52);
+      const msg=c.commit.message.split("\n")[0].slice(0,80);
       const name=c.commit.author.name||"?";
       const initials=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
       const dt=new Date(c.commit.author.date);
-      const diffH=Math.floor((Date.now()-dt)/3600000);
-      const when=diffH<1?"baru saja":diffH<24?diffH+"j lalu":Math.floor(diffH/24)+"hr lalu";
+      const diffS=Math.floor((Date.now()-dt)/1000);
+      const when=diffS<60?diffS+" detik lalu":diffS<3600?Math.floor(diffS/60)+" menit lalu":diffS<86400?Math.floor(diffS/3600)+" jam lalu":Math.floor(diffS/86400)+" hari lalu";
       return `<div class="commit-item">
         <div class="avatar">${initials}</div>
         <div>
