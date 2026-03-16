@@ -122,10 +122,17 @@ footer a{color:var(--blue);text-decoration:none}
     <div class="prog-labels"><span>0%</span><span>Target Go-Live: Mei 2025</span><span>100%</span></div>
   </div>
 
-  <div class="panel">
-    <div class="panel-title">Feature Progress Distribution</div>
-    <div class="chart-wrap">
-      <canvas id="featureChart"></canvas>
+  <div class="panel" style="padding:1.1rem 1.3rem">
+    <div class="panel-title" style="margin-bottom:1rem">Feature progress distribution</div>
+    <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
+      <div style="position:relative;width:190px;height:190px;flex-shrink:0">
+        <canvas id="featureChart"></canvas>
+        <div id="donutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+          <div id="donutVal" style="font-size:2rem;font-weight:700;color:#0A2B57;line-height:1">—</div>
+          <div style="font-size:0.7rem;color:#64748B;margin-top:3px">selesai</div>
+        </div>
+      </div>
+      <div id="donutLegend" style="flex:1;display:flex;flex-direction:column;gap:.65rem;min-width:180px"></div>
     </div>
   </div>
 
@@ -321,40 +328,60 @@ function saveToken(tok){
   setTimeout(()=>saved.style.display="none",2500);
 }
 
-function buildFeatureChart(done, wip, pend){
+const DONUT_DATA = [
+  { label:"Selesai",     color:"#27500A", bg:"#EAF3DE" },
+  { label:"In Progress", color:"#633806", bg:"#FAEEDA" },
+  { label:"Pending",     color:"#791F1F", bg:"#FCEBEB" },
+];
 
-  if(featureChart) featureChart.destroy();
+function buildFeatureChart(done, wip, pend) {
+  const vals = [done, wip, pend];
+  const total = done + wip + pend;
 
-  const ctx=document.getElementById("featureChart").getContext("2d");
+  document.getElementById("donutVal").textContent = done;
 
-  featureChart=new Chart(ctx,{
-    type:"pie",
-    data:{
-      labels:["Selesai","In Progress","Pending"],
-      datasets:[{
-        data:[done,wip,pend],
-        backgroundColor:[
-          "#2E7D32",
-          "#E65100",
-          "#C62828"
-        ],
-        borderWidth:0
+  const lg = document.getElementById("donutLegend");
+  lg.innerHTML = DONUT_DATA.map((d,i) => {
+    const pct = total > 0 ? Math.round(vals[i]/total*100) : 0;
+    return `<div style="display:flex;align-items:center;gap:.6rem">
+      <div style="width:10px;height:10px;border-radius:2px;background:${d.color};flex-shrink:0"></div>
+      <div style="font-size:.75rem;color:#64748B;width:78px">${d.label}</div>
+      <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden">
+        <div style="width:${pct}%;height:6px;background:${d.color};border-radius:100px;transition:width .8s ease"></div>
+      </div>
+      <div style="font-size:.75rem;font-weight:600;color:#0A2B57;min-width:22px;text-align:right">${vals[i]}</div>
+      <div style="font-size:.72rem;color:#64748B;min-width:32px;text-align:right">${pct}%</div>
+    </div>`;
+  }).join("");
+
+  if (featureChart) featureChart.destroy();
+  const ctx = document.getElementById("featureChart").getContext("2d");
+  featureChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: DONUT_DATA.map(d=>d.label),
+      datasets: [{
+        data: vals,
+        backgroundColor: DONUT_DATA.map(d=>d.color),
+        borderColor: DONUT_DATA.map(d=>d.bg),
+        borderWidth: 3,
+        hoverOffset: 6,
       }]
     },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{
-          position:"bottom",
-          labels:{
-            font:{size:11}
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "72%",
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.label}: ${ctx.parsed} fitur (${total>0?Math.round(ctx.parsed/total*100):0}%)`
           }
         }
       }
     }
   });
-
 }
 
 /* ── CHART */
