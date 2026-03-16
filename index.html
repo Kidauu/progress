@@ -122,6 +122,13 @@ footer a{color:var(--blue);text-decoration:none}
     <div class="prog-labels"><span>0%</span><span>Target Go-Live: Mei 2025</span><span>100%</span></div>
   </div>
 
+  <div class="panel">
+    <div class="panel-title">Feature Progress Distribution</div>
+    <div class="chart-wrap">
+      <canvas id="featureChart"></canvas>
+    </div>
+  </div>
+
   <div class="row2">
     <div class="panel">
       <div class="panel-title">Commit activity — 30 hari terakhir</div>
@@ -272,6 +279,7 @@ function recalc(){
   document.getElementById("pctLabel").textContent=pct+"%";
   document.getElementById("progBar").style.width=pct+"%";
   document.title="MPSDataCenter — "+pct+"% selesai";
+  buildFeatureChart(done,wip,pend);
 }
 
 function bc(s){ return s==="Selesai"?"done":s==="In Progress"?"wip":"pend"; }
@@ -313,7 +321,44 @@ function saveToken(tok){
   setTimeout(()=>saved.style.display="none",2500);
 }
 
+function buildFeatureChart(done, wip, pend){
+
+  if(featureChart) featureChart.destroy();
+
+  const ctx=document.getElementById("featureChart").getContext("2d");
+
+  featureChart=new Chart(ctx,{
+    type:"pie",
+    data:{
+      labels:["Selesai","In Progress","Pending"],
+      datasets:[{
+        data:[done,wip,pend],
+        backgroundColor:[
+          "#2E7D32",
+          "#E65100",
+          "#C62828"
+        ],
+        borderWidth:0
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          position:"bottom",
+          labels:{
+            font:{size:11}
+          }
+        }
+      }
+    }
+  });
+
+}
+
 /* ── CHART */
+let featureChart=null;
 let commitChart=null;
 function buildChart(labels,data){
   if(commitChart) commitChart.destroy();
