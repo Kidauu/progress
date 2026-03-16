@@ -199,8 +199,23 @@ const FEATURES = [
   ["Halaman Setting (all users)",     "User Panel",   "In Progress", "Rendah",  ""],
   ["Scrolling pada Riwayat Aktivitas","User Panel",   "In Progress", "Rendah",  ""],
   ["Toggle Dropdown belum Rapih",     "User Panel",   "In Progress", "Rendah",  ""],
+  ["Forgot Password + Email Reset",        "Autentikasi",  "Pending",  "Tinggi",  "Flow reset password via email belum dibuat"],
+  ["Password Strength Validation",         "Keamanan",     "Pending",  "Tinggi",  "Minimal karakter + kombinasi huruf/angka"],
+  ["Session Expired Feedback",             "UX",           "Pending",  "Medium",  "Tampilkan pesan 'Sesi anda telah berakhir' sebelum redirect login"],
+  ["Form Loading State",                   "UX",           "Pending",  "Medium",  "Prevent double submit saat klik Save/Register"],
+  ["Success Confirmation Message",         "UX",           "Pending", "Medium", "Flash message terlalu cepat hilang"],
+  ["Pagination Reset on Filter Change",    "UX",           "Pending",  "Medium",  "Filter harus reset ke page 1"],
+  ["Remove Debug Endpoints",               "Code Cleanup", "Pending",      "Tinggi",  "IronOcrDiagnostic, FixIronOcr, CheckFiles, DebugUsers, dll"],
+  ["Remove TestOcr.cs",                    "Code Cleanup", "Pending",      "Medium",  "File debugging OCR tidak boleh di production"],
+  ["Remove Empty MainData Page",           "Code Cleanup", "Pendingm",      "Low",     "Halaman hanya placeholder"],
+  ["Refactor / Remove SearchController",   "Architecture", "Pending",      "Medium",  "Belum terintegrasi ke sistem search"],
+  ["Clean Unused Sidebar CSS",             "Code Cleanup", "Pending",      "Low",     "sidebar.css dan sidebar-global.css banyak comment code"],
+  ["Standardize Global Exception Handling","Architecture", "Pending", "Medium", "Response error belum konsisten (JSON vs HTML)"],
+  ["Refactor ViewBag → ViewModel",         "Architecture", "Pending", "Medium", "Dashboard admin terlalu banyak ViewBag"],
+  ["Unit Test for OCR Service",            "Testing",      "Pending",      "Medium",  "Logic OCR cukup kompleks"],
+  ["Unit Test for Access Log Service",     "Testing",      "Pending",      "Medium",  "Validasi pencatatan aktivitas sistem"]
 ];
-
+  
 const TL_DONE = [
   ["Feb 2025 M4", "Autentikasi lengkap + semua middleware keamanan (5x)"],
   ["Mar 2025 M1", "Deleteting Duplicate Regis Page"],
