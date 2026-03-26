@@ -229,6 +229,91 @@ const FEATURES = [
   ["Unit Test for OCR Service",                         "Testing",                      "Pending",                   "Medium",                "Logic OCR cukup kompleks"],
   ["Unit Test for Access Log Service",                  "Testing",                      "Pending",                   "Medium",                "Validasi pencatatan aktivitas sistem"]
 ];
+
+const BUG_CHECKLIST = [
+
+  // ═══════════════════════════════════════════════════════════════
+  // KATEGORI: Critical Bugs — Runtime Errors / Wrong Behavior
+  // ═══════════════════════════════════════════════════════════════
+
+  // [nama, kategori, status, prioritas, catatan]
+  ["EditUser logic TERBALIK",                           "Critical Bug",                 "Bug",                       "Urgent",                "Line 1967: `if (!updateResult.Succeeded)` malah tampil SUCCESS message & log activity. Logic harus dibalik — AdminController.cs:1967-1971"],
+  ["Duplicate Login & Logout di AdminController",       "Critical Bug",                 "Bug",                       "Urgent",                "AdminController punya Login POST (line 1754) & Logout POST (line 1802) yang KONFLIK dengan AccountController. lockoutOnFailure: false vs true. Harus dihapus — AdminController.cs:1754-1834"],
+  ["Duplicate RegisterAdmin/RegisterEditor actions",    "Critical Bug",                 "Bug",                       "Urgent",                "AccountController DAN AdminController sama-sama punya RegisterAdmin + RegisterEditor. Ambiguous route → bisa 500 error — AccountController.cs:232-485 & AdminController.cs:515-700"],
+  ["LINQ-to-SQL: AddHours().ToString() di UserActivityHistory", "Critical Bug",         "Bug",                       "Urgent",                ".AddHours(7).ToString() di dalam LINQ Select projection. Npgsql tidak bisa translate → runtime crash — AdminController.cs:2866-2867"],
+  ["LINQ-to-SQL: AddHours().ToString() di UserController.Settings", "Critical Bug",     "Bug",                       "Urgent",                "Pattern sama — .AddHours(7).ToString() di LINQ Select. Harus materialize dulu baru format — UserController.cs:218-219"],
+  ["Dead code di ParseTextFromOcr",                     "Critical Bug",                 "Bug",                       "Medium",                "Setelah return model; di line 1195, ada blok Console.WriteLine + return lagi yang unreachable — AdminController.cs:1196-1208"],
+  ["IronOCR license EXPIRED",                           "Critical Bug",                 "Bug",                       "Urgent",                "License key EXPIRES.25.MAR.2026 — sudah expired. OCR tidak berfungsi di production — appsettings.json:6, Program.cs:12"],
+  ["EditorController AccessLogs data HARDCODED",        "Critical Bug",                 "Bug",                       "Tinggi",                "Semua user ditampilkan dengan Activity='Login', DateTime.Now, dan PasswordHash ASLI (tidak di-mask). Harusnya ambil dari tabel AccessLogs — EditorController.cs:1240-1264"],
+
+
+  // ═══════════════════════════════════════════════════════════════
+  // KATEGORI: Security Issues
+  // ═══════════════════════════════════════════════════════════════
+
+  ["Hardcoded credentials di banyak tempat",            "Security",                     "Bug",                       "Urgent",                "DB password 'mps123456' di appsettings.json & AdminController:2681. Seed passwords exposed. IronOCR key exposed. Gunakan user-secrets / env vars"],
+  ["PasswordHash EXPOSED di EditorController",          "Security",                     "Bug",                       "Urgent",                "Line 1254 kirim user.PasswordHash langsung ke view. AdminController mask '********' tapi Editor tidak — EditorController.cs:1254"],
+  ["Cookie SecurePolicy = None",                        "Security",                     "Bug",                       "Tinggi",                "Program.cs:137 set CookieSecurePolicy.None. Production harus Always atau SameAsRequest"],
+  ["Password validation mismatch",                      "Security",                     "Bug",                       "Tinggi",                "Identity require 8 chars (Program.cs:89) tapi ChangePassword cek length < 6 (AdminController:2068). Password 6-7 chars bisa lolos"],
+  ["Missing CSRF pada JSON endpoints",                  "Security",                     "Bug",                       "Tinggi",                "GetNotifications, MarkNotificationRead, MarkAllNotificationsRead, UserActivityHistory tanpa [ValidateAntiForgeryToken] — AdminController.cs:2888,2922,2934,2850"],
+  ["BackupDatabase SQL injection risk",                 "Security",                     "Bug",                       "Medium",                "Fallback backup pakai single-quote escaping saja. Special SQL chars bisa corrupt backup — AdminController.cs:2730-2810"],
+  ["CORS terlalu broad untuk production",               "Security",                     "Bug",                       "Medium",                "Multiple localhost origins. Saat deploy production harus diganti domain sesuai — Program.cs:153-169"],
+
+
+  // ═══════════════════════════════════════════════════════════════
+  // KATEGORI: Performance Issues
+  // ═══════════════════════════════════════════════════════════════
+
+  ["N+1 query: Dashboard Active Sessions",              "Performance",                  "Bug",                       "Tinggi",                "Loop semua users + query DB per user untuk cek Login/Logout terakhir. 100 user = 100 queries. Harus single query GROUP BY — AdminController.cs:213-222"],
+  ["N+1 query: AccessLogs action (3x per user)",        "Performance",                  "Bug",                       "Tinggi",                "3 query terpisah per user: lastAuthLog, lastActionLog, lastLog. N users = 3N queries — AdminController.cs:1853-1910"],
+  ["Duplicate Active Sessions calculation",             "Performance",                  "Bug",                       "Medium",                "Dashboard hitung active sessions (line 213-222), AccessLogs hitung lagi (line 1918-1930). Keduanya N+1. Refactor ke shared method"],
+  ["N+1 query: Role Distribution di Dashboard",         "Performance",                  "Bug",                       "Medium",                "Loop semua users + GetRolesAsync() per user. Bisa pakai raw SQL atau batch query — AdminController.cs:362-368"],
+  ["UserController.Recommendation() tanpa pagination",  "Performance",                  "Bug",                       "Medium",                "Load SEMUA recommendations sekaligus tanpa server-side pagination. AdminController sudah pakai PaginatedList — UserController.cs:177-193"],
+
+
+  // ═══════════════════════════════════════════════════════════════
+  // KATEGORI: Missing Features / Incomplete
+  // ═══════════════════════════════════════════════════════════════
+
+  ["ForgotPassword & ResetPassword actions TIDAK ADA",  "Missing Feature",              "Belum Ada",                 "Tinggi",                "View ForgotPassword.cshtml & ResetPassword.cshtml sudah ada, tapi AccountController TIDAK punya action-nya"],
+  ["ChangePassword action TIDAK ADA di AccountController","Missing Feature",            "Belum Ada",                 "Tinggi",                "View ChangePassword.cshtml ada, tapi tidak ada GET/POST action. Hanya ada di AdminController untuk reset user lain"],
+  ["VerifyEmail action TIDAK ADA",                      "Missing Feature",              "Belum Ada",                 "Medium",                "View VerifyEmail.cshtml ada, tapi tidak ada controller action untuk email verification flow"],
+  ["Notification creation logic TIDAK ADA",             "Missing Feature",              "Belum Ada",                 "Medium",                "Ada code READ notifications (GetNotifications, MarkRead) tapi TIDAK ADA code CREATE saat Editor/User add/edit data"],
+  ["Editor & User ChangePassword flow sendiri",         "Missing Feature",              "Belum Ada",                 "Medium",                "Editor dan User hanya bisa update profile, tidak bisa change own password via Settings"],
+
+
+  // ═══════════════════════════════════════════════════════════════
+  // KATEGORI: Code Quality / Architecture
+  // ═══════════════════════════════════════════════════════════════
+
+  ["EditorController = copy-paste AdminController",     "Code Quality",                 "Refactor",                  "Tinggi",                "EditorController 1737 lines duplikat hampir semua OCR logic, parsing, helper methods. Harus di-refactor ke shared service"],
+  ["`using Internal;` suspicious import",               "Code Quality",                 "Bug",                       "Medium",                "Line 3 AccessLogService.cs punya `using Internal;` — namespace tidak valid / internal .NET namespace"],
+  ["Inconsistent TempData keys",                        "Code Quality",                 "Refactor",                  "Medium",                "Campur: 'ErrorMessage' vs 'Error', 'SuccessMessage' vs 'Success', 'WarningMessage' vs 'Warning'. Harus standarisasi"],
+  ["Health endpoint salah tulis framework",             "Code Quality",                 "Bug",                       "Rendah",                "Health endpoint tulis framework='NET 8.0' tapi project pakai .NET 10.0 — Program.cs:266"],
+  ["ConnectionString key mismatch",                     "Code Quality",                 "Bug",                       "Rendah",                "appsettings.json pakai key 'Default' tapi Program.cs cek 'DefaultConnection' duluan — Program.cs:25-26 vs appsettings.json:3"],
+  ["Console.WriteLine berlebihan",                      "Code Quality",                 "Refactor",                  "Medium",                "Ratusan Console.WriteLine debugging tersebar di semua controllers. Harus diganti Serilog atau dihapus"],
+  ["`new Random()` untuk username collision",           "Code Quality",                 "Bug",                       "Rendah",                "new Random().Next(1000,9999) bisa collision. Lebih aman pakai counter atau GUID suffix — AccountController.cs:296,424"],
+  ["LogActivity cek TrackUserMgmt di User/Editor",      "Code Quality",                 "Refactor",                  "Rendah",                "LogActivity helper cek TrackUserMgmt untuk Register/Lock/Unlock — tapi User dan Editor tidak bisa melakukan action ini. Dead logic"],
+];
+
+
+// ═══════════════════════════════════════════════════════════════
+// RINGKASAN PER KATEGORI
+// ═══════════════════════════════════════════════════════════════
+//
+// Critical Bug     :  8 items  (5 Urgent, 2 Tinggi, 1 Medium)
+// Security         :  7 items  (2 Urgent, 3 Tinggi, 2 Medium)
+// Performance      :  5 items  (2 Tinggi, 3 Medium)
+// Missing Feature  :  5 items  (2 Tinggi, 3 Medium)
+// Code Quality     :  8 items  (1 Tinggi, 4 Medium, 3 Rendah)
+// ─────────────────────────────────────────────────────────────
+// TOTAL            : 33 items
+//
+// PRIORITAS BREAKDOWN:
+//   Urgent  :  7  ← fix SEKARANG, bisa crash / security hole
+//   Tinggi  : 12  ← fix sebelum deploy
+//   Medium  : 11  ← fix kalau waktu ada
+//   Rendah  :  3  ← nice-to-have
   
 const TL_DONE = [
   ["Feb 2025 M4", "Autentikasi lengkap + semua middleware keamanan (5x)"],
