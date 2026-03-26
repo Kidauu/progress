@@ -22,7 +22,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
 .btn-sync{font-size:12px;padding:0 16px;height:32px;border:none;border-radius:var(--rs);background:var(--blue);color:#fff;cursor:pointer;font-weight:600;align-self:flex-end;white-space:nowrap}
 .btn-sync:hover{background:#1565c0}
 .sync-status{font-size:11px;color:var(--gray);align-self:flex-end;padding-bottom:6px;white-space:nowrap}
-.tok-hint{font-size:10px;color:var(--gray);margin-top:1px}
 main{max-width:1200px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
 .page-header{margin-bottom:1.5rem}
 .page-header h1{font-size:1.3rem;font-weight:700}
@@ -69,7 +68,30 @@ tr{cursor:pointer}
 .info-box{background:var(--blue-light);border:1px solid #BBDEFB;border-radius:var(--rs);padding:.65rem .9rem;font-size:.76rem;color:#0d47a1;margin-bottom:.8rem}
 footer{text-align:center;font-size:.72rem;color:var(--gray);padding:1.25rem;border-top:1px solid var(--border);margin-top:.5rem}
 footer a{color:var(--blue);text-decoration:none}
-@media(max-width:768px){.cards{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.nav-controls{gap:.4rem}.inp-repo,.inp-token{width:140px}}
+
+/* ── Bug Checklist ── */
+.section-sep{border:none;border-top:2px solid var(--border);margin:2rem 0 1.5rem}
+.cards-5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.9rem;margin-bottom:1.1rem}
+.bug-filter{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.9rem}
+.fbtn{font-size:.7rem;padding:4px 12px;border:1px solid var(--border);border-radius:100px;background:var(--white);color:var(--gray);cursor:pointer;font-weight:500;transition:all .15s}
+.fbtn:hover{border-color:var(--blue);color:var(--blue)}
+.fbtn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.fbtn .fc{font-size:.6rem;opacity:.65;margin-left:2px}
+.cat-row td{background:var(--bg)!important;padding:.3rem .65rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray);border-bottom:1px solid var(--border);cursor:default}
+tr.fixed-row td{opacity:.45}
+tr.fixed-row td:first-child{text-decoration:line-through}
+.b-bug{background:#FFEBEE;color:#b71c1c}
+.b-fixed{background:var(--green-light);color:#1b5e20}
+.b-belum{background:#F3E5F6;color:#4a148c}
+.b-refac{background:#E0F2F1;color:#004d40}
+.b-urgent{background:#FFCDD2;color:#b71c1c;font-weight:700}
+.b-tinggi{background:var(--amber-light);color:#bf360c}
+.b-medium{background:var(--blue-light);color:#0d47a1}
+.b-rendah{background:var(--bg);color:var(--gray)}
+
+@media(max-width:900px){.cards-5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:768px){.cards{grid-template-columns:1fr 1fr}.cards-5{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.nav-controls{gap:.4rem}.inp-repo,.inp-token{width:140px}}
+@media(max-width:480px){.cards-5{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -106,6 +128,7 @@ footer a{color:var(--blue);text-decoration:none}
     <strong>Token diperlukan</strong> karena repo ini private. Token disimpan hanya di browser kamu (localStorage) — tidak dikirim ke server manapun selain api.github.com.
   </div>
 
+  <!-- ══════════ FEATURE SECTION ══════════ -->
   <div class="cards">
     <div class="card c-blue"><div class="card-lbl">Total Fitur</div><div class="card-val" id="cTotal">—</div><div class="card-sub">item tracked</div></div>
     <div class="card c-green"><div class="card-lbl">Selesai</div><div class="card-val" id="cDone" style="color:var(--green)">—</div><div class="card-sub" id="cPct">— % dari total</div></div>
@@ -114,15 +137,12 @@ footer a{color:var(--blue);text-decoration:none}
   </div>
 
   <div class="prog-panel">
-    <div class="prog-head">
-      <span class="prog-title">Progress keseluruhan</span>
-      <span class="prog-pct" id="pctLabel">0%</span>
-    </div>
+    <div class="prog-head"><span class="prog-title">Progress keseluruhan</span><span class="prog-pct" id="pctLabel">0%</span></div>
     <div class="prog-track"><div class="prog-fill" id="progBar" style="width:0%"></div></div>
     <div class="prog-labels"><span>0%</span><span>Target Go-Live: Mei 2025</span><span>100%</span></div>
   </div>
 
-  <div class="panel" style="padding:1.1rem 1.3rem">
+  <div class="panel" style="padding:1.1rem 1.3rem;margin-bottom:1.1rem">
     <div class="panel-title" style="margin-bottom:1rem">Feature progress distribution</div>
     <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
       <div style="position:relative;width:190px;height:190px;flex-shrink:0">
@@ -154,11 +174,7 @@ footer a{color:var(--blue);text-decoration:none}
       <span style="font-size:.72rem;color:var(--gray)">Klik baris untuk toggle status &middot; auto-save di browser</span>
     </div>
     <table><thead><tr>
-      <th style="width:34%">Fitur / Halaman</th>
-      <th style="width:17%">Kategori</th>
-      <th style="width:14%">Status</th>
-      <th style="width:11%">Prioritas</th>
-      <th>Catatan</th>
+      <th style="width:34%">Fitur / Halaman</th><th style="width:17%">Kategori</th><th style="width:14%">Status</th><th style="width:11%">Prioritas</th><th>Catatan</th>
     </tr></thead><tbody id="featBody"></tbody></table>
   </div>
 
@@ -166,6 +182,72 @@ footer a{color:var(--blue);text-decoration:none}
     <div class="panel"><div class="panel-title">Timeline — sudah selesai</div><div class="tl" id="tlDone"></div></div>
     <div class="panel"><div class="panel-title">Target ke depan</div><div class="tl" id="tlTarget"></div></div>
   </div>
+
+  <!-- ══════════ BUG CHECKLIST SECTION ══════════ -->
+  <hr class="section-sep">
+
+  <div class="page-header" style="margin-bottom:1.2rem">
+    <h1 style="display:flex;align-items:center;gap:.45rem">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Bug Checklist &amp; Code Review
+    </h1>
+    <p>Hasil review codebase — klik baris untuk toggle Fixed / Unfixed &middot; auto-save di browser</p>
+  </div>
+
+  <div class="cards-5">
+    <div class="card c-red"><div class="card-lbl">Total Issues</div><div class="card-val" id="bTotal" style="color:var(--red)">—</div><div class="card-sub">ditemukan</div></div>
+    <div class="card c-green"><div class="card-lbl">Fixed</div><div class="card-val" id="bFixed" style="color:var(--green)">—</div><div class="card-sub" id="bFixPct">— %</div></div>
+    <div class="card" style="border-top:3px solid #D32F2F"><div class="card-lbl">Urgent</div><div class="card-val" id="bUrgent" style="color:#C62828">—</div><div class="card-sub">fix sekarang</div></div>
+    <div class="card c-amber"><div class="card-lbl">Tinggi</div><div class="card-val" id="bHigh" style="color:var(--amber)">—</div><div class="card-sub">fix sebelum deploy</div></div>
+    <div class="card c-blue"><div class="card-lbl">Medium + Low</div><div class="card-val" id="bMedLow" style="color:var(--blue)">—</div><div class="card-sub">fix kalau sempat</div></div>
+  </div>
+
+  <div class="prog-panel">
+    <div class="prog-head"><span class="prog-title">Bug resolution progress</span><span class="prog-pct" id="bPctLbl" style="color:var(--green)">0%</span></div>
+    <div class="prog-track"><div class="prog-fill" id="bProgBar" style="width:0%;background:var(--green)"></div></div>
+    <div class="prog-labels"><span>0 fixed</span><span id="bProgSum">0 / 0</span><span>100%</span></div>
+  </div>
+
+  <div class="row2">
+    <div class="panel" style="padding:1.1rem 1.3rem">
+      <div class="panel-title" style="margin-bottom:1rem">Unfixed by category</div>
+      <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
+        <div style="position:relative;width:180px;height:180px;flex-shrink:0">
+          <canvas id="bugCatChart"></canvas>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+            <div id="bugCatVal" style="font-size:1.8rem;font-weight:700;color:#C62828;line-height:1">—</div>
+            <div style="font-size:.65rem;color:#64748B;margin-top:2px">unfixed</div>
+          </div>
+        </div>
+        <div id="bugCatLeg" style="flex:1;display:flex;flex-direction:column;gap:.6rem;min-width:170px"></div>
+      </div>
+    </div>
+    <div class="panel" style="padding:1.1rem 1.3rem">
+      <div class="panel-title" style="margin-bottom:1rem">Unfixed by priority</div>
+      <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
+        <div style="position:relative;width:180px;height:180px;flex-shrink:0">
+          <canvas id="bugPriChart"></canvas>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+            <div id="bugPriVal" style="font-size:1.8rem;font-weight:700;color:var(--dark);line-height:1">—</div>
+            <div style="font-size:.65rem;color:#64748B;margin-top:2px">unfixed</div>
+          </div>
+        </div>
+        <div id="bugPriLeg" style="flex:1;display:flex;flex-direction:column;gap:.6rem;min-width:170px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat-panel">
+    <div class="feat-head">
+      <span class="panel-title" style="margin:0">Bug checklist</span>
+      <span style="font-size:.72rem;color:var(--gray)">Klik baris untuk toggle Fixed &middot; auto-save di browser</span>
+    </div>
+    <div class="bug-filter" id="bugFilterBar"></div>
+    <table><thead><tr>
+      <th style="width:28%">Issue</th><th style="width:13%">Kategori</th><th style="width:9%">Status</th><th style="width:9%">Prioritas</th><th>Detail / Lokasi</th>
+    </tr></thead><tbody id="bugBody"></tbody></table>
+  </div>
+
 </main>
 
 <footer>
@@ -176,405 +258,316 @@ footer a{color:var(--blue);text-decoration:none}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 /* ================================================================
-   EDIT BAGIAN INI UNTUK UPDATE STATUS FITUR
+   DATA — FEATURES
    ================================================================ */
-const PROJECT = { repo: "" };  // optional: isi owner/repo default
+const PROJECT = { repo: "" };
 
 const FEATURES = [
-  // [nama, kategori, status, prioritas, catatan]
-  ["Login + Rate Limiter",                              "Autentikasi",                  "Selesai",                   "Tinggi",                "5x fail → lockout 15 menit"],
-  ["Register + Email Verification",                     "Autentikasi",                  "Selesai",                   "Tinggi",                "Self-service + admin approval"],
-  ["Locked & Access Denied pages",                      "Autentikasi",                  "Selesai",                   "Medium",                ""],
-  ["Security Middleware (5x)",                          "Keamanan",                     "Selesai",                   "Tinggi",                "Headers, RateLimit, Lockout, Log, Exception"],
-  ["Activity Log Tracking",                             "Keamanan",                     "Selesai",                   "Tinggi",                "Semua HTTP request tercatat"],
-  ["Admin Dashboard",                                   "Admin Panel",                  "Selesai",                   "Tinggi",                "6 stat cards + activity feed"],
-  ["Recommendation List (Admin)",                       "Admin Panel",                  "Selesai",                   "Tinggi",                "Filter, sort, paginate"],
-  ["Add Data + OCR Pipeline",                           "Admin Panel",                  "Selesai",                   "Tinggi",                "IronOCR primary + PdfPig fallback"],
-  ["Edit Data",                                         "Admin Panel",                  "Selesai",                   "Tinggi",                "Replace PDF optional"],
-  ["Access Logs Monitor",                               "Admin Panel",                  "Selesai",                   "Medium",                "Lock/unlock user, history modal"],
-  ["Register Admin & Editor",                           "Admin Panel",                  "Selesai",                   "Medium",                ""],
-  ["Settings (profile, export)",                        "Admin Panel",                  "Selesai",                   "Medium",                ""],
-  ["Log Sheet",                                         "Admin Panel",                  "In Progress",               "Tinggi",                "Binding data belum final"],
-  ["Editor Dashboard",                                  "Editor Panel",                 "Selesai",                   "Tinggi",                "4 stat cards"],
-  ["Recommendation (Editor)",                           "Editor Panel",                 "Selesai",                   "Tinggi",                "CRUD penuh"],
-  ["Add Data & Edit Data (Editor)",                     "Editor Panel",                 "Selesai",                   "Tinggi",                "Shared logic dengan Admin"],
-  ["User Dashboard",                                    "User Panel",                   "Selesai",                   "Medium",                "Read-only"],
-  ["Recommendation (User)",                             "User Panel",                   "Selesai",                   "Medium",                "View + download PDF only"],
-  ["Log Sheet (User)",                                  "User Panel",                   "In Progress",               "Medium",                "Perlu data binding"],
-  ["Excel Export Service",                              "Backend",                      "In Progress",               "Tinggi",                "Interface done, impl partial"],
-  ["OCR Service",                                       "Backend",                      "Selesai",                   "Tinggi",                "Primary + fallback"],
-  ["Role-based Authorization",                          "Backend",                      "Selesai",                   "Tinggi",                "Admin / Editor / User"],
-  ["AccessLog Repository & Service",                    "Backend",                      "Selesai",                   "Medium",                "Repository pattern"],
-  ["MainData Page",                                     "Backend",                      "Pending",                   "Medium",                "Placeholder"],
-  ["SearchController",                                  "Backend",                      "Pending",                   "Rendah",                "Belum terintegrasi ke UI"],
-  ["Card Dashboard",                                    "User Panel",                   "In Progress",               "Rendah",                ""],
-  ["Tampilan Halaman Rekomendasi (all users)",          "User Panel",                   "In Progress",               "Rendah",                ""],
-  ["Regis Admin dan Editor",                            "User Panel",                   "In Progress",               "Rendah",                ""],
-  ["Halaman Setting (all users)",                       "User Panel",                   "In Progress",               "Rendah",                ""],
-  ["Scrolling pada Riwayat Aktivitas",                  "User Panel",                   "In Progress",               "Rendah",                ""],
-  ["Toggle Dropdown belum Rapih",                       "User Panel",                   "In Progress",               "Rendah",                ""],
-  ["Forgot Password + Email Reset",                     "Autentikasi",                  "Pending",                   "Tinggi",                "Flow reset password via email belum dibuat"],
-  ["Adding Full Name on Registration",                  "Autentikasi",                  "Pending",                   "Meduim",                "Menambahkan entry full name pada form registrasi"],
-  ["Session Expired Feedback",                          "UX",                           "Pending",                   "Medium",                "Tampilkan pesan 'Sesi anda telah berakhir' sebelum redirect login"],
-  ["Form Loading State",                                "UX",                           "Pending",                   "Medium",                "Prevent double submit saat klik Save/Register"],
-  ["Success Confirmation Message",                      "UX",                           "Pending",                   "Medium",                "Flash message terlalu cepat hilang"],
-  ["Pagination Reset on Filter Change",                 "UX",                           "Pending",                   "Medium",                "Filter harus reset ke page 1"],
-  ["Remove Debug Endpoints",                            "Code Cleanup",                 "Pending",                   "Tinggi",                "IronOcrDiagnostic, FixIronOcr, CheckFiles, DebugUsers, dll"],
-  ["Remove TestOcr.cs",                                 "Code Cleanup",                 "Pending",                   "Medium",                "File debugging OCR tidak boleh di production"],
-  ["Remove Empty MainData Page",                        "Code Cleanup",                 "Pending",                   "Low",                   "Halaman hanya placeholder"],
-  ["Refactor / Remove SearchController",                "Architecture",                 "Pending",                   "Medium",                "Belum terintegrasi ke sistem search"],
-  ["Clean Unused Sidebar CSS",                          "Code Cleanup",                 "Pending",                   "Low",                   "sidebar.css dan sidebar-global.css banyak comment code"],
-  ["Standardize Global Exception Handling",             "Architecture",                 "Pending",                   "Medium",                "Response error belum konsisten (JSON vs HTML)"],
-  ["Refactor ViewBag → ViewModel",                      "Architecture",                 "Pending",                   "Medium",                "Dashboard admin terlalu banyak ViewBag"],
-  ["Unit Test for OCR Service",                         "Testing",                      "Pending",                   "Medium",                "Logic OCR cukup kompleks"],
-  ["Unit Test for Access Log Service",                  "Testing",                      "Pending",                   "Medium",                "Validasi pencatatan aktivitas sistem"]
+  ["Login + Rate Limiter","Autentikasi","Selesai","Tinggi","5x fail → lockout 15 menit"],
+  ["Register + Email Verification","Autentikasi","Selesai","Tinggi","Self-service + admin approval"],
+  ["Locked & Access Denied pages","Autentikasi","Selesai","Medium",""],
+  ["Security Middleware (5x)","Keamanan","Selesai","Tinggi","Headers, RateLimit, Lockout, Log, Exception"],
+  ["Activity Log Tracking","Keamanan","Selesai","Tinggi","Semua HTTP request tercatat"],
+  ["Admin Dashboard","Admin Panel","Selesai","Tinggi","6 stat cards + activity feed"],
+  ["Recommendation List (Admin)","Admin Panel","Selesai","Tinggi","Filter, sort, paginate"],
+  ["Add Data + OCR Pipeline","Admin Panel","Selesai","Tinggi","IronOCR primary + PdfPig fallback"],
+  ["Edit Data","Admin Panel","Selesai","Tinggi","Replace PDF optional"],
+  ["Access Logs Monitor","Admin Panel","Selesai","Medium","Lock/unlock user, history modal"],
+  ["Register Admin & Editor","Admin Panel","Selesai","Medium",""],
+  ["Settings (profile, export)","Admin Panel","Selesai","Medium",""],
+  ["Log Sheet","Admin Panel","In Progress","Tinggi","Binding data belum final"],
+  ["Editor Dashboard","Editor Panel","Selesai","Tinggi","4 stat cards"],
+  ["Recommendation (Editor)","Editor Panel","Selesai","Tinggi","CRUD penuh"],
+  ["Add Data & Edit Data (Editor)","Editor Panel","Selesai","Tinggi","Shared logic dengan Admin"],
+  ["User Dashboard","User Panel","Selesai","Medium","Read-only"],
+  ["Recommendation (User)","User Panel","Selesai","Medium","View + download PDF only"],
+  ["Log Sheet (User)","User Panel","In Progress","Medium","Perlu data binding"],
+  ["Excel Export Service","Backend","In Progress","Tinggi","Interface done, impl partial"],
+  ["OCR Service","Backend","Selesai","Tinggi","Primary + fallback"],
+  ["Role-based Authorization","Backend","Selesai","Tinggi","Admin / Editor / User"],
+  ["AccessLog Repository & Service","Backend","Selesai","Medium","Repository pattern"],
+  ["MainData Page","Backend","Pending","Medium","Placeholder"],
+  ["SearchController","Backend","Pending","Rendah","Belum terintegrasi ke UI"],
+  ["Card Dashboard","User Panel","In Progress","Rendah",""],
+  ["Tampilan Halaman Rekomendasi (all users)","User Panel","In Progress","Rendah",""],
+  ["Regis Admin dan Editor","User Panel","In Progress","Rendah",""],
+  ["Halaman Setting (all users)","User Panel","In Progress","Rendah",""],
+  ["Scrolling pada Riwayat Aktivitas","User Panel","In Progress","Rendah",""],
+  ["Toggle Dropdown belum Rapih","User Panel","In Progress","Rendah",""],
+  ["Forgot Password + Email Reset","Autentikasi","Pending","Tinggi","Flow reset password via email belum dibuat"],
+  ["Adding Full Name on Registration","Autentikasi","Pending","Meduim","Menambahkan entry full name pada form registrasi"],
+  ["Session Expired Feedback","UX","Pending","Medium","Tampilkan pesan 'Sesi anda telah berakhir' sebelum redirect login"],
+  ["Form Loading State","UX","Pending","Medium","Prevent double submit saat klik Save/Register"],
+  ["Success Confirmation Message","UX","Pending","Medium","Flash message terlalu cepat hilang"],
+  ["Pagination Reset on Filter Change","UX","Pending","Medium","Filter harus reset ke page 1"],
+  ["Remove Debug Endpoints","Code Cleanup","Pending","Tinggi","IronOcrDiagnostic, FixIronOcr, CheckFiles, DebugUsers, dll"],
+  ["Remove TestOcr.cs","Code Cleanup","Pending","Medium","File debugging OCR tidak boleh di production"],
+  ["Remove Empty MainData Page","Code Cleanup","Pending","Low","Halaman hanya placeholder"],
+  ["Refactor / Remove SearchController","Architecture","Pending","Medium","Belum terintegrasi ke sistem search"],
+  ["Clean Unused Sidebar CSS","Code Cleanup","Pending","Low","sidebar.css dan sidebar-global.css banyak comment code"],
+  ["Standardize Global Exception Handling","Architecture","Pending","Medium","Response error belum konsisten (JSON vs HTML)"],
+  ["Refactor ViewBag → ViewModel","Architecture","Pending","Medium","Dashboard admin terlalu banyak ViewBag"],
+  ["Unit Test for OCR Service","Testing","Pending","Medium","Logic OCR cukup kompleks"],
+  ["Unit Test for Access Log Service","Testing","Pending","Medium","Validasi pencatatan aktivitas sistem"]
 ];
 
+/* ================================================================
+   DATA — BUG CHECKLIST
+   ================================================================ */
 const BUG_CHECKLIST = [
-
-  // ═══════════════════════════════════════════════════════════════
-  // KATEGORI: Critical Bugs — Runtime Errors / Wrong Behavior
-  // ═══════════════════════════════════════════════════════════════
-
-  // [nama, kategori, status, prioritas, catatan]
-  ["EditUser logic TERBALIK",                           "Critical Bug",                 "Bug",                       "Urgent",                "Line 1967: `if (!updateResult.Succeeded)` malah tampil SUCCESS message & log activity. Logic harus dibalik — AdminController.cs:1967-1971"],
-  ["Duplicate Login & Logout di AdminController",       "Critical Bug",                 "Bug",                       "Urgent",                "AdminController punya Login POST (line 1754) & Logout POST (line 1802) yang KONFLIK dengan AccountController. lockoutOnFailure: false vs true. Harus dihapus — AdminController.cs:1754-1834"],
-  ["Duplicate RegisterAdmin/RegisterEditor actions",    "Critical Bug",                 "Bug",                       "Urgent",                "AccountController DAN AdminController sama-sama punya RegisterAdmin + RegisterEditor. Ambiguous route → bisa 500 error — AccountController.cs:232-485 & AdminController.cs:515-700"],
-  ["LINQ-to-SQL: AddHours().ToString() di UserActivityHistory", "Critical Bug",         "Bug",                       "Urgent",                ".AddHours(7).ToString() di dalam LINQ Select projection. Npgsql tidak bisa translate → runtime crash — AdminController.cs:2866-2867"],
-  ["LINQ-to-SQL: AddHours().ToString() di UserController.Settings", "Critical Bug",     "Bug",                       "Urgent",                "Pattern sama — .AddHours(7).ToString() di LINQ Select. Harus materialize dulu baru format — UserController.cs:218-219"],
-  ["Dead code di ParseTextFromOcr",                     "Critical Bug",                 "Bug",                       "Medium",                "Setelah return model; di line 1195, ada blok Console.WriteLine + return lagi yang unreachable — AdminController.cs:1196-1208"],
-  ["IronOCR license EXPIRED",                           "Critical Bug",                 "Bug",                       "Urgent",                "License key EXPIRES.25.MAR.2026 — sudah expired. OCR tidak berfungsi di production — appsettings.json:6, Program.cs:12"],
-  ["EditorController AccessLogs data HARDCODED",        "Critical Bug",                 "Bug",                       "Tinggi",                "Semua user ditampilkan dengan Activity='Login', DateTime.Now, dan PasswordHash ASLI (tidak di-mask). Harusnya ambil dari tabel AccessLogs — EditorController.cs:1240-1264"],
-
-
-  // ═══════════════════════════════════════════════════════════════
-  // KATEGORI: Security Issues
-  // ═══════════════════════════════════════════════════════════════
-
-  ["Hardcoded credentials di banyak tempat",            "Security",                     "Bug",                       "Urgent",                "DB password 'mps123456' di appsettings.json & AdminController:2681. Seed passwords exposed. IronOCR key exposed. Gunakan user-secrets / env vars"],
-  ["PasswordHash EXPOSED di EditorController",          "Security",                     "Bug",                       "Urgent",                "Line 1254 kirim user.PasswordHash langsung ke view. AdminController mask '********' tapi Editor tidak — EditorController.cs:1254"],
-  ["Cookie SecurePolicy = None",                        "Security",                     "Bug",                       "Tinggi",                "Program.cs:137 set CookieSecurePolicy.None. Production harus Always atau SameAsRequest"],
-  ["Password validation mismatch",                      "Security",                     "Bug",                       "Tinggi",                "Identity require 8 chars (Program.cs:89) tapi ChangePassword cek length < 6 (AdminController:2068). Password 6-7 chars bisa lolos"],
-  ["Missing CSRF pada JSON endpoints",                  "Security",                     "Bug",                       "Tinggi",                "GetNotifications, MarkNotificationRead, MarkAllNotificationsRead, UserActivityHistory tanpa [ValidateAntiForgeryToken] — AdminController.cs:2888,2922,2934,2850"],
-  ["BackupDatabase SQL injection risk",                 "Security",                     "Bug",                       "Medium",                "Fallback backup pakai single-quote escaping saja. Special SQL chars bisa corrupt backup — AdminController.cs:2730-2810"],
-  ["CORS terlalu broad untuk production",               "Security",                     "Bug",                       "Medium",                "Multiple localhost origins. Saat deploy production harus diganti domain sesuai — Program.cs:153-169"],
-
-
-  // ═══════════════════════════════════════════════════════════════
-  // KATEGORI: Performance Issues
-  // ═══════════════════════════════════════════════════════════════
-
-  ["N+1 query: Dashboard Active Sessions",              "Performance",                  "Bug",                       "Tinggi",                "Loop semua users + query DB per user untuk cek Login/Logout terakhir. 100 user = 100 queries. Harus single query GROUP BY — AdminController.cs:213-222"],
-  ["N+1 query: AccessLogs action (3x per user)",        "Performance",                  "Bug",                       "Tinggi",                "3 query terpisah per user: lastAuthLog, lastActionLog, lastLog. N users = 3N queries — AdminController.cs:1853-1910"],
-  ["Duplicate Active Sessions calculation",             "Performance",                  "Bug",                       "Medium",                "Dashboard hitung active sessions (line 213-222), AccessLogs hitung lagi (line 1918-1930). Keduanya N+1. Refactor ke shared method"],
-  ["N+1 query: Role Distribution di Dashboard",         "Performance",                  "Bug",                       "Medium",                "Loop semua users + GetRolesAsync() per user. Bisa pakai raw SQL atau batch query — AdminController.cs:362-368"],
-  ["UserController.Recommendation() tanpa pagination",  "Performance",                  "Bug",                       "Medium",                "Load SEMUA recommendations sekaligus tanpa server-side pagination. AdminController sudah pakai PaginatedList — UserController.cs:177-193"],
-
-
-  // ═══════════════════════════════════════════════════════════════
-  // KATEGORI: Missing Features / Incomplete
-  // ═══════════════════════════════════════════════════════════════
-
-  ["ForgotPassword & ResetPassword actions TIDAK ADA",  "Missing Feature",              "Belum Ada",                 "Tinggi",                "View ForgotPassword.cshtml & ResetPassword.cshtml sudah ada, tapi AccountController TIDAK punya action-nya"],
-  ["ChangePassword action TIDAK ADA di AccountController","Missing Feature",            "Belum Ada",                 "Tinggi",                "View ChangePassword.cshtml ada, tapi tidak ada GET/POST action. Hanya ada di AdminController untuk reset user lain"],
-  ["VerifyEmail action TIDAK ADA",                      "Missing Feature",              "Belum Ada",                 "Medium",                "View VerifyEmail.cshtml ada, tapi tidak ada controller action untuk email verification flow"],
-  ["Notification creation logic TIDAK ADA",             "Missing Feature",              "Belum Ada",                 "Medium",                "Ada code READ notifications (GetNotifications, MarkRead) tapi TIDAK ADA code CREATE saat Editor/User add/edit data"],
-  ["Editor & User ChangePassword flow sendiri",         "Missing Feature",              "Belum Ada",                 "Medium",                "Editor dan User hanya bisa update profile, tidak bisa change own password via Settings"],
-
-
-  // ═══════════════════════════════════════════════════════════════
-  // KATEGORI: Code Quality / Architecture
-  // ═══════════════════════════════════════════════════════════════
-
-  ["EditorController = copy-paste AdminController",     "Code Quality",                 "Refactor",                  "Tinggi",                "EditorController 1737 lines duplikat hampir semua OCR logic, parsing, helper methods. Harus di-refactor ke shared service"],
-  ["`using Internal;` suspicious import",               "Code Quality",                 "Bug",                       "Medium",                "Line 3 AccessLogService.cs punya `using Internal;` — namespace tidak valid / internal .NET namespace"],
-  ["Inconsistent TempData keys",                        "Code Quality",                 "Refactor",                  "Medium",                "Campur: 'ErrorMessage' vs 'Error', 'SuccessMessage' vs 'Success', 'WarningMessage' vs 'Warning'. Harus standarisasi"],
-  ["Health endpoint salah tulis framework",             "Code Quality",                 "Bug",                       "Rendah",                "Health endpoint tulis framework='NET 8.0' tapi project pakai .NET 10.0 — Program.cs:266"],
-  ["ConnectionString key mismatch",                     "Code Quality",                 "Bug",                       "Rendah",                "appsettings.json pakai key 'Default' tapi Program.cs cek 'DefaultConnection' duluan — Program.cs:25-26 vs appsettings.json:3"],
-  ["Console.WriteLine berlebihan",                      "Code Quality",                 "Refactor",                  "Medium",                "Ratusan Console.WriteLine debugging tersebar di semua controllers. Harus diganti Serilog atau dihapus"],
-  ["`new Random()` untuk username collision",           "Code Quality",                 "Bug",                       "Rendah",                "new Random().Next(1000,9999) bisa collision. Lebih aman pakai counter atau GUID suffix — AccountController.cs:296,424"],
-  ["LogActivity cek TrackUserMgmt di User/Editor",      "Code Quality",                 "Refactor",                  "Rendah",                "LogActivity helper cek TrackUserMgmt untuk Register/Lock/Unlock — tapi User dan Editor tidak bisa melakukan action ini. Dead logic"],
+  ["EditUser logic TERBALIK","Critical Bug","Bug","Urgent","Line 1967: `if (!updateResult.Succeeded)` malah tampil SUCCESS. Logic harus dibalik — AdminController.cs:1967-1971"],
+  ["Duplicate Login & Logout di AdminController","Critical Bug","Bug","Urgent","AdminController punya Login POST (line 1754) & Logout POST (line 1802) KONFLIK dengan AccountController — AdminController.cs:1754-1834"],
+  ["Duplicate RegisterAdmin/RegisterEditor actions","Critical Bug","Bug","Urgent","AccountController DAN AdminController sama-sama punya RegisterAdmin + RegisterEditor. Ambiguous route → 500 error — AccountController.cs:232-485 & AdminController.cs:515-700"],
+  ["LINQ-to-SQL: AddHours().ToString() di UserActivityHistory","Critical Bug","Bug","Urgent",".AddHours(7).ToString() di LINQ Select. Npgsql tidak bisa translate → runtime crash — AdminController.cs:2866-2867"],
+  ["LINQ-to-SQL: AddHours().ToString() di UserController.Settings","Critical Bug","Bug","Urgent","Pattern sama — .AddHours(7).ToString() di LINQ Select. Harus materialize dulu — UserController.cs:218-219"],
+  ["Dead code di ParseTextFromOcr","Critical Bug","Bug","Medium","Setelah return model; di line 1195, ada unreachable code — AdminController.cs:1196-1208"],
+  ["IronOCR license EXPIRED","Critical Bug","Bug","Urgent","License key EXPIRES.25.MAR.2026 — sudah expired. OCR mati — appsettings.json:6, Program.cs:12"],
+  ["EditorController AccessLogs data HARDCODED","Critical Bug","Bug","Tinggi","Semua user Activity='Login', DateTime.Now, PasswordHash ASLI exposed — EditorController.cs:1240-1264"],
+  ["Hardcoded credentials di banyak tempat","Security","Bug","Urgent","DB password, seed passwords, IronOCR key exposed. Gunakan user-secrets / env vars"],
+  ["PasswordHash EXPOSED di EditorController","Security","Bug","Urgent","Line 1254 kirim PasswordHash ke view. AdminController mask tapi Editor tidak — EditorController.cs:1254"],
+  ["Cookie SecurePolicy = None","Security","Bug","Tinggi","Program.cs:137 set CookieSecurePolicy.None. Production harus Always"],
+  ["Password validation mismatch","Security","Bug","Tinggi","Identity require 8 chars tapi ChangePassword cek < 6. Password 6-7 chars lolos — AdminController:2068"],
+  ["Missing CSRF pada JSON endpoints","Security","Bug","Tinggi","GetNotifications, MarkNotificationRead, MarkAllNotificationsRead tanpa ValidateAntiForgeryToken — AdminController.cs:2888,2922,2934"],
+  ["BackupDatabase SQL injection risk","Security","Bug","Medium","Fallback backup pakai single-quote escaping saja — AdminController.cs:2730-2810"],
+  ["CORS terlalu broad untuk production","Security","Bug","Medium","Multiple localhost origins. Deploy harus ganti domain — Program.cs:153-169"],
+  ["N+1 query: Dashboard Active Sessions","Performance","Bug","Tinggi","Loop users + query per user. 100 user = 100 queries — AdminController.cs:213-222"],
+  ["N+1 query: AccessLogs action (3x per user)","Performance","Bug","Tinggi","3 query per user: lastAuth, lastAction, lastLog. N users = 3N queries — AdminController.cs:1853-1910"],
+  ["Duplicate Active Sessions calculation","Performance","Bug","Medium","Dashboard & AccessLogs keduanya hitung active sessions. Refactor ke shared method"],
+  ["N+1 query: Role Distribution di Dashboard","Performance","Bug","Medium","Loop users + GetRolesAsync() per user — AdminController.cs:362-368"],
+  ["UserController.Recommendation() tanpa pagination","Performance","Bug","Medium","Load SEMUA recommendations tanpa pagination — UserController.cs:177-193"],
+  ["ForgotPassword & ResetPassword actions TIDAK ADA","Missing Feature","Belum Ada","Tinggi","View sudah ada tapi AccountController TIDAK punya action-nya"],
+  ["ChangePassword action TIDAK ADA di AccountController","Missing Feature","Belum Ada","Tinggi","View ada tapi tidak ada GET/POST action"],
+  ["VerifyEmail action TIDAK ADA","Missing Feature","Belum Ada","Medium","View ada tapi tidak ada controller action"],
+  ["Notification creation logic TIDAK ADA","Missing Feature","Belum Ada","Medium","Ada READ tapi TIDAK ADA CREATE saat add/edit data"],
+  ["Editor & User ChangePassword flow sendiri","Missing Feature","Belum Ada","Medium","Tidak bisa change own password via Settings"],
+  ["EditorController = copy-paste AdminController","Code Quality","Refactor","Tinggi","1737 lines duplikat. Harus refactor ke shared service"],
+  ["`using Internal;` suspicious import","Code Quality","Bug","Medium","AccessLogService.cs:3 — namespace tidak valid"],
+  ["Inconsistent TempData keys","Code Quality","Refactor","Medium","'ErrorMessage' vs 'Error', 'SuccessMessage' vs 'Success'. Standarisasi"],
+  ["Health endpoint salah tulis framework","Code Quality","Bug","Rendah","Tulis 'NET 8.0' tapi pakai .NET 10.0 — Program.cs:266"],
+  ["ConnectionString key mismatch","Code Quality","Bug","Rendah","appsettings pakai 'Default' tapi Program.cs cek 'DefaultConnection' — Program.cs:25-26"],
+  ["Console.WriteLine berlebihan","Code Quality","Refactor","Medium","Ratusan Console.WriteLine debugging. Ganti Serilog atau hapus"],
+  ["`new Random()` untuk username collision","Code Quality","Bug","Rendah","Random(1000,9999) bisa collision. Pakai GUID — AccountController.cs:296,424"],
+  ["LogActivity cek TrackUserMgmt di User/Editor","Code Quality","Refactor","Rendah","Cek TrackUserMgmt untuk actions yang User/Editor tidak bisa lakukan. Dead logic"],
 ];
 
-
-// ═══════════════════════════════════════════════════════════════
-// RINGKASAN PER KATEGORI
-// ═══════════════════════════════════════════════════════════════
-//
-// Critical Bug     :  8 items  (5 Urgent, 2 Tinggi, 1 Medium)
-// Security         :  7 items  (2 Urgent, 3 Tinggi, 2 Medium)
-// Performance      :  5 items  (2 Tinggi, 3 Medium)
-// Missing Feature  :  5 items  (2 Tinggi, 3 Medium)
-// Code Quality     :  8 items  (1 Tinggi, 4 Medium, 3 Rendah)
-// ─────────────────────────────────────────────────────────────
-// TOTAL            : 33 items
-//
-// PRIORITAS BREAKDOWN:
-//   Urgent  :  7  ← fix SEKARANG, bisa crash / security hole
-//   Tinggi  : 12  ← fix sebelum deploy
-//   Medium  : 11  ← fix kalau waktu ada
-//   Rendah  :  3  ← nice-to-have
-  
+/* ================================================================
+   DATA — TIMELINES
+   ================================================================ */
 const TL_DONE = [
-  ["Feb 2025 M4", "Autentikasi lengkap + semua middleware keamanan (5x)"],
-  ["Mar 2025 M1", "Deleteting Duplicate Regis Page"],
-  ["Mar 2025 M1", "Security Improvement"],
-  ["Mar 2025 M4", "Error Handling and Feedback Improvement"],
-  ["Mar 2025 M1", "Improvement Excel File Export System"],
-  ["Mar 2025 M1", "Search and Pagination server_side"],
-  
+  ["Feb 2025 M4","Autentikasi lengkap + semua middleware keamanan (5x)"],
+  ["Mar 2025 M1","Deleteting Duplicate Regis Page"],["Mar 2025 M1","Security Improvement"],
+  ["Mar 2025 M4","Error Handling and Feedback Improvement"],
+  ["Mar 2025 M1","Improvement Excel File Export System"],["Mar 2025 M1","Search and Pagination server_side"],
 ];
-
 const TL_TARGET = [
-  ["Apr 2025 M2",   "Beta Testing"],
-  ["Apr 2025 M3",   "Migrasi ke i18n"],
-  ["Apr 2025 M4",   "Implement Forgot Password flow with email reset"],
-  ["Apr 2025 M4",   "Add password strength validation on Register form"],
-  ["Apr 2025 M4",   "Session timeout feedback message when session expired"],
-  ["May 2025 M4",   "Add loading state to prevent double submit on forms"],
-  ["May 2025 M1",   "Improve success confirmation messages visibility"],
-  ["May 2025 M1",   "Fix pagination reset when filter changes in Recommendation page"],
-
-  ["May 2025 M2",   "Remove debugging endpoints (IronOcrDiagnostic, FixIronOcr, CheckFiles, DebugUsers, etc)"],
-  ["May 2025 M2",   "Remove unused TestOcr.cs debugging file"],
-  ["May 2025 M2",   "Remove unused MainData.cshtml placeholder page"],
-  ["May 2025 M2",   "Remove unused SearchController or integrate search logic properly"],
-  ["May 2025 M3",   "Clean unused CSS (sidebar.css and sidebar-global.css)"],
-
-  ["May 2025 M3",   "Standardize GlobalExceptionMiddleware error responses"],
-  ["May 2025 M3",   "Refactor multiple ViewBag usage into structured ViewModel"],
-  ["May 2025 M3",   "Add basic unit tests for OCR service"],
-  ["May 2025 M3",   "Add basic unit tests for access log service"]
+  ["Apr 2025 M2","Beta Testing"],["Apr 2025 M3","Migrasi ke i18n"],
+  ["Apr 2025 M4","Implement Forgot Password flow with email reset"],
+  ["Apr 2025 M4","Add password strength validation on Register form"],
+  ["Apr 2025 M4","Session timeout feedback message when session expired"],
+  ["May 2025 M4","Add loading state to prevent double submit on forms"],
+  ["May 2025 M1","Improve success confirmation messages visibility"],
+  ["May 2025 M1","Fix pagination reset when filter changes"],
+  ["May 2025 M2","Remove debugging endpoints"],["May 2025 M2","Remove unused TestOcr.cs"],
+  ["May 2025 M2","Remove unused MainData.cshtml"],["May 2025 M2","Remove/integrate SearchController"],
+  ["May 2025 M3","Clean unused CSS"],["May 2025 M3","Standardize error responses"],
+  ["May 2025 M3","Refactor ViewBag → ViewModel"],["May 2025 M3","Unit tests for OCR & AccessLog"],
 ];
-/* ================================================================ */
 
-const CYCLE = {"Selesai":"In Progress","In Progress":"Pending","Pending":"Selesai"};
-let statuses = {};
-
-function loadState(){
-  try { statuses = JSON.parse(localStorage.getItem("mpsStat")||"{}"); } catch(e){ statuses={}; }
-  FEATURES.forEach((f,i)=>{ if(!statuses[i]) statuses[i]=f[2]; });
-}
-function saveState(){ localStorage.setItem("mpsStat",JSON.stringify(statuses)); }
-
+/* ================================================================
+   FEATURE LOGIC
+   ================================================================ */
+const CYCLE={"Selesai":"In Progress","In Progress":"Pending","Pending":"Selesai"};
+let statuses={};
+function loadState(){try{statuses=JSON.parse(localStorage.getItem("mpsStat")||"{}");}catch(e){statuses={};}FEATURES.forEach((f,i)=>{if(!statuses[i])statuses[i]=f[2];});}
+function saveState(){localStorage.setItem("mpsStat",JSON.stringify(statuses));}
 function recalc(){
-  const vals=Object.values(statuses), n=FEATURES.length;
-  const done=vals.filter(s=>s==="Selesai").length;
-  const wip=vals.filter(s=>s==="In Progress").length;
-  const pend=vals.filter(s=>s==="Pending").length;
-  const pct=Math.round(done/n*100);
-  document.getElementById("cTotal").textContent=n;
-  document.getElementById("cDone").textContent=done;
-  document.getElementById("cPct").textContent=pct+"% dari total";
-  document.getElementById("cWip").textContent=wip;
-  document.getElementById("cPend").textContent=pend;
-  document.getElementById("pctLabel").textContent=pct+"%";
-  document.getElementById("progBar").style.width=pct+"%";
-  document.title="MPSDataCenter — "+pct+"% selesai";
+  const vals=Object.values(statuses),n=FEATURES.length,done=vals.filter(s=>s==="Selesai").length,wip=vals.filter(s=>s==="In Progress").length,pend=vals.filter(s=>s==="Pending").length,pct=Math.round(done/n*100);
+  document.getElementById("cTotal").textContent=n;document.getElementById("cDone").textContent=done;
+  document.getElementById("cPct").textContent=pct+"% dari total";document.getElementById("cWip").textContent=wip;
+  document.getElementById("cPend").textContent=pend;document.getElementById("pctLabel").textContent=pct+"%";
+  document.getElementById("progBar").style.width=pct+"%";document.title="MPSDataCenter — "+pct+"% selesai";
   buildFeatureChart(done,wip,pend);
 }
-
-function bc(s){ return s==="Selesai"?"done":s==="In Progress"?"wip":"pend"; }
+function bc(s){return s==="Selesai"?"done":s==="In Progress"?"wip":"pend";}
 function renderTable(){
-  document.getElementById("featBody").innerHTML=FEATURES.map((f,i)=>{
-    const s=statuses[i];
-    return `<tr onclick="toggle(${i})">
-      <td style="font-weight:500">${f[0]}</td>
-      <td style="color:var(--gray)">${f[1]}</td>
-      <td><span class="badge ${bc(s)}">${s}</span></td>
-      <td><span class="badge ${f[3]==="Tinggi"?"done":f[3]==="Medium"?"wip":"pend"}">${f[3]}</span></td>
-      <td style="color:var(--gray);font-size:.72rem">${f[4]}</td>
-    </tr>`;
-  }).join("");
+  document.getElementById("featBody").innerHTML=FEATURES.map((f,i)=>{const s=statuses[i];
+    return`<tr onclick="toggle(${i})"><td style="font-weight:500">${f[0]}</td><td style="color:var(--gray)">${f[1]}</td>
+    <td><span class="badge ${bc(s)}">${s}</span></td><td><span class="badge ${f[3]==="Tinggi"?"done":f[3]==="Medium"?"wip":"pend"}">${f[3]}</span></td>
+    <td style="color:var(--gray);font-size:.72rem">${f[4]}</td></tr>`;}).join("");
 }
-function toggle(i){ statuses[i]=CYCLE[statuses[i]]; saveState(); renderTable(); recalc(); }
-
+function toggle(i){statuses[i]=CYCLE[statuses[i]];saveState();renderTable();recalc();}
 function renderTimeline(){
-  document.getElementById("tlDone").innerHTML=TL_DONE.map(([p,t])=>
-    `<div class="tl-item"><div class="tl-dot tl-dot-d"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`
-  ).join("");
-  document.getElementById("tlTarget").innerHTML=TL_TARGET.map(([p,t])=>
-    `<div class="tl-item"><div class="tl-dot tl-dot-t"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`
-  ).join("");
+  document.getElementById("tlDone").innerHTML=TL_DONE.map(([p,t])=>`<div class="tl-item"><div class="tl-dot tl-dot-d"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`).join("");
+  document.getElementById("tlTarget").innerHTML=TL_TARGET.map(([p,t])=>`<div class="tl-item"><div class="tl-dot tl-dot-t"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`).join("");
 }
 
-/* ── TOKEN UI */
-function toggleTok(){
-  const inp=document.getElementById("tokenInput");
-  const eye=document.getElementById("tokEye");
-  if(inp.type==="password"){ inp.type="text"; eye.textContent="🙈"; }
-  else { inp.type="password"; eye.textContent="👁"; }
+/* ── Token UI */
+function toggleTok(){const inp=document.getElementById("tokenInput"),eye=document.getElementById("tokEye");if(inp.type==="password"){inp.type="text";eye.textContent="🙈";}else{inp.type="password";eye.textContent="👁";}}
+function saveToken(tok){if(tok)localStorage.setItem("mpsToken",tok);const s=document.getElementById("tokSaved");s.style.display="inline";setTimeout(()=>s.style.display="none",2500);}
+
+/* ── Feature Donut */
+const DONUT_DATA=[{label:"Selesai",color:"#38ff01",bg:"#EAF3DE"},{label:"In Progress",color:"#fefb00",bg:"#FAEEDA"},{label:"Pending",color:"#ff1400",bg:"#FCEBEB"}];
+let featureChart=null;
+function buildFeatureChart(done,wip,pend){
+  const vals=[done,wip,pend],total=done+wip+pend;
+  document.getElementById("donutVal").textContent=done;
+  document.getElementById("donutLegend").innerHTML=DONUT_DATA.map((d,i)=>{const pct=total>0?Math.round(vals[i]/total*100):0;
+    return`<div style="display:flex;align-items:center;gap:.6rem"><div style="width:10px;height:10px;border-radius:2px;background:${d.color};flex-shrink:0"></div>
+    <div style="font-size:.75rem;color:#64748B;width:78px">${d.label}</div>
+    <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden"><div style="width:${pct}%;height:6px;background:${d.color};border-radius:100px;transition:width .8s ease"></div></div>
+    <div style="font-size:.75rem;font-weight:600;color:#0A2B57;min-width:22px;text-align:right">${vals[i]}</div>
+    <div style="font-size:.72rem;color:#64748B;min-width:32px;text-align:right">${pct}%</div></div>`;}).join("");
+  if(featureChart)featureChart.destroy();
+  featureChart=new Chart(document.getElementById("featureChart").getContext("2d"),{type:"doughnut",
+    data:{labels:DONUT_DATA.map(d=>d.label),datasets:[{data:vals,backgroundColor:DONUT_DATA.map(d=>d.color),borderColor:DONUT_DATA.map(d=>d.bg),borderWidth:3,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} (${total>0?Math.round(c.parsed/total*100):0}%)`}}}}});
 }
 
-function saveToken(tok){
-  if(tok) localStorage.setItem("mpsToken",tok);
-  const saved=document.getElementById("tokSaved");
-  saved.style.display="inline";
-  setTimeout(()=>saved.style.display="none",2500);
+/* ── Commit Chart */
+let commitChart=null;
+function buildChart(labels,data){if(commitChart)commitChart.destroy();
+  commitChart=new Chart(document.getElementById("commitChart").getContext("2d"),{type:"bar",
+    data:{labels,datasets:[{label:"Commits",data,backgroundColor:"#BBDEFB",borderRadius:3,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{font:{size:9},maxRotation:45,color:"#888"},grid:{display:false}},y:{ticks:{font:{size:9},color:"#888",stepSize:1},beginAtZero:true,grid:{color:"rgba(0,0,0,0.05)"}}}}});
 }
 
-const DONUT_DATA = [
-  { label:"Selesai",     color:"#38ff01", bg:"#EAF3DE" },
-  { label:"In Progress", color:"#fefb00", bg:"#FAEEDA" },
-  { label:"Pending",     color:"#ff1400", bg:"#FCEBEB" },
+/* ════════════════════════════════════════════════════════════════
+   BUG CHECKLIST LOGIC
+   ════════════════════════════════════════════════════════════════ */
+let bugStat={},bugFilter="Semua";
+function loadBugState(){try{bugStat=JSON.parse(localStorage.getItem("mpsBugStat")||"{}");}catch(e){bugStat={};}BUG_CHECKLIST.forEach((b,i)=>{if(!bugStat[i])bugStat[i]=b[2];});}
+function saveBugState(){localStorage.setItem("mpsBugStat",JSON.stringify(bugStat));}
+
+function bsc(s){return s==="Fixed"?"b-fixed":s==="Bug"?"b-bug":s==="Belum Ada"?"b-belum":s==="Refactor"?"b-refac":"pend";}
+function bpc(p){const l=p.toLowerCase();return l==="urgent"?"b-urgent":l==="tinggi"?"b-tinggi":l==="medium"?"b-medium":"b-rendah";}
+
+const CAT_META=[
+  {key:"Critical Bug",lbl:"Critical",clr:"#EF5350",bg:"#FFEBEE"},
+  {key:"Security",lbl:"Security",clr:"#FF9800",bg:"#FFF3E0"},
+  {key:"Performance",lbl:"Performance",clr:"#42A5F5",bg:"#E3F2FD"},
+  {key:"Missing Feature",lbl:"Missing",clr:"#AB47BC",bg:"#F3E5F6"},
+  {key:"Code Quality",lbl:"Quality",clr:"#26A69A",bg:"#E0F2F1"},
+];
+const PRI_META=[
+  {key:"urgent",lbl:"Urgent",clr:"#E53935",bg:"#FFCDD2"},
+  {key:"tinggi",lbl:"Tinggi",clr:"#FF9800",bg:"#FFE0B2"},
+  {key:"medium",lbl:"Medium",clr:"#42A5F5",bg:"#BBDEFB"},
+  {key:"rendah",lbl:"Rendah",clr:"#90A4AE",bg:"#ECEFF1"},
 ];
 
-function buildFeatureChart(done, wip, pend) {
-  const vals = [done, wip, pend];
-  const total = done + wip + pend;
-
-  document.getElementById("donutVal").textContent = done;
-
-  const lg = document.getElementById("donutLegend");
-  lg.innerHTML = DONUT_DATA.map((d,i) => {
-    const pct = total > 0 ? Math.round(vals[i]/total*100) : 0;
-    return `<div style="display:flex;align-items:center;gap:.6rem">
-      <div style="width:10px;height:10px;border-radius:2px;background:${d.color};flex-shrink:0"></div>
-      <div style="font-size:.75rem;color:#64748B;width:78px">${d.label}</div>
-      <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden">
-        <div style="width:${pct}%;height:6px;background:${d.color};border-radius:100px;transition:width .8s ease"></div>
-      </div>
-      <div style="font-size:.75rem;font-weight:600;color:#0A2B57;min-width:22px;text-align:right">${vals[i]}</div>
-      <div style="font-size:.72rem;color:#64748B;min-width:32px;text-align:right">${pct}%</div>
-    </div>`;
-  }).join("");
-
-  if (featureChart) featureChart.destroy();
-  const ctx = document.getElementById("featureChart").getContext("2d");
-  featureChart = new Chart(ctx, {
-    type: "doughnut",
-    data: {
-      labels: DONUT_DATA.map(d=>d.label),
-      datasets: [{
-        data: vals,
-        backgroundColor: DONUT_DATA.map(d=>d.color),
-        borderColor: DONUT_DATA.map(d=>d.bg),
-        borderWidth: 3,
-        hoverOffset: 6,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: "72%",
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` ${ctx.label}: ${ctx.parsed} fitur (${total>0?Math.round(ctx.parsed/total*100):0}%)`
-          }
-        }
-      }
-    }
-  });
+function recalcBugs(){
+  const n=BUG_CHECKLIST.length,fixed=Object.values(bugStat).filter(s=>s==="Fixed").length,unfixed=n-fixed,pct=Math.round(fixed/n*100);
+  let urgent=0,tinggi=0,medlow=0;
+  BUG_CHECKLIST.forEach((b,i)=>{if(bugStat[i]==="Fixed")return;const p=b[3].toLowerCase();if(p==="urgent")urgent++;else if(p==="tinggi")tinggi++;else medlow++;});
+  document.getElementById("bTotal").textContent=n;document.getElementById("bFixed").textContent=fixed;
+  document.getElementById("bFixPct").textContent=pct+"% resolved";document.getElementById("bUrgent").textContent=urgent;
+  document.getElementById("bHigh").textContent=tinggi;document.getElementById("bMedLow").textContent=medlow;
+  document.getElementById("bPctLbl").textContent=pct+"%";document.getElementById("bProgBar").style.width=pct+"%";
+  document.getElementById("bProgSum").textContent=fixed+" fixed / "+n+" total";
+  buildBugCharts(unfixed);
 }
 
-/* ── CHART */
-let featureChart=null;
-let commitChart=null;
-function buildChart(labels,data){
-  if(commitChart) commitChart.destroy();
-  const ctx=document.getElementById("commitChart").getContext("2d");
-  commitChart=new Chart(ctx,{
-    type:"bar",
-    data:{ labels, datasets:[{label:"Commits",data,backgroundColor:"#BBDEFB",borderRadius:3,borderSkipped:false}] },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{ticks:{font:{size:9},maxRotation:45,color:"#888"},grid:{display:false}},
-        y:{ticks:{font:{size:9},color:"#888",stepSize:1},beginAtZero:true,grid:{color:"rgba(0,0,0,0.05)"}}
-      }
-    }
-  });
+let bugCatC=null,bugPriC=null;
+function legendRow(m,val,total){
+  const pct=total>0?Math.round(val/total*100):0;
+  return`<div style="display:flex;align-items:center;gap:.55rem">
+  <div style="width:10px;height:10px;border-radius:2px;background:${m.clr};flex-shrink:0"></div>
+  <div style="font-size:.73rem;color:#64748B;width:75px">${m.lbl}</div>
+  <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden"><div style="width:${pct}%;height:6px;background:${m.clr};border-radius:100px;transition:width .8s ease"></div></div>
+  <div style="font-size:.73rem;font-weight:600;color:#0A2B57;min-width:18px;text-align:right">${val}</div></div>`;
+}
+function mkDonut(canvasId,labels,data,colors,borders,tip){
+  return new Chart(document.getElementById(canvasId).getContext("2d"),{type:"doughnut",
+    data:{labels,datasets:[{data,backgroundColor:colors,borderColor:borders,borderWidth:3,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} ${tip}`}}}}});
 }
 
-/* ── GITHUB FETCH */
+function buildBugCharts(unfixed){
+  const catVals=CAT_META.map(m=>{let c=0;BUG_CHECKLIST.forEach((b,i)=>{if(bugStat[i]!=="Fixed"&&b[1]===m.key)c++;});return c;});
+  const catTot=catVals.reduce((a,b)=>a+b,0)||1;
+  document.getElementById("bugCatVal").textContent=unfixed;
+  document.getElementById("bugCatLeg").innerHTML=CAT_META.map((m,i)=>legendRow(m,catVals[i],catTot)).join("");
+  if(bugCatC)bugCatC.destroy();
+  bugCatC=mkDonut("bugCatChart",CAT_META.map(m=>m.lbl),catVals,CAT_META.map(m=>m.clr),CAT_META.map(m=>m.bg),"unfixed");
+
+  const priVals=PRI_META.map(m=>{let c=0;BUG_CHECKLIST.forEach((b,i)=>{if(bugStat[i]!=="Fixed"&&b[3].toLowerCase()===m.key)c++;});return c;});
+  const priTot=priVals.reduce((a,b)=>a+b,0)||1;
+  document.getElementById("bugPriVal").textContent=unfixed;
+  document.getElementById("bugPriLeg").innerHTML=PRI_META.map((m,i)=>legendRow(m,priVals[i],priTot)).join("");
+  if(bugPriC)bugPriC.destroy();
+  bugPriC=mkDonut("bugPriChart",PRI_META.map(m=>m.lbl),priVals,PRI_META.map(m=>m.clr),PRI_META.map(m=>m.bg),"unfixed");
+}
+
+function buildBugFilters(){
+  const cats=["Semua",...new Set(BUG_CHECKLIST.map(b=>b[1]))];
+  document.getElementById("bugFilterBar").innerHTML=cats.map(c=>{
+    const cnt=c==="Semua"?BUG_CHECKLIST.length:BUG_CHECKLIST.filter(b=>b[1]===c).length;
+    return`<button class="fbtn${bugFilter===c?" active":""}" onclick="setBugFilter('${c}')">${c}<span class="fc">(${cnt})</span></button>`;}).join("");
+}
+function setBugFilter(c){bugFilter=c;buildBugFilters();renderBugTable();}
+
+const CAT_ORDER=["Critical Bug","Security","Performance","Missing Feature","Code Quality"];
+function renderBugTable(){
+  const filtered=BUG_CHECKLIST.map((b,i)=>({b,i})).filter(({b})=>bugFilter==="Semua"||b[1]===bugFilter);
+  const groups={};filtered.forEach(({b,i})=>{if(!groups[b[1]])groups[b[1]]=[];groups[b[1]].push({b,i});});
+  const keys=CAT_ORDER.filter(k=>groups[k]);
+  let html="";
+  keys.forEach(cat=>{
+    const cm=CAT_META.find(m=>m.key===cat)||{clr:"#64748B"};
+    if(bugFilter==="Semua")html+=`<tr class="cat-row"><td colspan="5" style="border-left:3px solid ${cm.clr}">${cat} <span style="font-weight:400;opacity:.6">(${groups[cat].length})</span></td></tr>`;
+    groups[cat].forEach(({b,i})=>{
+      const s=bugStat[i],isFixed=s==="Fixed",ds=isFixed?"Fixed":b[2];
+      html+=`<tr class="${isFixed?"fixed-row":""}" onclick="toggleBug(${i})">
+        <td style="font-weight:500">${b[0]}</td>
+        <td><span style="font-size:.66rem;color:${cm.clr};font-weight:600">${b[1]}</span></td>
+        <td><span class="badge ${bsc(ds)}">${ds}</span></td>
+        <td><span class="badge ${bpc(b[3])}">${b[3]}</span></td>
+        <td style="color:var(--gray);font-size:.7rem;line-height:1.35">${b[4]}</td></tr>`;
+    });
+  });
+  document.getElementById("bugBody").innerHTML=html;
+}
+function toggleBug(i){bugStat[i]=bugStat[i]==="Fixed"?BUG_CHECKLIST[i][2]:"Fixed";saveBugState();renderBugTable();recalcBugs();}
+
+/* ════════════════════════════════════════════════════════════════
+   GITHUB FETCH
+   ════════════════════════════════════════════════════════════════ */
 async function fetchGitHub(){
-  const repo=document.getElementById("repoInput").value.trim();
-  const token=document.getElementById("tokenInput").value.trim();
-
-  if(!repo||!repo.includes("/")){
-    document.getElementById("syncStatus").textContent="⚠ Format repo: owner/nama-repo";
-    return;
-  }
-  if(!token){
-    document.getElementById("syncStatus").textContent="⚠ Token diperlukan untuk repo private";
-    document.getElementById("tokenInput").focus();
-    return;
-  }
-
-  document.getElementById("syncStatus").textContent="Mengambil data...";
-  document.getElementById("chartStatus").textContent="";
-
-  const headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json"};
-  const since=new Date(Date.now()-30*86400000).toISOString();
-
+  const repo=document.getElementById("repoInput").value.trim(),token=document.getElementById("tokenInput").value.trim();
+  if(!repo||!repo.includes("/")){document.getElementById("syncStatus").textContent="⚠ Format: owner/repo";return;}
+  if(!token){document.getElementById("syncStatus").textContent="⚠ Token diperlukan";document.getElementById("tokenInput").focus();return;}
+  document.getElementById("syncStatus").textContent="Mengambil data...";document.getElementById("chartStatus").textContent="";
+  const headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json"},since=new Date(Date.now()-30*86400000).toISOString();
   try{
     const res=await fetch(`https://api.github.com/repos/${repo}/commits?per_page=100&since=${since}`,{headers});
-    if(res.status===401) throw new Error("Token tidak valid atau expired");
-    if(res.status===403) throw new Error("Token tidak punya akses ke repo ini");
-    if(res.status===404) throw new Error("Repo tidak ditemukan");
-    if(!res.ok) throw new Error("GitHub API error: "+res.status);
-
+    if(res.status===401)throw new Error("Token tidak valid");if(res.status===403)throw new Error("Tidak punya akses");
+    if(res.status===404)throw new Error("Repo tidak ditemukan");if(!res.ok)throw new Error("API error: "+res.status);
     const commits=await res.json();
-
-    /* build chart */
-    const map={};
-    for(let i=29;i>=0;i--){
-      const d=new Date(); d.setDate(d.getDate()-i);
-      map[d.toISOString().slice(0,10)]=0;
-    }
-    commits.forEach(c=>{
-      const k=c.commit.author.date.slice(0,10);
-      if(map[k]!==undefined) map[k]++;
-    });
+    const map={};for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);map[d.toISOString().slice(0,10)]=0;}
+    commits.forEach(c=>{const k=c.commit.author.date.slice(0,10);if(map[k]!==undefined)map[k]++;});
     buildChart(Object.keys(map).map(k=>k.slice(5)),Object.values(map));
-    document.getElementById("chartStatus").textContent=commits.length+" commits dalam 30 hari terakhir";
-
-    /* recent commits */
+    document.getElementById("chartStatus").textContent=commits.length+" commits dalam 30 hari";
     document.getElementById("commitList").innerHTML=commits.slice(0,5).map(c=>{
-      const msg=c.commit.message.split("\n")[0].slice(0,80);
-      const name=c.commit.author.name||"?";
-      const initials=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
-      const dt=new Date(c.commit.author.date);
-      const diffS=Math.floor((Date.now()-dt)/1000);
-      const when=diffS<60?diffS+" detik lalu":diffS<3600?Math.floor(diffS/60)+" menit lalu":diffS<86400?Math.floor(diffS/3600)+" jam lalu":Math.floor(diffS/86400)+" hari lalu";
-      return `<div class="commit-item">
-        <div class="avatar">${initials}</div>
-        <div>
-          <div class="commit-msg">${msg}</div>
-          <div class="commit-meta">${when} &middot; ${c.sha.slice(0,7)} &middot; ${name}</div>
-        </div>
-      </div>`;
-    }).join("");
-
-    /* save prefs */
-    localStorage.setItem("mpsRepo",repo);
-    saveToken(token);
-    document.getElementById("tokenInfo").style.display="none";
-
-    const ts=new Date().toLocaleString("id-ID");
-    document.getElementById("syncStatus").textContent="✓ "+ts;
-    document.getElementById("lastUpdated").textContent=
-      "Last sync: "+ts+" · "+commits.length+" commits (30 hari)";
-
-  }catch(e){
-    document.getElementById("syncStatus").textContent="✗ "+e.message;
-    document.getElementById("chartStatus").textContent=e.message;
-  }
+      const msg=c.commit.message.split("\n")[0].slice(0,80),name=c.commit.author.name||"?",
+        initials=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+        dt=new Date(c.commit.author.date),diffS=Math.floor((Date.now()-dt)/1000),
+        when=diffS<60?diffS+"s lalu":diffS<3600?Math.floor(diffS/60)+"m lalu":diffS<86400?Math.floor(diffS/3600)+"j lalu":Math.floor(diffS/86400)+"h lalu";
+      return`<div class="commit-item"><div class="avatar">${initials}</div><div><div class="commit-msg">${msg}</div><div class="commit-meta">${when} · ${c.sha.slice(0,7)} · ${name}</div></div></div>`;}).join("");
+    localStorage.setItem("mpsRepo",repo);saveToken(token);document.getElementById("tokenInfo").style.display="none";
+    const ts=new Date().toLocaleString("id-ID");document.getElementById("syncStatus").textContent="✓ "+ts;
+    document.getElementById("lastUpdated").textContent="Last sync: "+ts+" · "+commits.length+" commits (30 hari)";
+  }catch(e){document.getElementById("syncStatus").textContent="✗ "+e.message;document.getElementById("chartStatus").textContent=e.message;}
 }
 
-/* ── INIT */
-loadState(); recalc(); renderTable(); renderTimeline();
-const sr=localStorage.getItem("mpsRepo")||PROJECT.repo;
-const st=localStorage.getItem("mpsToken")||"";
-if(sr) document.getElementById("repoInput").value=sr;
-if(st){
-  document.getElementById("tokenInput").value=st;
-  document.getElementById("tokSaved").style.display="inline";
-  document.getElementById("tokenInfo").style.display="none";
-}
+/* ════════════════════════════════════════════════════════════════
+   INIT
+   ════════════════════════════════════════════════════════════════ */
+loadState();recalc();renderTable();renderTimeline();
+loadBugState();buildBugFilters();renderBugTable();recalcBugs();
+const sr=localStorage.getItem("mpsRepo")||PROJECT.repo,st=localStorage.getItem("mpsToken")||"";
+if(sr)document.getElementById("repoInput").value=sr;
+if(st){document.getElementById("tokenInput").value=st;document.getElementById("tokSaved").style.display="inline";document.getElementById("tokenInfo").style.display="none";}
 </script>
 </body>
 </html>
