@@ -15,13 +15,14 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
 .field-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);font-weight:600}
 .inp{font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--dark);outline:none;height:32px}
 .inp:focus{border-color:var(--blue)}
-.inp-repo{width:195px}
-.inp-token{width:210px;font-family:monospace;letter-spacing:1px}
+.inp-repo{width:195px}.inp-token{width:210px;font-family:monospace;letter-spacing:1px}
 .tok-wrap{position:relative;display:flex;align-items:center}
 .tok-eye{position:absolute;right:8px;cursor:pointer;font-size:12px;color:var(--gray);user-select:none;line-height:1}
 .btn-sync{font-size:12px;padding:0 16px;height:32px;border:none;border-radius:var(--rs);background:var(--blue);color:#fff;cursor:pointer;font-weight:600;align-self:flex-end;white-space:nowrap}
 .btn-sync:hover{background:#1565c0}
 .sync-status{font-size:11px;color:var(--gray);align-self:flex-end;padding-bottom:6px;white-space:nowrap}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-left:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
 main{max-width:1200px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
 .page-header{margin-bottom:1.5rem}
 .page-header h1{font-size:1.3rem;font-weight:700}
@@ -68,8 +69,7 @@ tr{cursor:pointer}
 .info-box{background:var(--blue-light);border:1px solid #BBDEFB;border-radius:var(--rs);padding:.65rem .9rem;font-size:.76rem;color:#0d47a1;margin-bottom:.8rem}
 footer{text-align:center;font-size:.72rem;color:var(--gray);padding:1.25rem;border-top:1px solid var(--border);margin-top:.5rem}
 footer a{color:var(--blue);text-decoration:none}
-
-/* ── Bug Checklist ── */
+/* Bug */
 .section-sep{border:none;border-top:2px solid var(--border);margin:2rem 0 1.5rem}
 .cards-5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.9rem;margin-bottom:1.1rem}
 .bug-filter{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.9rem}
@@ -80,26 +80,25 @@ footer a{color:var(--blue);text-decoration:none}
 .cat-row td{background:var(--bg)!important;padding:.3rem .65rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray);border-bottom:1px solid var(--border);cursor:default}
 tr.fixed-row td{opacity:.45}
 tr.fixed-row td:first-child{text-decoration:line-through}
-.b-bug{background:#FFEBEE;color:#b71c1c}
-.b-fixed{background:var(--green-light);color:#1b5e20}
-.b-belum{background:#F3E5F6;color:#4a148c}
-.b-refac{background:#E0F2F1;color:#004d40}
-.b-urgent{background:#FFCDD2;color:#b71c1c;font-weight:700}
-.b-tinggi{background:var(--amber-light);color:#bf360c}
-.b-medium{background:var(--blue-light);color:#0d47a1}
-.b-rendah{background:var(--bg);color:var(--gray)}
-
+.b-bug{background:#FFEBEE;color:#b71c1c}.b-fixed{background:var(--green-light);color:#1b5e20}.b-belum{background:#F3E5F6;color:#4a148c}.b-refac{background:#E0F2F1;color:#004d40}
+.b-urgent{background:#FFCDD2;color:#b71c1c;font-weight:700}.b-tinggi{background:var(--amber-light);color:#bf360c}.b-medium{background:var(--blue-light);color:#0d47a1}.b-rendah{background:var(--bg);color:var(--gray)}
+/* Sync toast */
+.sync-toast{position:fixed;bottom:20px;right:20px;background:#263238;color:#fff;font-size:.75rem;padding:8px 14px;border-radius:8px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+.sync-toast.show{opacity:1}
 @media(max-width:900px){.cards-5{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:768px){.cards{grid-template-columns:1fr 1fr}.cards-5{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.nav-controls{gap:.4rem}.inp-repo,.inp-token{width:140px}}
+@media(max-width:768px){.cards{grid-template-columns:1fr 1fr}.cards-5{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.inp-repo,.inp-token{width:140px}}
 @media(max-width:480px){.cards-5{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
+<div class="sync-toast" id="syncToast"></div>
+
 <nav>
   <div class="nav-brand">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 10h16M4 14h8M4 18h6"/><rect x="14" y="12" width="8" height="8" rx="1.5"/></svg>
     MPSDataCenter
+    <span class="live-dot" title="Live sync aktif"></span>
   </div>
   <div class="nav-controls">
     <div class="field-grp">
@@ -121,14 +120,14 @@ tr.fixed-row td:first-child{text-decoration:line-through}
 <main>
   <div class="page-header">
     <h1>Progress Dashboard — MPSDataCenter</h1>
-    <p id="lastUpdated">Masukkan repo + token lalu klik Sync &middot; Status fitur bisa diubah langsung di tabel (tersimpan di browser)</p>
+    <p id="lastUpdated">Masukkan repo + token lalu klik Sync &middot; Status fitur bisa diubah langsung di tabel &middot; <strong>Sinkron otomatis antar semua pengguna</strong></p>
   </div>
 
   <div class="info-box" id="tokenInfo">
-    <strong>Token diperlukan</strong> karena repo ini private. Token disimpan hanya di browser kamu (localStorage) — tidak dikirim ke server manapun selain api.github.com.
+    <strong>Token diperlukan</strong> karena repo ini private. Token disimpan hanya di browser kamu — tidak dikirim ke server manapun selain api.github.com.
   </div>
 
-  <!-- ══════════ FEATURE SECTION ══════════ -->
+  <!-- FEATURE SECTION -->
   <div class="cards">
     <div class="card c-blue"><div class="card-lbl">Total Fitur</div><div class="card-val" id="cTotal">—</div><div class="card-sub">item tracked</div></div>
     <div class="card c-green"><div class="card-lbl">Selesai</div><div class="card-val" id="cDone" style="color:var(--green)">—</div><div class="card-sub" id="cPct">— % dari total</div></div>
@@ -171,7 +170,7 @@ tr.fixed-row td:first-child{text-decoration:line-through}
   <div class="feat-panel">
     <div class="feat-head">
       <span class="panel-title" style="margin:0">Status fitur</span>
-      <span style="font-size:.72rem;color:var(--gray)">Klik baris untuk toggle status &middot; auto-save di browser</span>
+      <span style="font-size:.72rem;color:var(--gray)">Klik baris untuk toggle status &middot; sinkron ke semua pengguna</span>
     </div>
     <table><thead><tr>
       <th style="width:34%">Fitur / Halaman</th><th style="width:17%">Kategori</th><th style="width:14%">Status</th><th style="width:11%">Prioritas</th><th>Catatan</th>
@@ -183,7 +182,7 @@ tr.fixed-row td:first-child{text-decoration:line-through}
     <div class="panel"><div class="panel-title">Target ke depan</div><div class="tl" id="tlTarget"></div></div>
   </div>
 
-  <!-- ══════════ BUG CHECKLIST SECTION ══════════ -->
+  <!-- BUG CHECKLIST SECTION -->
   <hr class="section-sep">
 
   <div class="page-header" style="margin-bottom:1.2rem">
@@ -191,7 +190,7 @@ tr.fixed-row td:first-child{text-decoration:line-through}
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       Bug Checklist &amp; Code Review
     </h1>
-    <p>Hasil review codebase — klik baris untuk toggle Fixed / Unfixed &middot; auto-save di browser</p>
+    <p>Hasil review codebase — klik baris untuk toggle Fixed &middot; <strong>sinkron otomatis ke semua pengguna</strong></p>
   </div>
 
   <div class="cards-5">
@@ -240,7 +239,7 @@ tr.fixed-row td:first-child{text-decoration:line-through}
   <div class="feat-panel">
     <div class="feat-head">
       <span class="panel-title" style="margin:0">Bug checklist</span>
-      <span style="font-size:.72rem;color:var(--gray)">Klik baris untuk toggle Fixed &middot; auto-save di browser</span>
+      <span style="font-size:.72rem;color:var(--gray)">Klik baris untuk toggle Fixed &middot; sinkron ke semua pengguna</span>
     </div>
     <div class="bug-filter" id="bugFilterBar"></div>
     <table><thead><tr>
@@ -253,13 +252,14 @@ tr.fixed-row td:first-child{text-decoration:line-through}
 <footer>
   MPSDataCenter Progress Dashboard &middot; <strong>Risky Hidayat</strong> &middot;
   <a href="https://github.com" target="_blank">github.com</a>
+  &middot; <span id="footerSync" style="color:var(--green)">&#8635; Live sync aktif</span>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 /* ================================================================
    DATA — FEATURES
-   ================================================================ */
+================================================================ */
 const PROJECT = { repo: "" };
 
 const FEATURES = [
@@ -295,7 +295,7 @@ const FEATURES = [
   ["Scrolling pada Riwayat Aktivitas","User Panel","In Progress","Rendah",""],
   ["Toggle Dropdown belum Rapih","User Panel","In Progress","Rendah",""],
   ["Forgot Password + Email Reset","Autentikasi","Pending","Tinggi","Flow reset password via email belum dibuat"],
-  ["Adding Full Name on Registration","Autentikasi","Pending","Meduim","Menambahkan entry full name pada form registrasi"],
+  ["Adding Full Name on Registration","Autentikasi","Pending","Medium","Menambahkan entry full name pada form registrasi"],
   ["Session Expired Feedback","UX","Pending","Medium","Tampilkan pesan 'Sesi anda telah berakhir' sebelum redirect login"],
   ["Form Loading State","UX","Pending","Medium","Prevent double submit saat klik Save/Register"],
   ["Success Confirmation Message","UX","Pending","Medium","Flash message terlalu cepat hilang"],
@@ -313,48 +313,39 @@ const FEATURES = [
 
 /* ================================================================
    DATA — BUG CHECKLIST
-   ================================================================ */
+================================================================ */
 const BUG_CHECKLIST = [
-  // ── Critical Bug ──
-  ["EditUser logic TERBALIK","Critical Bug","Bug","Urgent","Line 1967: `if (!updateResult.Succeeded)` malah tampil SUCCESS. Logic harus dibalik — AdminController.cs:1967-1971"],
-  ["Duplicate Login & Logout di AdminController","Critical Bug","Bug","Urgent","AdminController punya Login POST (line 1754) & Logout POST (line 1802) KONFLIK dengan AccountController — AdminController.cs:1754-1834"],
-  ["Duplicate RegisterAdmin/RegisterEditor actions","Critical Bug","Bug","Urgent","AccountController DAN AdminController sama-sama punya RegisterAdmin + RegisterEditor. Ambiguous route → 500 error — AccountController.cs:232-485 & AdminController.cs:515-700"],
+  ["EditUser logic TERBALIK","Critical Bug","Bug","Urgent","Line 1967: if (!updateResult.Succeeded) malah tampil SUCCESS. Logic harus dibalik — AdminController.cs:1967-1971"],
+  ["Duplicate Login & Logout di AdminController","Critical Bug","Bug","Urgent","AdminController punya Login POST & Logout POST KONFLIK dengan AccountController — AdminController.cs:1754-1834"],
+  ["Duplicate RegisterAdmin/RegisterEditor actions","Critical Bug","Bug","Urgent","AccountController DAN AdminController sama-sama punya RegisterAdmin + RegisterEditor. Ambiguous route → 500 error"],
   ["LINQ-to-SQL: AddHours().ToString() di UserActivityHistory","Critical Bug","Bug","Urgent",".AddHours(7).ToString() di LINQ Select. Npgsql tidak bisa translate → runtime crash — AdminController.cs:2866-2867"],
   ["LINQ-to-SQL: AddHours().ToString() di UserController.Settings","Critical Bug","Bug","Urgent","Pattern sama — .AddHours(7).ToString() di LINQ Select. Harus materialize dulu — UserController.cs:218-219"],
   ["Dead code di ParseTextFromOcr","Critical Bug","Bug","Medium","Setelah return model; di line 1195, ada unreachable code — AdminController.cs:1196-1208"],
   ["EditorController AccessLogs data HARDCODED","Critical Bug","Bug","Tinggi","Semua user Activity='Login', DateTime.Now, PasswordHash ASLI exposed — EditorController.cs:1240-1264"],
-
-  // ── Security ──
   ["Hardcoded credentials di banyak tempat","Security","Bug","Urgent","DB password, seed passwords, IronOCR key exposed. Gunakan user-secrets / env vars"],
   ["PasswordHash EXPOSED di EditorController","Security","Bug","Urgent","Line 1254 kirim PasswordHash ke view. AdminController mask tapi Editor tidak — EditorController.cs:1254"],
   ["Cookie SecurePolicy = None","Security","Bug","Tinggi","Program.cs:137 set CookieSecurePolicy.None. Production harus Always"],
   ["Password validation mismatch","Security","Bug","Tinggi","Identity require 8 chars tapi ChangePassword cek < 6. Password 6-7 chars lolos — AdminController:2068"],
-  ["Missing CSRF pada JSON endpoints","Security","Bug","Tinggi","GetNotifications, MarkNotificationRead, MarkAllNotificationsRead tanpa ValidateAntiForgeryToken — AdminController.cs:2888,2922,2934"],
+  ["Missing CSRF pada JSON endpoints","Security","Bug","Tinggi","GetNotifications, MarkNotificationRead, MarkAllNotificationsRead tanpa ValidateAntiForgeryToken"],
   ["Create POST missing ValidateAntiForgeryToken","Security","Bug","Tinggi","AdminController.cs:475 dan EditorController.cs:335 — action Create(RecommendationModel) tanpa CSRF protection"],
   ["AddData POST missing ValidateAntiForgeryToken","Security","Bug","Tinggi","AdminController.cs:724 dan EditorController.cs:438 — action AddData(IFormFile) tanpa CSRF protection"],
   ["BackupDatabase SQL injection risk","Security","Bug","Medium","Fallback backup pakai single-quote escaping saja — AdminController.cs:2730-2810"],
   ["CORS terlalu broad untuk production","Security","Bug","Medium","Multiple localhost origins. Deploy harus ganti domain — Program.cs:153-169"],
-
-  // ── Performance ──
   ["N+1 query: Dashboard Active Sessions","Performance","Bug","Tinggi","Loop users + query per user. 100 user = 100 queries — AdminController.cs:213-222"],
   ["N+1 query: AccessLogs action (3x per user)","Performance","Bug","Tinggi","3 query per user: lastAuth, lastAction, lastLog. N users = 3N queries — AdminController.cs:1853-1910"],
   ["Duplicate Active Sessions calculation","Performance","Bug","Medium","Dashboard & AccessLogs keduanya hitung active sessions. Refactor ke shared method"],
   ["N+1 query: Role Distribution di Dashboard","Performance","Bug","Medium","Loop users + GetRolesAsync() per user — AdminController.cs:362-368"],
   ["UserController.Recommendation() tanpa pagination","Performance","Bug","Medium","Load SEMUA recommendations tanpa pagination — UserController.cs:177-193"],
-
-  // ── Missing Feature ──
   ["ForgotPassword & ResetPassword actions TIDAK ADA","Missing Feature","Belum Ada","Tinggi","View sudah ada tapi AccountController TIDAK punya action-nya"],
   ["ChangePassword action TIDAK ADA di AccountController","Missing Feature","Belum Ada","Tinggi","View ada tapi tidak ada GET/POST action"],
   ["Notification creation logic TIDAK ADA","Missing Feature","Belum Ada","Medium","Ada READ tapi TIDAK ADA CREATE saat add/edit data"],
   ["Editor & User ChangePassword flow sendiri","Missing Feature","Belum Ada","Medium","Tidak bisa change own password via Settings"],
-
-  // ── Code Quality ──
   ["EditorController = copy-paste AdminController","Code Quality","Refactor","Tinggi","1737 lines duplikat. Harus refactor ke shared service"],
   ["`using Internal;` suspicious import","Code Quality","Bug","Medium","AccessLogService.cs:3 — namespace tidak valid"],
   ["Inconsistent TempData keys","Code Quality","Refactor","Medium","'ErrorMessage' vs 'Error', 'SuccessMessage' vs 'Success'. Standarisasi"],
   ["Create action ga ada LogActivity & Notification","Code Quality","Bug","Medium","AdminController.cs:476 — Create berhasil tapi ga log activity dan ga create notification"],
   ["_signInManager unused setelah hapus Login/Logout","Code Quality","Refactor","Rendah","AdminController.cs:28,39,48 — field + constructor param masih ada tapi ga dipakai. Dead dependency"],
-  ["Orphan EditData() method","Code Quality","Bug","Rendah","AdminController.cs:1739 dan EditorController.cs:1232 — return empty view tanpa model, ga ada route yang pakai"],
+  ["Orphan EditData() method","Code Quality","Bug","Rendah","AdminController.cs:1739 dan EditorController.cs:1232 — return empty view tanpa model"],
   ["Orphan Action() method","Code Quality","Bug","Rendah","AdminController.cs:507 — return View('Action') tapi view-nya mungkin ga ada"],
   ["Health endpoint salah tulis framework","Code Quality","Bug","Rendah","Tulis 'NET 8.0' tapi pakai .NET 10.0 — Program.cs:266"],
   ["ConnectionString key mismatch","Code Quality","Bug","Rendah","appsettings pakai 'Default' tapi Program.cs cek 'DefaultConnection' — Program.cs:25-26"],
@@ -363,14 +354,13 @@ const BUG_CHECKLIST = [
   ["LogActivity cek TrackUserMgmt di User/Editor","Code Quality","Refactor","Rendah","Cek TrackUserMgmt untuk actions yang User/Editor tidak bisa lakukan. Dead logic"],
 ];
 
-/* ================================================================
-   DATA — TIMELINES
-   ================================================================ */
 const TL_DONE = [
   ["Feb 2025 M4","Autentikasi lengkap + semua middleware keamanan (5x)"],
-  ["Mar 2025 M1","Deleteting Duplicate Regis Page"],["Mar 2025 M1","Security Improvement"],
+  ["Mar 2025 M1","Deleteting Duplicate Regis Page"],
+  ["Mar 2025 M1","Security Improvement"],
   ["Mar 2025 M4","Error Handling and Feedback Improvement"],
-  ["Mar 2025 M1","Improvement Excel File Export System"],["Mar 2025 M1","Search and Pagination server_side"],
+  ["Mar 2025 M1","Improvement Excel File Export System"],
+  ["Mar 2025 M1","Search and Pagination server_side"],
 ];
 const TL_TARGET = [
   ["Apr 2025 M2","Beta Testing"],["Apr 2025 M3","Migrasi ke i18n"],
@@ -387,151 +377,288 @@ const TL_TARGET = [
 ];
 
 /* ================================================================
+   SHARED STORAGE — state dipakai bersama semua user
+================================================================ */
+let statuses = {};
+let bugStat   = {};
+let lastFeatHash = "";
+let lastBugHash  = "";
+
+async function loadState() {
+  try {
+    const r = await window.storage.get('mpsStat', true);
+    statuses = r ? JSON.parse(r.value) : {};
+  } catch(e) { statuses = {}; }
+  FEATURES.forEach((f, i) => { if (!statuses[i]) statuses[i] = f[2]; });
+}
+
+async function saveState() {
+  const val = JSON.stringify(statuses);
+  lastFeatHash = val;
+  try { await window.storage.set('mpsStat', val, true); } catch(e) { console.error('saveState failed', e); }
+}
+
+async function loadBugState() {
+  try {
+    const r = await window.storage.get('mpsBugStat', true);
+    bugStat = r ? JSON.parse(r.value) : {};
+  } catch(e) { bugStat = {}; }
+  BUG_CHECKLIST.forEach((b, i) => { if (!bugStat[i]) bugStat[i] = b[2]; });
+}
+
+async function saveBugState() {
+  const val = JSON.stringify(bugStat);
+  lastBugHash = val;
+  try { await window.storage.set('mpsBugStat', val, true); } catch(e) { console.error('saveBugState failed', e); }
+}
+
+/* ── Toast notification ── */
+function showToast(msg) {
+  const t = document.getElementById('syncToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ── Polling: cek perubahan dari user lain setiap 5 detik ── */
+function startPolling() {
+  setInterval(async () => {
+    try {
+      const rf = await window.storage.get('mpsStat', true);
+      const fVal = rf ? rf.value : '{}';
+      if (fVal !== lastFeatHash) {
+        lastFeatHash = fVal;
+        const incoming = JSON.parse(fVal);
+        const changed = JSON.stringify(statuses) !== fVal;
+        statuses = incoming;
+        FEATURES.forEach((f, i) => { if (!statuses[i]) statuses[i] = f[2]; });
+        renderTable();
+        recalc();
+        if (changed) showToast('🔄 Status fitur diperbarui');
+      }
+    } catch(e) {}
+
+    try {
+      const rb = await window.storage.get('mpsBugStat', true);
+      const bVal = rb ? rb.value : '{}';
+      if (bVal !== lastBugHash) {
+        lastBugHash = bVal;
+        const incoming = JSON.parse(bVal);
+        const changed = JSON.stringify(bugStat) !== bVal;
+        bugStat = incoming;
+        BUG_CHECKLIST.forEach((b, i) => { if (!bugStat[i]) bugStat[i] = b[2]; });
+        renderBugTable();
+        recalcBugs();
+        if (changed) showToast('🔄 Bug checklist diperbarui');
+      }
+    } catch(e) {}
+  }, 5000);
+}
+
+/* ================================================================
    FEATURE LOGIC
-   ================================================================ */
-const CYCLE={"Selesai":"In Progress","In Progress":"Pending","Pending":"Selesai"};
-let statuses={};
-function loadState(){try{statuses=JSON.parse(localStorage.getItem("mpsStat")||"{}");}catch(e){statuses={};}FEATURES.forEach((f,i)=>{if(!statuses[i])statuses[i]=f[2];});}
-function saveState(){localStorage.setItem("mpsStat",JSON.stringify(statuses));}
-function recalc(){
-  const vals=Object.values(statuses),n=FEATURES.length,done=vals.filter(s=>s==="Selesai").length,wip=vals.filter(s=>s==="In Progress").length,pend=vals.filter(s=>s==="Pending").length,pct=Math.round(done/n*100);
-  document.getElementById("cTotal").textContent=n;document.getElementById("cDone").textContent=done;
-  document.getElementById("cPct").textContent=pct+"% dari total";document.getElementById("cWip").textContent=wip;
-  document.getElementById("cPend").textContent=pend;document.getElementById("pctLabel").textContent=pct+"%";
-  document.getElementById("progBar").style.width=pct+"%";document.title="MPSDataCenter — "+pct+"% selesai";
-  buildFeatureChart(done,wip,pend);
-}
-function bc(s){return s==="Selesai"?"done":s==="In Progress"?"wip":"pend";}
-function renderTable(){
-  document.getElementById("featBody").innerHTML=FEATURES.map((f,i)=>{const s=statuses[i];
-    return`<tr onclick="toggle(${i})"><td style="font-weight:500">${f[0]}</td><td style="color:var(--gray)">${f[1]}</td>
-    <td><span class="badge ${bc(s)}">${s}</span></td><td><span class="badge ${f[3]==="Tinggi"?"done":f[3]==="Medium"?"wip":"pend"}">${f[3]}</span></td>
-    <td style="color:var(--gray);font-size:.72rem">${f[4]}</td></tr>`;}).join("");
-}
-function toggle(i){statuses[i]=CYCLE[statuses[i]];saveState();renderTable();recalc();}
-function renderTimeline(){
-  document.getElementById("tlDone").innerHTML=TL_DONE.map(([p,t])=>`<div class="tl-item"><div class="tl-dot tl-dot-d"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`).join("");
-  document.getElementById("tlTarget").innerHTML=TL_TARGET.map(([p,t])=>`<div class="tl-item"><div class="tl-dot tl-dot-t"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`).join("");
+================================================================ */
+const CYCLE = {"Selesai":"In Progress","In Progress":"Pending","Pending":"Selesai"};
+
+function recalc() {
+  const vals = Object.values(statuses), n = FEATURES.length;
+  const done = vals.filter(s=>s==="Selesai").length;
+  const wip  = vals.filter(s=>s==="In Progress").length;
+  const pend = vals.filter(s=>s==="Pending").length;
+  const pct  = Math.round(done / n * 100);
+  document.getElementById("cTotal").textContent = n;
+  document.getElementById("cDone").textContent  = done;
+  document.getElementById("cPct").textContent   = pct + "% dari total";
+  document.getElementById("cWip").textContent   = wip;
+  document.getElementById("cPend").textContent  = pend;
+  document.getElementById("pctLabel").textContent = pct + "%";
+  document.getElementById("progBar").style.width  = pct + "%";
+  document.title = "MPSDataCenter — " + pct + "% selesai";
+  buildFeatureChart(done, wip, pend);
 }
 
-/* ── Token UI */
-function toggleTok(){const inp=document.getElementById("tokenInput"),eye=document.getElementById("tokEye");if(inp.type==="password"){inp.type="text";eye.textContent="🙈";}else{inp.type="password";eye.textContent="👁";}}
-function saveToken(tok){if(tok)localStorage.setItem("mpsToken",tok);const s=document.getElementById("tokSaved");s.style.display="inline";setTimeout(()=>s.style.display="none",2500);}
+function bc(s) { return s==="Selesai"?"done":s==="In Progress"?"wip":"pend"; }
 
-/* ── Feature Donut */
-const DONUT_DATA=[{label:"Selesai",color:"#38ff01",bg:"#EAF3DE"},{label:"In Progress",color:"#fefb00",bg:"#FAEEDA"},{label:"Pending",color:"#ff1400",bg:"#FCEBEB"}];
-let featureChart=null;
-function buildFeatureChart(done,wip,pend){
-  const vals=[done,wip,pend],total=done+wip+pend;
-  document.getElementById("donutVal").textContent=done;
-  document.getElementById("donutLegend").innerHTML=DONUT_DATA.map((d,i)=>{const pct=total>0?Math.round(vals[i]/total*100):0;
-    return`<div style="display:flex;align-items:center;gap:.6rem"><div style="width:10px;height:10px;border-radius:2px;background:${d.color};flex-shrink:0"></div>
-    <div style="font-size:.75rem;color:#64748B;width:78px">${d.label}</div>
-    <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden"><div style="width:${pct}%;height:6px;background:${d.color};border-radius:100px;transition:width .8s ease"></div></div>
-    <div style="font-size:.75rem;font-weight:600;color:#0A2B57;min-width:22px;text-align:right">${vals[i]}</div>
-    <div style="font-size:.72rem;color:#64748B;min-width:32px;text-align:right">${pct}%</div></div>`;}).join("");
-  if(featureChart)featureChart.destroy();
-  featureChart=new Chart(document.getElementById("featureChart").getContext("2d"),{type:"doughnut",
+function renderTable() {
+  document.getElementById("featBody").innerHTML = FEATURES.map((f,i) => {
+    const s = statuses[i];
+    return `<tr onclick="toggle(${i})">
+      <td style="font-weight:500">${f[0]}</td>
+      <td style="color:var(--gray)">${f[1]}</td>
+      <td><span class="badge ${bc(s)}">${s}</span></td>
+      <td><span class="badge ${f[3]==="Tinggi"?"done":f[3]==="Medium"?"wip":"pend"}">${f[3]}</span></td>
+      <td style="color:var(--gray);font-size:.72rem">${f[4]}</td></tr>`;
+  }).join("");
+}
+
+async function toggle(i) {
+  statuses[i] = CYCLE[statuses[i]];
+  await saveState();
+  renderTable();
+  recalc();
+}
+
+function renderTimeline() {
+  document.getElementById("tlDone").innerHTML = TL_DONE.map(([p,t]) =>
+    `<div class="tl-item"><div class="tl-dot tl-dot-d"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`).join("");
+  document.getElementById("tlTarget").innerHTML = TL_TARGET.map(([p,t]) =>
+    `<div class="tl-item"><div class="tl-dot tl-dot-t"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`).join("");
+}
+
+function toggleTok() {
+  const inp = document.getElementById("tokenInput"), eye = document.getElementById("tokEye");
+  if (inp.type === "password") { inp.type = "text"; eye.textContent = "🙈"; }
+  else { inp.type = "password"; eye.textContent = "👁"; }
+}
+function saveToken(tok) {
+  if (tok) localStorage.setItem("mpsToken", tok);
+  const s = document.getElementById("tokSaved");
+  s.style.display = "inline";
+  setTimeout(() => s.style.display = "none", 2500);
+}
+
+/* ── Feature Donut ── */
+const DONUT_DATA = [
+  {label:"Selesai",  color:"#38ff01", bg:"#EAF3DE"},
+  {label:"In Progress", color:"#fefb00", bg:"#FAEEDA"},
+  {label:"Pending",  color:"#ff1400", bg:"#FCEBEB"},
+];
+let featureChart = null;
+function buildFeatureChart(done, wip, pend) {
+  const vals = [done, wip, pend], total = done+wip+pend;
+  document.getElementById("donutVal").textContent = done;
+  document.getElementById("donutLegend").innerHTML = DONUT_DATA.map((d,i) => {
+    const pct = total > 0 ? Math.round(vals[i]/total*100) : 0;
+    return `<div style="display:flex;align-items:center;gap:.6rem">
+      <div style="width:10px;height:10px;border-radius:2px;background:${d.color};flex-shrink:0"></div>
+      <div style="font-size:.75rem;color:#64748B;width:78px">${d.label}</div>
+      <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden">
+        <div style="width:${pct}%;height:6px;background:${d.color};border-radius:100px;transition:width .8s ease"></div></div>
+      <div style="font-size:.75rem;font-weight:600;color:#0A2B57;min-width:22px;text-align:right">${vals[i]}</div>
+      <div style="font-size:.72rem;color:#64748B;min-width:32px;text-align:right">${pct}%</div></div>`;
+  }).join("");
+  if (featureChart) featureChart.destroy();
+  featureChart = new Chart(document.getElementById("featureChart").getContext("2d"), {
+    type:"doughnut",
     data:{labels:DONUT_DATA.map(d=>d.label),datasets:[{data:vals,backgroundColor:DONUT_DATA.map(d=>d.color),borderColor:DONUT_DATA.map(d=>d.bg),borderWidth:3,hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} (${total>0?Math.round(c.parsed/total*100):0}%)`}}}}});
+    options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} (${total>0?Math.round(c.parsed/total*100):0}%)`}}}}
+  });
 }
 
-/* ── Commit Chart */
-let commitChart=null;
-function buildChart(labels,data){if(commitChart)commitChart.destroy();
-  commitChart=new Chart(document.getElementById("commitChart").getContext("2d"),{type:"bar",
+/* ── Commit Chart ── */
+let commitChart = null;
+function buildChart(labels, data) {
+  if (commitChart) commitChart.destroy();
+  commitChart = new Chart(document.getElementById("commitChart").getContext("2d"), {
+    type:"bar",
     data:{labels,datasets:[{label:"Commits",data,backgroundColor:"#BBDEFB",borderRadius:3,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{ticks:{font:{size:9},maxRotation:45,color:"#888"},grid:{display:false}},y:{ticks:{font:{size:9},color:"#888",stepSize:1},beginAtZero:true,grid:{color:"rgba(0,0,0,0.05)"}}}}});
+      scales:{x:{ticks:{font:{size:9},maxRotation:45,color:"#888"},grid:{display:false}},
+              y:{ticks:{font:{size:9},color:"#888",stepSize:1},beginAtZero:true,grid:{color:"rgba(0,0,0,0.05)"}}}}
+  });
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    BUG CHECKLIST LOGIC
-   ════════════════════════════════════════════════════════════════ */
-let bugStat={},bugFilter="Semua";
-function loadBugState(){try{bugStat=JSON.parse(localStorage.getItem("mpsBugStat")||"{}");}catch(e){bugStat={};}BUG_CHECKLIST.forEach((b,i)=>{if(!bugStat[i])bugStat[i]=b[2];});}
-function saveBugState(){localStorage.setItem("mpsBugStat",JSON.stringify(bugStat));}
+================================================================ */
+let bugFilter = "Semua";
+function bsc(s) { return s==="Fixed"?"b-fixed":s==="Bug"?"b-bug":s==="Belum Ada"?"b-belum":s==="Refactor"?"b-refac":"pend"; }
+function bpc(p) { const l=p.toLowerCase(); return l==="urgent"?"b-urgent":l==="tinggi"?"b-tinggi":l==="medium"?"b-medium":"b-rendah"; }
 
-function bsc(s){return s==="Fixed"?"b-fixed":s==="Bug"?"b-bug":s==="Belum Ada"?"b-belum":s==="Refactor"?"b-refac":"pend";}
-function bpc(p){const l=p.toLowerCase();return l==="urgent"?"b-urgent":l==="tinggi"?"b-tinggi":l==="medium"?"b-medium":"b-rendah";}
-
-const CAT_META=[
-  {key:"Critical Bug",lbl:"Critical",clr:"#EF5350",bg:"#FFEBEE"},
-  {key:"Security",lbl:"Security",clr:"#FF9800",bg:"#FFF3E0"},
-  {key:"Performance",lbl:"Performance",clr:"#42A5F5",bg:"#E3F2FD"},
-  {key:"Missing Feature",lbl:"Missing",clr:"#AB47BC",bg:"#F3E5F6"},
-  {key:"Code Quality",lbl:"Quality",clr:"#26A69A",bg:"#E0F2F1"},
+const CAT_META = [
+  {key:"Critical Bug",  lbl:"Critical",    clr:"#EF5350", bg:"#FFEBEE"},
+  {key:"Security",      lbl:"Security",    clr:"#FF9800", bg:"#FFF3E0"},
+  {key:"Performance",   lbl:"Performance", clr:"#42A5F5", bg:"#E3F2FD"},
+  {key:"Missing Feature",lbl:"Missing",   clr:"#AB47BC", bg:"#F3E5F6"},
+  {key:"Code Quality",  lbl:"Quality",     clr:"#26A69A", bg:"#E0F2F1"},
 ];
-const PRI_META=[
-  {key:"urgent",lbl:"Urgent",clr:"#E53935",bg:"#FFCDD2"},
-  {key:"tinggi",lbl:"Tinggi",clr:"#FF9800",bg:"#FFE0B2"},
-  {key:"medium",lbl:"Medium",clr:"#42A5F5",bg:"#BBDEFB"},
-  {key:"rendah",lbl:"Rendah",clr:"#90A4AE",bg:"#ECEFF1"},
+const PRI_META = [
+  {key:"urgent", lbl:"Urgent", clr:"#E53935", bg:"#FFCDD2"},
+  {key:"tinggi", lbl:"Tinggi", clr:"#FF9800", bg:"#FFE0B2"},
+  {key:"medium", lbl:"Medium", clr:"#42A5F5", bg:"#BBDEFB"},
+  {key:"rendah", lbl:"Rendah", clr:"#90A4AE", bg:"#ECEFF1"},
 ];
 
-function recalcBugs(){
-  const n=BUG_CHECKLIST.length,fixed=Object.values(bugStat).filter(s=>s==="Fixed").length,unfixed=n-fixed,pct=Math.round(fixed/n*100);
-  let urgent=0,tinggi=0,medlow=0;
-  BUG_CHECKLIST.forEach((b,i)=>{if(bugStat[i]==="Fixed")return;const p=b[3].toLowerCase();if(p==="urgent")urgent++;else if(p==="tinggi")tinggi++;else medlow++;});
-  document.getElementById("bTotal").textContent=n;document.getElementById("bFixed").textContent=fixed;
-  document.getElementById("bFixPct").textContent=pct+"% resolved";document.getElementById("bUrgent").textContent=urgent;
-  document.getElementById("bHigh").textContent=tinggi;document.getElementById("bMedLow").textContent=medlow;
-  document.getElementById("bPctLbl").textContent=pct+"%";document.getElementById("bProgBar").style.width=pct+"%";
-  document.getElementById("bProgSum").textContent=fixed+" fixed / "+n+" total";
+function recalcBugs() {
+  const n = BUG_CHECKLIST.length;
+  const fixed = Object.values(bugStat).filter(s=>s==="Fixed").length;
+  const unfixed = n - fixed;
+  const pct = Math.round(fixed / n * 100);
+  let urgent=0, tinggi=0, medlow=0;
+  BUG_CHECKLIST.forEach((b,i) => {
+    if (bugStat[i]==="Fixed") return;
+    const p = b[3].toLowerCase();
+    if (p==="urgent") urgent++; else if (p==="tinggi") tinggi++; else medlow++;
+  });
+  document.getElementById("bTotal").textContent  = n;
+  document.getElementById("bFixed").textContent  = fixed;
+  document.getElementById("bFixPct").textContent = pct + "% resolved";
+  document.getElementById("bUrgent").textContent = urgent;
+  document.getElementById("bHigh").textContent   = tinggi;
+  document.getElementById("bMedLow").textContent = medlow;
+  document.getElementById("bPctLbl").textContent = pct + "%";
+  document.getElementById("bProgBar").style.width = pct + "%";
+  document.getElementById("bProgSum").textContent = fixed + " fixed / " + n + " total";
   buildBugCharts(unfixed);
 }
 
-let bugCatC=null,bugPriC=null;
-function legendRow(m,val,total){
-  const pct=total>0?Math.round(val/total*100):0;
-  return`<div style="display:flex;align-items:center;gap:.55rem">
-  <div style="width:10px;height:10px;border-radius:2px;background:${m.clr};flex-shrink:0"></div>
-  <div style="font-size:.73rem;color:#64748B;width:75px">${m.lbl}</div>
-  <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden"><div style="width:${pct}%;height:6px;background:${m.clr};border-radius:100px;transition:width .8s ease"></div></div>
-  <div style="font-size:.73rem;font-weight:600;color:#0A2B57;min-width:18px;text-align:right">${val}</div></div>`;
+let bugCatC=null, bugPriC=null;
+function legendRow(m, val, total) {
+  const pct = total>0 ? Math.round(val/total*100) : 0;
+  return `<div style="display:flex;align-items:center;gap:.55rem">
+    <div style="width:10px;height:10px;border-radius:2px;background:${m.clr};flex-shrink:0"></div>
+    <div style="font-size:.73rem;color:#64748B;width:75px">${m.lbl}</div>
+    <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden">
+      <div style="width:${pct}%;height:6px;background:${m.clr};border-radius:100px;transition:width .8s ease"></div></div>
+    <div style="font-size:.73rem;font-weight:600;color:#0A2B57;min-width:18px;text-align:right">${val}</div></div>`;
 }
-function mkDonut(canvasId,labels,data,colors,borders,tip){
-  return new Chart(document.getElementById(canvasId).getContext("2d"),{type:"doughnut",
+function mkDonut(canvasId, labels, data, colors, borders, tip) {
+  return new Chart(document.getElementById(canvasId).getContext("2d"), {
+    type:"doughnut",
     data:{labels,datasets:[{data,backgroundColor:colors,borderColor:borders,borderWidth:3,hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} ${tip}`}}}}});
+    options:{responsive:true,maintainAspectRatio:false,cutout:"72%",
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} ${tip}`}}}}
+  });
 }
 
-function buildBugCharts(unfixed){
-  const catVals=CAT_META.map(m=>{let c=0;BUG_CHECKLIST.forEach((b,i)=>{if(bugStat[i]!=="Fixed"&&b[1]===m.key)c++;});return c;});
-  const catTot=catVals.reduce((a,b)=>a+b,0)||1;
-  document.getElementById("bugCatVal").textContent=unfixed;
-  document.getElementById("bugCatLeg").innerHTML=CAT_META.map((m,i)=>legendRow(m,catVals[i],catTot)).join("");
-  if(bugCatC)bugCatC.destroy();
-  bugCatC=mkDonut("bugCatChart",CAT_META.map(m=>m.lbl),catVals,CAT_META.map(m=>m.clr),CAT_META.map(m=>m.bg),"unfixed");
+function buildBugCharts(unfixed) {
+  const catVals = CAT_META.map(m => { let c=0; BUG_CHECKLIST.forEach((b,i) => { if(bugStat[i]!=="Fixed"&&b[1]===m.key) c++; }); return c; });
+  const catTot  = catVals.reduce((a,b)=>a+b,0) || 1;
+  document.getElementById("bugCatVal").textContent  = unfixed;
+  document.getElementById("bugCatLeg").innerHTML    = CAT_META.map((m,i) => legendRow(m,catVals[i],catTot)).join("");
+  if (bugCatC) bugCatC.destroy();
+  bugCatC = mkDonut("bugCatChart", CAT_META.map(m=>m.lbl), catVals, CAT_META.map(m=>m.clr), CAT_META.map(m=>m.bg), "unfixed");
 
-  const priVals=PRI_META.map(m=>{let c=0;BUG_CHECKLIST.forEach((b,i)=>{if(bugStat[i]!=="Fixed"&&b[3].toLowerCase()===m.key)c++;});return c;});
-  const priTot=priVals.reduce((a,b)=>a+b,0)||1;
-  document.getElementById("bugPriVal").textContent=unfixed;
-  document.getElementById("bugPriLeg").innerHTML=PRI_META.map((m,i)=>legendRow(m,priVals[i],priTot)).join("");
-  if(bugPriC)bugPriC.destroy();
-  bugPriC=mkDonut("bugPriChart",PRI_META.map(m=>m.lbl),priVals,PRI_META.map(m=>m.clr),PRI_META.map(m=>m.bg),"unfixed");
+  const priVals = PRI_META.map(m => { let c=0; BUG_CHECKLIST.forEach((b,i) => { if(bugStat[i]!=="Fixed"&&b[3].toLowerCase()===m.key) c++; }); return c; });
+  const priTot  = priVals.reduce((a,b)=>a+b,0) || 1;
+  document.getElementById("bugPriVal").textContent  = unfixed;
+  document.getElementById("bugPriLeg").innerHTML    = PRI_META.map((m,i) => legendRow(m,priVals[i],priTot)).join("");
+  if (bugPriC) bugPriC.destroy();
+  bugPriC = mkDonut("bugPriChart", PRI_META.map(m=>m.lbl), priVals, PRI_META.map(m=>m.clr), PRI_META.map(m=>m.bg), "unfixed");
 }
 
-function buildBugFilters(){
-  const cats=["Semua",...new Set(BUG_CHECKLIST.map(b=>b[1]))];
-  document.getElementById("bugFilterBar").innerHTML=cats.map(c=>{
-    const cnt=c==="Semua"?BUG_CHECKLIST.length:BUG_CHECKLIST.filter(b=>b[1]===c).length;
-    return`<button class="fbtn${bugFilter===c?" active":""}" onclick="setBugFilter('${c}')">${c}<span class="fc">(${cnt})</span></button>`;}).join("");
+function buildBugFilters() {
+  const cats = ["Semua", ...new Set(BUG_CHECKLIST.map(b=>b[1]))];
+  document.getElementById("bugFilterBar").innerHTML = cats.map(c => {
+    const cnt = c==="Semua" ? BUG_CHECKLIST.length : BUG_CHECKLIST.filter(b=>b[1]===c).length;
+    return `<button class="fbtn${bugFilter===c?" active":""}" onclick="setBugFilter('${c}')">${c}<span class="fc">(${cnt})</span></button>`;
+  }).join("");
 }
-function setBugFilter(c){bugFilter=c;buildBugFilters();renderBugTable();}
+function setBugFilter(c) { bugFilter = c; buildBugFilters(); renderBugTable(); }
 
-const CAT_ORDER=["Critical Bug","Security","Performance","Missing Feature","Code Quality"];
-function renderBugTable(){
-  const filtered=BUG_CHECKLIST.map((b,i)=>({b,i})).filter(({b})=>bugFilter==="Semua"||b[1]===bugFilter);
-  const groups={};filtered.forEach(({b,i})=>{if(!groups[b[1]])groups[b[1]]=[];groups[b[1]].push({b,i});});
-  const keys=CAT_ORDER.filter(k=>groups[k]);
-  let html="";
-  keys.forEach(cat=>{
-    const cm=CAT_META.find(m=>m.key===cat)||{clr:"#64748B"};
-    if(bugFilter==="Semua")html+=`<tr class="cat-row"><td colspan="5" style="border-left:3px solid ${cm.clr}">${cat} <span style="font-weight:400;opacity:.6">(${groups[cat].length})</span></td></tr>`;
-    groups[cat].forEach(({b,i})=>{
-      const s=bugStat[i],isFixed=s==="Fixed",ds=isFixed?"Fixed":b[2];
-      html+=`<tr class="${isFixed?"fixed-row":""}" onclick="toggleBug(${i})">
+const CAT_ORDER = ["Critical Bug","Security","Performance","Missing Feature","Code Quality"];
+function renderBugTable() {
+  const filtered = BUG_CHECKLIST.map((b,i) => ({b,i})).filter(({b}) => bugFilter==="Semua" || b[1]===bugFilter);
+  const groups = {};
+  filtered.forEach(({b,i}) => { if(!groups[b[1]]) groups[b[1]]=[]; groups[b[1]].push({b,i}); });
+  const keys = CAT_ORDER.filter(k => groups[k]);
+  let html = "";
+  keys.forEach(cat => {
+    const cm = CAT_META.find(m=>m.key===cat) || {clr:"#64748B"};
+    if (bugFilter==="Semua") html += `<tr class="cat-row"><td colspan="5" style="border-left:3px solid ${cm.clr}">${cat} <span style="font-weight:400;opacity:.6">(${groups[cat].length})</span></td></tr>`;
+    groups[cat].forEach(({b,i}) => {
+      const s = bugStat[i], isFixed = s==="Fixed", ds = isFixed?"Fixed":b[2];
+      html += `<tr class="${isFixed?"fixed-row":""}" onclick="toggleBug(${i})">
         <td style="font-weight:500">${b[0]}</td>
         <td><span style="font-size:.66rem;color:${cm.clr};font-weight:600">${b[1]}</span></td>
         <td><span class="badge ${bsc(ds)}">${ds}</span></td>
@@ -539,48 +666,90 @@ function renderBugTable(){
         <td style="color:var(--gray);font-size:.7rem;line-height:1.35">${b[4]}</td></tr>`;
     });
   });
-  document.getElementById("bugBody").innerHTML=html;
+  document.getElementById("bugBody").innerHTML = html;
 }
-function toggleBug(i){bugStat[i]=bugStat[i]==="Fixed"?BUG_CHECKLIST[i][2]:"Fixed";saveBugState();renderBugTable();recalcBugs();}
 
-/* ════════════════════════════════════════════════════════════════
+async function toggleBug(i) {
+  bugStat[i] = bugStat[i]==="Fixed" ? BUG_CHECKLIST[i][2] : "Fixed";
+  await saveBugState();
+  renderBugTable();
+  recalcBugs();
+}
+
+/* ================================================================
    GITHUB FETCH
-   ════════════════════════════════════════════════════════════════ */
-async function fetchGitHub(){
-  const repo=document.getElementById("repoInput").value.trim(),token=document.getElementById("tokenInput").value.trim();
-  if(!repo||!repo.includes("/")){document.getElementById("syncStatus").textContent="⚠ Format: owner/repo";return;}
-  if(!token){document.getElementById("syncStatus").textContent="⚠ Token diperlukan";document.getElementById("tokenInput").focus();return;}
-  document.getElementById("syncStatus").textContent="Mengambil data...";document.getElementById("chartStatus").textContent="";
-  const headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json"},since=new Date(Date.now()-30*86400000).toISOString();
-  try{
-    const res=await fetch(`https://api.github.com/repos/${repo}/commits?per_page=100&since=${since}`,{headers});
-    if(res.status===401)throw new Error("Token tidak valid");if(res.status===403)throw new Error("Tidak punya akses");
-    if(res.status===404)throw new Error("Repo tidak ditemukan");if(!res.ok)throw new Error("API error: "+res.status);
-    const commits=await res.json();
-    const map={};for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);map[d.toISOString().slice(0,10)]=0;}
-    commits.forEach(c=>{const k=c.commit.author.date.slice(0,10);if(map[k]!==undefined)map[k]++;});
-    buildChart(Object.keys(map).map(k=>k.slice(5)),Object.values(map));
-    document.getElementById("chartStatus").textContent=commits.length+" commits dalam 30 hari";
-    document.getElementById("commitList").innerHTML=commits.slice(0,5).map(c=>{
-      const msg=c.commit.message.split("\n")[0].slice(0,80),name=c.commit.author.name||"?",
-        initials=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(),
-        dt=new Date(c.commit.author.date),diffS=Math.floor((Date.now()-dt)/1000),
-        when=diffS<60?diffS+"s lalu":diffS<3600?Math.floor(diffS/60)+"m lalu":diffS<86400?Math.floor(diffS/3600)+"j lalu":Math.floor(diffS/86400)+"h lalu";
-      return`<div class="commit-item"><div class="avatar">${initials}</div><div><div class="commit-msg">${msg}</div><div class="commit-meta">${when} · ${c.sha.slice(0,7)} · ${name}</div></div></div>`;}).join("");
-    localStorage.setItem("mpsRepo",repo);saveToken(token);document.getElementById("tokenInfo").style.display="none";
-    const ts=new Date().toLocaleString("id-ID");document.getElementById("syncStatus").textContent="✓ "+ts;
-    document.getElementById("lastUpdated").textContent="Last sync: "+ts+" · "+commits.length+" commits (30 hari)";
-  }catch(e){document.getElementById("syncStatus").textContent="✗ "+e.message;document.getElementById("chartStatus").textContent=e.message;}
+================================================================ */
+async function fetchGitHub() {
+  const repo  = document.getElementById("repoInput").value.trim();
+  const token = document.getElementById("tokenInput").value.trim();
+  if (!repo || !repo.includes("/")) { document.getElementById("syncStatus").textContent = "⚠ Format: owner/repo"; return; }
+  if (!token) { document.getElementById("syncStatus").textContent = "⚠ Token diperlukan"; document.getElementById("tokenInput").focus(); return; }
+  document.getElementById("syncStatus").textContent = "Mengambil data...";
+  document.getElementById("chartStatus").textContent = "";
+  const headers = {"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json"};
+  const since = new Date(Date.now() - 30*86400000).toISOString();
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repo}/commits?per_page=100&since=${since}`, {headers});
+    if (res.status===401) throw new Error("Token tidak valid");
+    if (res.status===403) throw new Error("Tidak punya akses");
+    if (res.status===404) throw new Error("Repo tidak ditemukan");
+    if (!res.ok) throw new Error("API error: "+res.status);
+    const commits = await res.json();
+    const map = {};
+    for (let i=29; i>=0; i--) { const d=new Date(); d.setDate(d.getDate()-i); map[d.toISOString().slice(0,10)]=0; }
+    commits.forEach(c => { const k=c.commit.author.date.slice(0,10); if(map[k]!==undefined) map[k]++; });
+    buildChart(Object.keys(map).map(k=>k.slice(5)), Object.values(map));
+    document.getElementById("chartStatus").textContent = commits.length+" commits dalam 30 hari";
+    document.getElementById("commitList").innerHTML = commits.slice(0,5).map(c => {
+      const msg  = c.commit.message.split("\n")[0].slice(0,80);
+      const name = c.commit.author.name || "?";
+      const initials = name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+      const dt = new Date(c.commit.author.date), diffS = Math.floor((Date.now()-dt)/1000);
+      const when = diffS<60?diffS+"s lalu":diffS<3600?Math.floor(diffS/60)+"m lalu":diffS<86400?Math.floor(diffS/3600)+"j lalu":Math.floor(diffS/86400)+"h lalu";
+      return `<div class="commit-item"><div class="avatar">${initials}</div>
+        <div><div class="commit-msg">${msg}</div><div class="commit-meta">${when} · ${c.sha.slice(0,7)} · ${name}</div></div></div>`;
+    }).join("");
+    localStorage.setItem("mpsRepo", repo);
+    saveToken(token);
+    document.getElementById("tokenInfo").style.display = "none";
+    const ts = new Date().toLocaleString("id-ID");
+    document.getElementById("syncStatus").textContent = "✓ "+ts;
+    document.getElementById("lastUpdated").textContent = "Last sync: "+ts+" · "+commits.length+" commits (30 hari) · Live sync aktif";
+  } catch(e) {
+    document.getElementById("syncStatus").textContent = "✗ "+e.message;
+    document.getElementById("chartStatus").textContent = e.message;
+  }
 }
 
-/* ════════════════════════════════════════════════════════════════
-   INIT
-   ════════════════════════════════════════════════════════════════ */
-loadState();recalc();renderTable();renderTimeline();
-loadBugState();buildBugFilters();renderBugTable();recalcBugs();
-const sr=localStorage.getItem("mpsRepo")||PROJECT.repo,st=localStorage.getItem("mpsToken")||"";
-if(sr)document.getElementById("repoInput").value=sr;
-if(st){document.getElementById("tokenInput").value=st;document.getElementById("tokSaved").style.display="inline";document.getElementById("tokenInfo").style.display="none";}
+/* ================================================================
+   INIT — async karena pakai shared storage
+================================================================ */
+async function init() {
+  await loadState();
+  await loadBugState();
+
+  lastFeatHash = JSON.stringify(statuses);
+  lastBugHash  = JSON.stringify(bugStat);
+
+  recalc();
+  renderTable();
+  renderTimeline();
+  buildBugFilters();
+  renderBugTable();
+  recalcBugs();
+  startPolling();
+
+  const sr = localStorage.getItem("mpsRepo") || PROJECT.repo;
+  const st = localStorage.getItem("mpsToken") || "";
+  if (sr) document.getElementById("repoInput").value = sr;
+  if (st) {
+    document.getElementById("tokenInput").value = st;
+    document.getElementById("tokSaved").style.display = "inline";
+    document.getElementById("tokenInfo").style.display = "none";
+  }
+}
+
+init();
 </script>
 </body>
 </html>
