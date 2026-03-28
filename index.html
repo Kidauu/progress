@@ -315,6 +315,7 @@ const FEATURES = [
    DATA — BUG CHECKLIST
    ================================================================ */
 const BUG_CHECKLIST = [
+  // ── Critical Bug ──
   ["EditUser logic TERBALIK","Critical Bug","Bug","Urgent","Line 1967: `if (!updateResult.Succeeded)` malah tampil SUCCESS. Logic harus dibalik — AdminController.cs:1967-1971"],
   ["Duplicate Login & Logout di AdminController","Critical Bug","Bug","Urgent","AdminController punya Login POST (line 1754) & Logout POST (line 1802) KONFLIK dengan AccountController — AdminController.cs:1754-1834"],
   ["Duplicate RegisterAdmin/RegisterEditor actions","Critical Bug","Bug","Urgent","AccountController DAN AdminController sama-sama punya RegisterAdmin + RegisterEditor. Ambiguous route → 500 error — AccountController.cs:232-485 & AdminController.cs:515-700"],
@@ -322,25 +323,39 @@ const BUG_CHECKLIST = [
   ["LINQ-to-SQL: AddHours().ToString() di UserController.Settings","Critical Bug","Bug","Urgent","Pattern sama — .AddHours(7).ToString() di LINQ Select. Harus materialize dulu — UserController.cs:218-219"],
   ["Dead code di ParseTextFromOcr","Critical Bug","Bug","Medium","Setelah return model; di line 1195, ada unreachable code — AdminController.cs:1196-1208"],
   ["EditorController AccessLogs data HARDCODED","Critical Bug","Bug","Tinggi","Semua user Activity='Login', DateTime.Now, PasswordHash ASLI exposed — EditorController.cs:1240-1264"],
+
+  // ── Security ──
   ["Hardcoded credentials di banyak tempat","Security","Bug","Urgent","DB password, seed passwords, IronOCR key exposed. Gunakan user-secrets / env vars"],
   ["PasswordHash EXPOSED di EditorController","Security","Bug","Urgent","Line 1254 kirim PasswordHash ke view. AdminController mask tapi Editor tidak — EditorController.cs:1254"],
   ["Cookie SecurePolicy = None","Security","Bug","Tinggi","Program.cs:137 set CookieSecurePolicy.None. Production harus Always"],
   ["Password validation mismatch","Security","Bug","Tinggi","Identity require 8 chars tapi ChangePassword cek < 6. Password 6-7 chars lolos — AdminController:2068"],
   ["Missing CSRF pada JSON endpoints","Security","Bug","Tinggi","GetNotifications, MarkNotificationRead, MarkAllNotificationsRead tanpa ValidateAntiForgeryToken — AdminController.cs:2888,2922,2934"],
+  ["Create POST missing ValidateAntiForgeryToken","Security","Bug","Tinggi","AdminController.cs:475 dan EditorController.cs:335 — action Create(RecommendationModel) tanpa CSRF protection"],
+  ["AddData POST missing ValidateAntiForgeryToken","Security","Bug","Tinggi","AdminController.cs:724 dan EditorController.cs:438 — action AddData(IFormFile) tanpa CSRF protection"],
   ["BackupDatabase SQL injection risk","Security","Bug","Medium","Fallback backup pakai single-quote escaping saja — AdminController.cs:2730-2810"],
   ["CORS terlalu broad untuk production","Security","Bug","Medium","Multiple localhost origins. Deploy harus ganti domain — Program.cs:153-169"],
+
+  // ── Performance ──
   ["N+1 query: Dashboard Active Sessions","Performance","Bug","Tinggi","Loop users + query per user. 100 user = 100 queries — AdminController.cs:213-222"],
   ["N+1 query: AccessLogs action (3x per user)","Performance","Bug","Tinggi","3 query per user: lastAuth, lastAction, lastLog. N users = 3N queries — AdminController.cs:1853-1910"],
   ["Duplicate Active Sessions calculation","Performance","Bug","Medium","Dashboard & AccessLogs keduanya hitung active sessions. Refactor ke shared method"],
   ["N+1 query: Role Distribution di Dashboard","Performance","Bug","Medium","Loop users + GetRolesAsync() per user — AdminController.cs:362-368"],
   ["UserController.Recommendation() tanpa pagination","Performance","Bug","Medium","Load SEMUA recommendations tanpa pagination — UserController.cs:177-193"],
+
+  // ── Missing Feature ──
   ["ForgotPassword & ResetPassword actions TIDAK ADA","Missing Feature","Belum Ada","Tinggi","View sudah ada tapi AccountController TIDAK punya action-nya"],
   ["ChangePassword action TIDAK ADA di AccountController","Missing Feature","Belum Ada","Tinggi","View ada tapi tidak ada GET/POST action"],
   ["Notification creation logic TIDAK ADA","Missing Feature","Belum Ada","Medium","Ada READ tapi TIDAK ADA CREATE saat add/edit data"],
   ["Editor & User ChangePassword flow sendiri","Missing Feature","Belum Ada","Medium","Tidak bisa change own password via Settings"],
+
+  // ── Code Quality ──
   ["EditorController = copy-paste AdminController","Code Quality","Refactor","Tinggi","1737 lines duplikat. Harus refactor ke shared service"],
   ["`using Internal;` suspicious import","Code Quality","Bug","Medium","AccessLogService.cs:3 — namespace tidak valid"],
   ["Inconsistent TempData keys","Code Quality","Refactor","Medium","'ErrorMessage' vs 'Error', 'SuccessMessage' vs 'Success'. Standarisasi"],
+  ["Create action ga ada LogActivity & Notification","Code Quality","Bug","Medium","AdminController.cs:476 — Create berhasil tapi ga log activity dan ga create notification"],
+  ["_signInManager unused setelah hapus Login/Logout","Code Quality","Refactor","Rendah","AdminController.cs:28,39,48 — field + constructor param masih ada tapi ga dipakai. Dead dependency"],
+  ["Orphan EditData() method","Code Quality","Bug","Rendah","AdminController.cs:1739 dan EditorController.cs:1232 — return empty view tanpa model, ga ada route yang pakai"],
+  ["Orphan Action() method","Code Quality","Bug","Rendah","AdminController.cs:507 — return View('Action') tapi view-nya mungkin ga ada"],
   ["Health endpoint salah tulis framework","Code Quality","Bug","Rendah","Tulis 'NET 8.0' tapi pakai .NET 10.0 — Program.cs:266"],
   ["ConnectionString key mismatch","Code Quality","Bug","Rendah","appsettings pakai 'Default' tapi Program.cs cek 'DefaultConnection' — Program.cs:25-26"],
   ["Console.WriteLine berlebihan","Code Quality","Refactor","Medium","Ratusan Console.WriteLine debugging. Ganti Serilog atau hapus"],
