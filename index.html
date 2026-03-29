@@ -3,83 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MPSDataCenter — Progress Dashboard</title>
+<title>MPSDataCenter — Bug Tracking Dashboard</title>
 <style>
 :root{--blue:#1976D2;--blue-light:#E3F2FD;--green:#2E7D32;--green-light:#E8F5E9;--amber:#E65100;--amber-light:#FFF3E0;--red:#C62828;--red-light:#FFEBEE;--dark:#0A2B57;--gray:#64748B;--border:#E2E8F0;--bg:#F8FAFC;--white:#FFFFFF;--r:14px;--rs:8px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--dark)}
-nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;min-height:64px;position:sticky;top:0;z-index:100;gap:1rem;flex-wrap:wrap}
-.nav-brand{font-size:1rem;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:.4rem;white-space:nowrap}
+
+/* ── Navbar ── */
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;min-height:64px;position:sticky;top:0;z-index:100;gap:1rem;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,0.02)}
+.nav-brand{font-size:1.05rem;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:.5rem;white-space:nowrap}
+.nav-brand svg{color:var(--blue)}
 .nav-controls{display:flex;align-items:flex-end;gap:.6rem;flex-wrap:wrap;padding:.5rem 0}
-.field-grp{display:flex;flex-direction:column;gap:3px}
-.field-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);font-weight:600}
-.inp{font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--dark);outline:none;height:32px}
-.inp:focus{border-color:var(--blue)}
+.field-grp{display:flex;flex-direction:column;gap:4px}
+.field-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);font-weight:600}
+.inp{font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--dark);outline:none;height:34px;transition:border-color 0.2s}
+.inp:focus{border-color:var(--blue);background:var(--white)}
 .inp-repo{width:195px}
 .inp-token{width:210px;font-family:monospace;letter-spacing:1px}
 .tok-wrap{position:relative;display:flex;align-items:center}
 .tok-eye{position:absolute;right:8px;cursor:pointer;font-size:12px;color:var(--gray);user-select:none;line-height:1}
-.btn-sync{font-size:12px;padding:0 16px;height:32px;border:none;border-radius:var(--rs);background:var(--blue);color:#fff;cursor:pointer;font-weight:600;align-self:flex-end;white-space:nowrap}
+.btn-sync{font-size:12px;padding:0 18px;height:34px;border:none;border-radius:var(--rs);background:var(--blue);color:#fff;cursor:pointer;font-weight:600;align-self:flex-end;white-space:nowrap;transition:background 0.2s}
 .btn-sync:hover{background:#1565c0}
-.sync-status{font-size:11px;color:var(--gray);align-self:flex-end;padding-bottom:6px;white-space:nowrap}
-main{max-width:1200px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
-.page-header{margin-bottom:1.5rem}
-.page-header h1{font-size:1.3rem;font-weight:700}
-.page-header p{font-size:.82rem;color:var(--gray);margin-top:.2rem}
-.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.9rem;margin-bottom:1.1rem}
-.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.3rem}
-.card-lbl{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-bottom:.35rem}
-.card-val{font-size:1.9rem;font-weight:700;line-height:1}
-.card-sub{font-size:.72rem;color:var(--gray);margin-top:.25rem}
-.c-blue{border-top:3px solid var(--blue)}.c-green{border-top:3px solid var(--green)}.c-amber{border-top:3px solid var(--amber)}.c-red{border-top:3px solid var(--red)}
-.prog-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.3rem;margin-bottom:1.1rem}
-.prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem}
-.prog-title{font-size:.85rem;font-weight:600}
-.prog-pct{font-size:1.4rem;font-weight:700;color:var(--blue)}
-.prog-track{background:var(--bg);border-radius:100px;height:12px;overflow:hidden;margin-bottom:.35rem}
-.prog-fill{height:12px;border-radius:100px;background:var(--blue);transition:width 1s ease}
-.prog-labels{display:flex;justify-content:space-between;font-size:.7rem;color:var(--gray)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.1rem}
-.panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.3rem}
-.panel-title{font-size:.85rem;font-weight:600;margin-bottom:.85rem}
-.chart-wrap{position:relative;height:175px}
-.commit-item{display:flex;align-items:flex-start;gap:.6rem;padding:.45rem 0;border-top:1px solid var(--bg)}
-.commit-item:first-child{border-top:none}
-.avatar{width:26px;height:26px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--blue);flex-shrink:0;margin-top:1px}
-.commit-msg{font-size:.78rem;color:var(--dark);font-weight:500;line-height:1.3}
-.commit-meta{font-size:.7rem;color:var(--gray);margin-top:2px}
-.feat-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.3rem;margin-bottom:1.1rem}
-.feat-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem;flex-wrap:wrap;gap:.5rem}
-table{width:100%;border-collapse:collapse;font-size:.78rem}
-th{text-align:left;font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--gray);padding:.45rem .65rem;border-bottom:2px solid var(--border)}
-td{padding:.55rem .65rem;border-bottom:1px solid var(--bg);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#F0F7FF}
-tr{cursor:pointer}
-.badge{display:inline-block;padding:2px 9px;border-radius:100px;font-size:.68rem;font-weight:600}
-.done{background:var(--green-light);color:#1b5e20}.wip{background:var(--amber-light);color:#bf360c}.pend{background:var(--red-light);color:#b71c1c}
-.tl{padding-left:.9rem}
-.tl-item{position:relative;padding:.4rem 0 .4rem 1.3rem;border-left:2px solid var(--border)}
-.tl-item:last-child{border-left:2px solid transparent}
-.tl-dot{position:absolute;left:-5px;top:.65rem;width:8px;height:8px;border-radius:50%}
-.tl-dot-d{background:var(--green)}.tl-dot-t{background:var(--amber)}
-.tl-period{font-size:.68rem;font-weight:600;color:var(--gray)}
-.tl-task{font-size:.78rem;color:var(--dark);margin-top:1px}
-.info-box{background:var(--blue-light);border:1px solid #BBDEFB;border-radius:var(--rs);padding:.65rem .9rem;font-size:.76rem;color:#0d47a1;margin-bottom:.8rem}
-footer{text-align:center;font-size:.72rem;color:var(--gray);padding:1.25rem;border-top:1px solid var(--border);margin-top:.5rem}
-footer a{color:var(--blue);text-decoration:none}
+.sync-status{font-size:11px;color:var(--gray);align-self:flex-end;padding-bottom:8px;white-space:nowrap;font-weight:500}
 
-/* ── Bug Checklist ── */
-.section-sep{border:none;border-top:2px solid var(--border);margin:2rem 0 1.5rem}
-.cards-5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.9rem;margin-bottom:1.1rem}
-.bug-filter{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.9rem}
-.fbtn{font-size:.7rem;padding:4px 12px;border:1px solid var(--border);border-radius:100px;background:var(--white);color:var(--gray);cursor:pointer;font-weight:500;transition:all .15s}
-.fbtn:hover{border-color:var(--blue);color:var(--blue)}
+/* ── Layout ── */
+main{max-width:1200px;margin:0 auto;padding:2rem 1.5rem 3rem}
+.page-header{margin-bottom:1.5rem}
+.page-header h1{font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+.page-header p{font-size:.85rem;color:var(--gray);margin-top:.3rem}
+.info-box{background:var(--blue-light);border:1px solid #BBDEFB;border-radius:var(--rs);padding:.8rem 1rem;font-size:.8rem;color:#0d47a1;margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+
+/* ── Cards ── */
+.cards-5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1rem;margin-bottom:1.25rem}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+.card-lbl{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-bottom:.4rem}
+.card-val{font-size:2rem;font-weight:700;line-height:1}
+.card-sub{font-size:.75rem;color:var(--gray);margin-top:.3rem}
+.c-blue{border-top:3px solid var(--blue)}.c-green{border-top:3px solid var(--green)}.c-amber{border-top:3px solid var(--amber)}.c-red{border-top:3px solid var(--red)}
+
+/* ── Progress Panel ── */
+.prog-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+.prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem}
+.prog-title{font-size:.9rem;font-weight:600}
+.prog-pct{font-size:1.5rem;font-weight:700}
+.prog-track{background:var(--bg);border-radius:100px;height:12px;overflow:hidden;margin-bottom:.4rem}
+.prog-fill{height:12px;border-radius:100px;transition:width 1s cubic-bezier(0.4, 0, 0.2, 1)}
+.prog-labels{display:flex;justify-content:space-between;font-size:.75rem;color:var(--gray);font-weight:500}
+
+/* ── Panels & Charts ── */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+.panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+.panel-title{font-size:.9rem;font-weight:600;margin-bottom:.85rem;color:var(--dark)}
+.chart-wrap{position:relative;height:180px}
+.donut-wrap{display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+.donut-chart-container{position:relative;width:180px;height:180px;flex-shrink:0}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+.donut-val{font-size:1.8rem;font-weight:700;line-height:1}
+.donut-lbl{font-size:.65rem;color:var(--gray);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
+.donut-leg{flex:1;display:flex;flex-direction:column;gap:.6rem;min-width:170px}
+
+/* ── Commits ── */
+.commit-item{display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0;border-top:1px solid var(--border)}
+.commit-item:first-child{border-top:none;padding-top:0}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--blue);flex-shrink:0;margin-top:2px}
+.commit-msg{font-size:.8rem;color:var(--dark);font-weight:500;line-height:1.4}
+.commit-meta{font-size:.7rem;color:var(--gray);margin-top:3px}
+
+/* ── Table & Filters ── */
+.feat-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+.feat-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.bug-filter{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.fbtn{font-size:.75rem;padding:5px 14px;border:1px solid var(--border);border-radius:100px;background:var(--white);color:var(--gray);cursor:pointer;font-weight:500;transition:all .2s ease}
+.fbtn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
 .fbtn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
-.fbtn .fc{font-size:.6rem;opacity:.65;margin-left:2px}
-.cat-row td{background:var(--bg)!important;padding:.3rem .65rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray);border-bottom:1px solid var(--border);cursor:default}
-tr.fixed-row td{opacity:.45}
+.fbtn .fc{font-size:.65rem;opacity:.7;margin-left:3px}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{text-align:left;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);padding:.6rem .75rem;border-bottom:2px solid var(--border)}
+td{padding:.65rem .75rem;border-bottom:1px solid var(--border);vertical-align:middle;transition:background 0.15s}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+tr{cursor:pointer}
+.badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:600}
+.cat-row td{background:var(--bg)!important;padding:.4rem .75rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dark);border-bottom:1px solid var(--border);cursor:default}
+tr.fixed-row td{opacity:.5}
 tr.fixed-row td:first-child{text-decoration:line-through}
+
+/* ── Badge Colors ── */
 .b-bug{background:#FFEBEE;color:#b71c1c}
 .b-fixed{background:var(--green-light);color:#1b5e20}
 .b-belum{background:#F3E5F6;color:#4a148c}
@@ -89,8 +98,13 @@ tr.fixed-row td:first-child{text-decoration:line-through}
 .b-medium{background:var(--blue-light);color:#0d47a1}
 .b-rendah{background:var(--bg);color:var(--gray)}
 
+/* ── Footer ── */
+footer{text-align:center;font-size:.75rem;color:var(--gray);padding:1.5rem;border-top:1px solid var(--border);margin-top:1rem}
+footer a{color:var(--blue);text-decoration:none;font-weight:500}
+footer a:hover{text-decoration:underline}
+
 @media(max-width:900px){.cards-5{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:768px){.cards{grid-template-columns:1fr 1fr}.cards-5{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.nav-controls{gap:.4rem}.inp-repo,.inp-token{width:140px}}
+@media(max-width:768px){.cards-5{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.nav-controls{gap:.4rem}.inp-repo,.inp-token{width:140px}}
 @media(max-width:480px){.cards-5{grid-template-columns:1fr}}
 </style>
 </head>
@@ -98,7 +112,7 @@ tr.fixed-row td:first-child{text-decoration:line-through}
 
 <nav>
   <div class="nav-brand">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 10h16M4 14h8M4 18h6"/><rect x="14" y="12" width="8" height="8" rx="1.5"/></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 10h16M4 14h8M4 18h6"/><rect x="14" y="12" width="8" height="8" rx="1.5"/></svg>
     MPSDataCenter
   </div>
   <div class="nav-controls">
@@ -120,207 +134,110 @@ tr.fixed-row td:first-child{text-decoration:line-through}
 
 <main>
   <div class="page-header">
-    <h1>Progress Dashboard — MPSDataCenter</h1>
-    <p id="lastUpdated">Masukkan repo + token lalu klik Sync &middot; Status fitur bisa diubah langsung di tabel (tersimpan di browser)</p>
+    <h1>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Bug Tracking & Code Review
+    </h1>
+    <p id="lastUpdated">Full codebase audit — 29 Mar 2026 &middot; Sync GitHub untuk melacak aktivitas repository.</p>
   </div>
 
   <div class="info-box" id="tokenInfo">
-    <strong>Token diperlukan</strong> karena repo ini private. Token disimpan hanya di browser kamu (localStorage) — tidak dikirim ke server manapun selain api.github.com.
-  </div>
-
-  <!-- ══════════ FEATURE SECTION ══════════ -->
-  <div class="cards">
-    <div class="card c-blue"><div class="card-lbl">Total Fitur</div><div class="card-val" id="cTotal">—</div><div class="card-sub">item tracked</div></div>
-    <div class="card c-green"><div class="card-lbl">Selesai</div><div class="card-val" id="cDone" style="color:var(--green)">—</div><div class="card-sub" id="cPct">— % dari total</div></div>
-    <div class="card c-amber"><div class="card-lbl">In Progress</div><div class="card-val" id="cWip" style="color:var(--amber)">—</div><div class="card-sub">sedang dikerjakan</div></div>
-    <div class="card c-red"><div class="card-lbl">Pending</div><div class="card-val" id="cPend" style="color:var(--red)">—</div><div class="card-sub">belum dimulai</div></div>
-  </div>
-
-  <div class="prog-panel">
-    <div class="prog-head"><span class="prog-title">Progress keseluruhan</span><span class="prog-pct" id="pctLabel">0%</span></div>
-    <div class="prog-track"><div class="prog-fill" id="progBar" style="width:0%"></div></div>
-    <div class="prog-labels"><span>0%</span><span>Target Go-Live: Mei 2025</span><span>100%</span></div>
-  </div>
-
-  <div class="panel" style="padding:1.1rem 1.3rem;margin-bottom:1.1rem">
-    <div class="panel-title" style="margin-bottom:1rem">Feature progress distribution</div>
-    <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
-      <div style="position:relative;width:190px;height:190px;flex-shrink:0">
-        <canvas id="featureChart"></canvas>
-        <div id="donutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
-          <div id="donutVal" style="font-size:2rem;font-weight:700;color:#0A2B57;line-height:1">—</div>
-          <div style="font-size:0.7rem;color:#64748B;margin-top:3px">selesai</div>
-        </div>
-      </div>
-      <div id="donutLegend" style="flex:1;display:flex;flex-direction:column;gap:.65rem;min-width:180px"></div>
-    </div>
-  </div>
-
-  <div class="row2">
-    <div class="panel">
-      <div class="panel-title">Commit activity — 30 hari terakhir</div>
-      <div class="chart-wrap"><canvas id="commitChart"></canvas></div>
-      <p id="chartStatus" style="font-size:.7rem;color:var(--gray);text-align:center;margin-top:.4rem">Sync untuk melihat commit activity</p>
-    </div>
-    <div class="panel">
-      <div class="panel-title">Recent commits</div>
-      <div id="commitList"><p style="font-size:.78rem;color:var(--gray)">Sync GitHub untuk melihat commit terbaru.</p></div>
-    </div>
-  </div>
-
-  <div class="feat-panel">
-    <div class="feat-head">
-      <span class="panel-title" style="margin:0">Status fitur</span>
-      <span style="font-size:.72rem;color:var(--gray)">Klik baris untuk toggle status &middot; auto-save di browser</span>
-    </div>
-    <table><thead><tr>
-      <th style="width:34%">Fitur / Halaman</th><th style="width:17%">Kategori</th><th style="width:14%">Status</th><th style="width:11%">Prioritas</th><th>Catatan</th>
-    </tr></thead><tbody id="featBody"></tbody></table>
-  </div>
-
-  <div class="row2">
-    <div class="panel"><div class="panel-title">Timeline — sudah selesai</div><div class="tl" id="tlDone"></div></div>
-    <div class="panel"><div class="panel-title">Target ke depan</div><div class="tl" id="tlTarget"></div></div>
-  </div>
-
-  <!-- ══════════ BUG CHECKLIST SECTION ══════════ -->
-  <hr class="section-sep">
-
-  <div class="page-header" style="margin-bottom:1.2rem">
-    <h1 style="display:flex;align-items:center;gap:.45rem">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Bug Checklist &amp; Code Review
-    </h1>
-    <p>Full codebase audit — 29 Mar 2026 &middot; Klik baris untuk toggle Fixed / Unfixed &middot; auto-save di browser</p>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <span><strong>Token diperlukan</strong> untuk private repository. Token disimpan aman hanya di browser kamu (localStorage) dan tidak dikirim ke server manapun selain API GitHub.</span>
   </div>
 
   <div class="cards-5">
-    <div class="card c-red"><div class="card-lbl">Total Issues</div><div class="card-val" id="bTotal" style="color:var(--red)">—</div><div class="card-sub">ditemukan</div></div>
-    <div class="card c-green"><div class="card-lbl">Fixed</div><div class="card-val" id="bFixed" style="color:var(--green)">—</div><div class="card-sub" id="bFixPct">— %</div></div>
-    <div class="card" style="border-top:3px solid #D32F2F"><div class="card-lbl">Urgent</div><div class="card-val" id="bUrgent" style="color:#C62828">—</div><div class="card-sub">fix sekarang</div></div>
+    <div class="card c-red"><div class="card-lbl">Total Issues</div><div class="card-val" id="bTotal" style="color:var(--red)">—</div><div class="card-sub">ditemukan dalam audit</div></div>
+    <div class="card c-green"><div class="card-lbl">Resolved</div><div class="card-val" id="bFixed" style="color:var(--green)">—</div><div class="card-sub" id="bFixPct">— % completion</div></div>
+    <div class="card" style="border-top:3px solid #D32F2F"><div class="card-lbl">Urgent</div><div class="card-val" id="bUrgent" style="color:#C62828">—</div><div class="card-sub">memerlukan fix instan</div></div>
     <div class="card c-amber"><div class="card-lbl">Tinggi</div><div class="card-val" id="bHigh" style="color:var(--amber)">—</div><div class="card-sub">fix sebelum deploy</div></div>
-    <div class="card c-blue"><div class="card-lbl">Medium + Low</div><div class="card-val" id="bMedLow" style="color:var(--blue)">—</div><div class="card-sub">fix kalau sempat</div></div>
+    <div class="card c-blue"><div class="card-lbl">Medium + Low</div><div class="card-val" id="bMedLow" style="color:var(--blue)">—</div><div class="card-sub">tech-debt & perbaikan</div></div>
   </div>
 
   <div class="prog-panel">
-    <div class="prog-head"><span class="prog-title">Bug resolution progress</span><span class="prog-pct" id="bPctLbl" style="color:var(--green)">0%</span></div>
+    <div class="prog-head"><span class="prog-title">Bug Resolution Progress</span><span class="prog-pct" id="bPctLbl" style="color:var(--green)">0%</span></div>
     <div class="prog-track"><div class="prog-fill" id="bProgBar" style="width:0%;background:var(--green)"></div></div>
-    <div class="prog-labels"><span>0 fixed</span><span id="bProgSum">0 / 0</span><span>100%</span></div>
+    <div class="prog-labels"><span>0 resolved</span><span id="bProgSum">0 / 0</span><span>100%</span></div>
   </div>
 
   <div class="row2">
-    <div class="panel" style="padding:1.1rem 1.3rem">
-      <div class="panel-title" style="margin-bottom:1rem">Unfixed by category</div>
-      <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
-        <div style="position:relative;width:180px;height:180px;flex-shrink:0">
-          <canvas id="bugCatChart"></canvas>
-          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
-            <div id="bugCatVal" style="font-size:1.8rem;font-weight:700;color:#C62828;line-height:1">—</div>
-            <div style="font-size:.65rem;color:#64748B;margin-top:2px">unfixed</div>
-          </div>
-        </div>
-        <div id="bugCatLeg" style="flex:1;display:flex;flex-direction:column;gap:.6rem;min-width:170px"></div>
+    <div class="panel">
+      <div class="panel-title">Commit Activity — 30 Hari Terakhir</div>
+      <div class="chart-wrap"><canvas id="commitChart"></canvas></div>
+      <p id="chartStatus" style="font-size:.75rem;color:var(--gray);text-align:center;margin-top:.6rem">Sync repository untuk melihat grafik commit</p>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Recent Commits</div>
+      <div id="commitList">
+        <p style="font-size:.8rem;color:var(--gray);text-align:center;padding-top:2rem">Sync GitHub untuk melihat riwayat commit terbaru.</p>
       </div>
     </div>
-    <div class="panel" style="padding:1.1rem 1.3rem">
-      <div class="panel-title" style="margin-bottom:1rem">Unfixed by priority</div>
-      <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
-        <div style="position:relative;width:180px;height:180px;flex-shrink:0">
-          <canvas id="bugPriChart"></canvas>
-          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
-            <div id="bugPriVal" style="font-size:1.8rem;font-weight:700;color:var(--dark);line-height:1">—</div>
-            <div style="font-size:.65rem;color:#64748B;margin-top:2px">unfixed</div>
+  </div>
+
+  <div class="row2">
+    <div class="panel">
+      <div class="panel-title">Unresolved Issues by Category</div>
+      <div class="donut-wrap">
+        <div class="donut-chart-container">
+          <canvas id="bugCatChart"></canvas>
+          <div class="donut-center">
+            <div id="bugCatVal" class="donut-val" style="color:#C62828">—</div>
+            <div class="donut-lbl">unresolved</div>
           </div>
         </div>
-        <div id="bugPriLeg" style="flex:1;display:flex;flex-direction:column;gap:.6rem;min-width:170px"></div>
+        <div id="bugCatLeg" class="donut-leg"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Unresolved Issues by Priority</div>
+      <div class="donut-wrap">
+        <div class="donut-chart-container">
+          <canvas id="bugPriChart"></canvas>
+          <div class="donut-center">
+            <div id="bugPriVal" class="donut-val" style="color:var(--dark)">—</div>
+            <div class="donut-lbl">unresolved</div>
+          </div>
+        </div>
+        <div id="bugPriLeg" class="donut-leg"></div>
       </div>
     </div>
   </div>
 
   <div class="feat-panel">
     <div class="feat-head">
-      <span class="panel-title" style="margin:0">Bug checklist</span>
-      <span style="font-size:.72rem;color:var(--gray)">Klik baris untuk toggle Fixed &middot; auto-save di browser</span>
+      <span class="panel-title" style="margin:0">Actionable Checklist</span>
+      <span style="font-size:.75rem;color:var(--gray);font-weight:500">Klik baris untuk toggle Fixed / Unfixed &middot; Progress tersimpan otomatis di browser</span>
     </div>
     <div class="bug-filter" id="bugFilterBar"></div>
-    <table><thead><tr>
-      <th style="width:28%">Issue</th><th style="width:13%">Kategori</th><th style="width:9%">Status</th><th style="width:9%">Prioritas</th><th>Detail / Lokasi</th>
-    </tr></thead><tbody id="bugBody"></tbody></table>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:28%">Issue Description</th>
+            <th style="width:13%">Kategori</th>
+            <th style="width:9%">Status</th>
+            <th style="width:9%">Prioritas</th>
+            <th>Detail & Lokasi File</th>
+          </tr>
+        </thead>
+        <tbody id="bugBody"></tbody>
+      </table>
+    </div>
   </div>
 
 </main>
 
 <footer>
-  MPSDataCenter Progress Dashboard &middot; <strong>Risky Hidayat</strong> &middot;
-  <a href="https://github.com" target="_blank">github.com</a>
+  MPSDataCenter Bug Tracking Dashboard &middot; <strong>Risky Hidayat</strong> &middot;
+  <a href="https://github.com" target="_blank">View on GitHub</a>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 /* ================================================================
-   DATA — FEATURES
-   ================================================================ */
-const PROJECT = { repo: "" };
-
-const FEATURES = [
-  ["Login + Rate Limiter","Autentikasi","Selesai","Tinggi","5x fail → lockout 15 menit"],
-  ["Register + Email Verification","Autentikasi","Selesai","Tinggi","Self-service + admin approval"],
-  ["Locked & Access Denied pages","Autentikasi","Selesai","Medium",""],
-  ["Forgot Password + Reset Password","Autentikasi","Selesai","Tinggi","Base64UrlEncode token, local-only direct redirect"],
-  ["Change Password (logged-in user)","Autentikasi","Selesai","Tinggi","Via Settings page, semua role"],
-  ["Security Middleware (5x)","Keamanan","Selesai","Tinggi","Headers, RateLimit, Lockout, Log, Exception"],
-  ["Activity Log Tracking","Keamanan","Selesai","Tinggi","Semua HTTP request tercatat"],
-  ["Admin Dashboard","Admin Panel","Selesai","Tinggi","AdminDashboardViewModel + 6 stat cards + charts"],
-  ["Recommendation List (Admin)","Admin Panel","Selesai","Tinggi","Filter, sort, paginate"],
-  ["Add Data + OCR Pipeline","Admin Panel","Selesai","Tinggi","IronOCR primary + PdfPig fallback"],
-  ["Edit Data","Admin Panel","Selesai","Tinggi","Replace PDF optional"],
-  ["Access Logs Monitor","Admin Panel","Selesai","Medium","Lock/unlock user, history modal"],
-  ["Register Admin & Editor","Admin Panel","Selesai","Medium",""],
-  ["Settings (profile, export)","Admin Panel","Selesai","Medium",""],
-  ["Log Sheet","Admin Panel","In Progress","Tinggi","Binding data belum final"],
-  ["Editor Dashboard","Editor Panel","Selesai","Tinggi","4 stat cards + charts (masih ViewBag)"],
-  ["Recommendation (Editor)","Editor Panel","Selesai","Tinggi","CRUD penuh"],
-  ["Add Data & Edit Data (Editor)","Editor Panel","Selesai","Tinggi","Shared logic dengan Admin"],
-  ["User Dashboard","User Panel","Selesai","Medium","Read-only (masih ViewBag)"],
-  ["Recommendation (User)","User Panel","Selesai","Medium","View + download PDF only"],
-  ["Log Sheet (User)","User Panel","In Progress","Medium","Perlu data binding"],
-  ["Excel Export Service","Backend","In Progress","Tinggi","Interface done, impl partial"],
-  ["OCR Parsing Service (extracted)","Backend","Selesai","Tinggi","IOcrParsingService + 40+ xUnit tests"],
-  ["Role-based Authorization","Backend","Selesai","Tinggi","Admin / Editor / User"],
-  ["AccessLog Repository & Service","Backend","Selesai","Medium","Repository pattern"],
-  ["MainData Page","Backend","Pending","Medium","Placeholder"],
-  ["SearchController","Backend","Pending","Rendah","Belum terintegrasi ke UI"],
-  ["Card Dashboard","User Panel","In Progress","Rendah",""],
-  ["Tampilan Halaman Rekomendasi (all users)","User Panel","In Progress","Rendah",""],
-  ["Regis Admin dan Editor","User Panel","In Progress","Rendah",""],
-  ["Halaman Setting (all users)","User Panel","In Progress","Rendah",""],
-  ["Scrolling pada Riwayat Aktivitas","User Panel","In Progress","Rendah",""],
-  ["Toggle Dropdown belum Rapih","User Panel","In Progress","Rendah",""],
-  ["Adding Full Name on Registration","Autentikasi","Pending","Medium","Menambahkan entry full name pada form registrasi"],
-  ["Session Expired Feedback","UX","Pending","Medium","Tampilkan pesan 'Sesi anda telah berakhir' sebelum redirect login"],
-  ["Form Loading State","UX","Pending","Medium","Prevent double submit saat klik Save/Register"],
-  ["Success Confirmation Message","UX","Pending","Medium","Flash message terlalu cepat hilang"],
-  ["Pagination Reset on Filter Change","UX","Pending","Medium","Filter harus reset ke page 1"],
-  ["Remove Debug Endpoints","Code Cleanup","Pending","Tinggi","IronOcrDiagnostic, FixIronOcr, CheckFiles, DebugUsers, dll"],
-  ["Remove TestOcr.cs","Code Cleanup","Pending","Medium","File debugging OCR tidak boleh di production"],
-  ["Remove Empty MainData Page","Code Cleanup","Pending","Low","Halaman hanya placeholder"],
-  ["Refactor / Remove SearchController","Architecture","Pending","Medium","Belum terintegrasi ke sistem search"],
-  ["Clean Unused Sidebar CSS","Code Cleanup","Pending","Low","sidebar.css dan sidebar-global.css banyak comment code"],
-  ["Standardize Global Exception Handling","Architecture","Pending","Medium","Response error belum konsisten (JSON vs HTML)"],
-  ["Refactor ViewBag → ViewModel (Editor+User)","Architecture","In Progress","Medium","Admin done, Editor & User belum"],
-  ["BaseController Refactor","Architecture","In Progress","Medium","BaseDataController.cs created, UserController & EditorController belum extend"],
-  ["Unit Test for Access Log Service","Testing","Pending","Medium","Validasi pencatatan aktivitas sistem"]
-];
-
-/* ================================================================
-   DATA — BUG CHECKLIST (v2 — Full Audit 29 Mar 2026)
+   DATA — BUG CHECKLIST (Full Audit 29 Mar 2026)
    ================================================================ */
 const BUG_CHECKLIST = [
-
-  // ══════════════════════════════════════════════
-  // ✅ PREVIOUSLY FIXED (dari sesi bug-fixing sebelumnya)
-  // ══════════════════════════════════════════════
-
   // ── Critical Bug (Fixed) ──
   ["[FIXED] EditUser logic TERBALIK","Critical Bug","Fixed","Urgent","if(!Succeeded) tampil SUCCESS → logic dibalik — AdminController.cs"],
   ["[FIXED] Duplicate Login/Logout di AdminController","Critical Bug","Fixed","Urgent","Konflik dengan AccountController → actions dihapus — AdminController.cs"],
@@ -352,136 +269,64 @@ const BUG_CHECKLIST = [
   ["[FIXED] OCR parsing methods extracted ke service","Code Quality","Fixed","Tinggi","Duplicate code → IOcrParsingService + OcrParsingService + 40+ xUnit tests"],
   ["[FIXED] CSS extracted dari inline styles","Code Quality","Fixed","Medium","8 .cshtml files inline CSS → separate .css files"],
 
-  // ══════════════════════════════════════════════
-  // 🔴 NEW BUGS (Full audit 29 Mar 2026)
-  // ══════════════════════════════════════════════
-
-  // ── Critical Bug ──
+  // ── Critical Bug (Unfixed) ──
   ["Hardcoded IronOCR License Key di Program.cs","Critical Bug","Bug","Urgent","License key hardcoded sebagai fallback env var name. License EXPIRED 25 Mar 2026. Pindah ke appsettings/secrets — Program.cs:10-12"],
   ["Hardcoded DB Credentials di appsettings + Program.cs","Critical Bug","Bug","Urgent","Password 'mps123456' plaintext di appsettings.json. Fallback 'yourpassword' di Program.cs. Gunakan User Secrets / env var — appsettings.json & Program.cs"],
   ["EditRecommendation POST return view name SALAH","Critical Bug","Bug","Urgent","ModelState invalid → return View(\"EditRecommendation\", model) tapi GET return View(\"EditData\",...). ViewNotFound exception — AdminController.cs & EditorController.cs"],
   ["RegisterEditor.cshtml (AuthLayout) POST ke controller salah","Critical Bug","Bug","Urgent","Form asp-controller=\"Account\" tapi action RegisterEditor di AdminController → 404 atau route salah — RegisterEditor.cshtml (versi _AuthLayout)"],
   ["EditorController.Create() pakai NotMapped property circular","Critical Bug","Bug","Tinggi","Create() reference model.Unit & model.DisplayPlant (computed getter dari Plant) → circular, tidak akan set Plant benar. Harusnya UnitInput/PlantInput — EditorController.cs"],
 
-  // ── Security ──
+  // ── Security (Unfixed) ──
   ["Session vs Auth Cookie SecurePolicy mismatch","Security","Bug","Tinggi","Session: CookieSecurePolicy.Always, Auth: SameAsRequest. Di HTTP dev session cookie gagal. Harus konsisten — Program.cs"],
   ["CORS 'Production' policy masih placeholder","Security","Bug","Medium","CORS Production policy pakai 'https://yourdomain.com' placeholder. Ganti domain asli sebelum deploy — Program.cs"],
   ["ForgotPassword langsung redirect tanpa email (bypass)","Security","Bug","Tinggi","Siapapun tahu email user bisa langsung reset password. OK local dev tapi harus ada guard/disable di production — AccountController.cs"],
   ["No file size validation pada PDF upload","Security","Bug","Tinggi","AddData POST validasi extension saja, tidak ada max size. PDF besar → memory issue saat OCR — AdminController.cs & EditorController.cs"],
   ["EditUser tidak update NormalizedUserName","Security","Bug","Medium","Set UserName & Email tapi NormalizedUserName tidak sinkron. Identity inconsistent saat login by username — AdminController.cs"],
 
-  // ── Performance ──
+  // ── Performance (Unfixed) ──
   ["Editor Recommendation list tanpa pagination","Performance","Bug","Tinggi","EditorController.Recommendation() load semua records ToListAsync() tanpa pagination. Admin & User sudah pakai PaginatedList — EditorController.cs"],
   ["IronOCR diinisialisasi setiap request (constructor)","Performance","Bug","Tinggi","InitializeIronOcr() di constructor = init per request termasuk test read. Harus singleton/service — AdminController.cs & EditorController.cs"],
   ["Startup loop semua users untuk fix LockoutEnabled","Performance","Bug","Medium","Program.cs loop allUsers cek LockoutEnabled setiap app start. Harusnya one-time migration saja — Program.cs"],
 
-  // ── Code Quality ──
+  // ── Code Quality (Unfixed) ──
   ["Massive duplication: AdminController ≈ EditorController","Code Quality","Refactor","Tinggi","InitializeIronOcr, Extract*, Parse*, AddData, SaveData, EditRecommendation semua duplicate. Extract ke shared service/BaseController — AdminController.cs & EditorController.cs"],
   ["Editor Dashboard masih ViewBag (belum ViewModel)","Code Quality","Refactor","Medium","Admin Dashboard sudah refactor ke AdminDashboardViewModel. Editor masih 15+ ViewBag properties — EditorController.cs & Dashboard.cshtml (Editor)"],
   ["UserController Dashboard juga masih ViewBag","Code Quality","Refactor","Medium","Sama seperti Editor — perlu UserDashboardViewModel — UserController.cs"],
   ["LogActivity() duplicated di 3 controllers","Code Quality","Refactor","Medium","Admin, Editor, User punya LogActivity() hampir identik. Extract ke BaseController/service — AdminController.cs, EditorController.cs, UserController.cs"],
   ["CustomSignInManager.cs entirely commented out","Code Quality","Bug","Rendah","Seluruh file di-comment. Hapus dead code atau uncomment jika dipakai — CustomSignInManager.cs"],
-  ["Excessive Console.WriteLine debugging","Code Quality","Refactor","Medium","Ratusan Console.WriteLine + emoji (✅❌⚠🔧). Ganti ILogger/Serilog untuk production — AdminController.cs, EditorController.cs, AccountController.cs, Program.cs"],
+  ["Excessive Console.WriteLine debugging","Code Quality","Refactor","Medium","Ratusan Console.WriteLine + emoji. Ganti ILogger/Serilog untuk production — AdminController.cs, EditorController.cs, AccountController.cs, Program.cs"],
   ["Magic string '37' di DownloadPdf GUID extraction","Code Quality","Bug","Rendah","dbFileName.Substring(37) untuk skip GUID. Magic number → buat constant/helper — AdminController.cs"],
   ["Inconsistent TempData keys across controllers","Code Quality","Refactor","Medium","'ErrorMessage' vs 'Error', 'SuccessMessage' vs 'Success'. Standarisasi satu convention — semua Controllers"],
-  ["Dua versi RegisterEditor.cshtml (layout berbeda)","Code Quality","Bug","Tinggi","Versi _AuthLayout (old, route ke Account) dan versi @section Styles (new Admin-style). Hapus yang lama — RegisterEditor.cshtml"],
-
-  // ── UX / Frontend ──
+  ["Dua versi RegisterEditor.cshtml (layout berbeda)","Code Quality","Bug","Tinggi","Versi _AuthLayout (old) dan versi @section Styles (new). Hapus yang lama — RegisterEditor.cshtml"],
   ["Settings.cshtml tulis '.NET 8.0' — seharusnya '.NET 10.0'","Code Quality","Bug","Rendah","Framework info hardcode '.NET 8.0' tapi .csproj target net10.0 — Settings.cshtml"],
   ["Layout translation 'min 6 characters' → seharusnya 'min 8'","Code Quality","Bug","Medium","_Layout.cshtml translation 'Enter password (min 6 characters)' tapi RequiredLength=8 — _Layout.cshtml"],
 
-  // ── Missing Feature / Architecture ──
-  ["AccessLogMiddleware logout detection mungkin unreliable","Missing Feature","Bug","Medium","Middleware call _next() dulu, baru cek IsAuthenticated. Setelah SignOutAsync bisa false → test atau pindah logging ke controller — AccessLogMiddleware.cs"],
-  ["UseSession() dipanggil setelah UseAuthorization()","Missing Feature","Bug","Tinggi","Middleware order: Auth → Authorization → AccessLog → Session. Jika session dibutuhkan sebelumnya → tidak tersedia. Pindahkan UseSession() — Program.cs"],
+  // ── Missing Feature / Architecture (Unfixed) ──
+  ["AccessLogMiddleware logout detection unreliable","Missing Feature","Bug","Medium","Middleware call _next() dulu, baru cek IsAuthenticated. Pindah logging ke controller — AccessLogMiddleware.cs"],
+  ["UseSession() dipanggil setelah UseAuthorization()","Missing Feature","Bug","Tinggi","Middleware order salah. Pindahkan UseSession() sebelum Auth — Program.cs"],
   ["Unit Test untuk AccessLogService belum dibuat","Missing Feature","Belum Ada","Medium","OcrParsingService sudah ada 40+ tests, tapi AccessLogService belum coverage — AccessLogService.cs"],
   ["BaseController refactor belum selesai","Missing Feature","Belum Ada","Medium","BaseDataController.cs sudah dibuat, tapi UserController & EditorController belum extend — UserController.cs & EditorController.cs"],
 ];
 
-/* ================================================================
-   DATA — TIMELINES
-   ================================================================ */
-const TL_DONE = [
-  ["Feb 2025 M4","Autentikasi lengkap + semua middleware keamanan (5x)"],
-  ["Mar 2025 M1","Deleting Duplicate Regis Page + Security Improvement"],
-  ["Mar 2025 M1","Improvement Excel File Export System + Search/Pagination server-side"],
-  ["Mar 2025 M4","Error Handling and Feedback Improvement"],
-  ["Mar 2026 M1","Bug-fix session: Critical (7), Security (6), Performance (3)"],
-  ["Mar 2026 M2","ForgotPassword/ResetPassword + ChangePassword flow"],
-  ["Mar 2026 M3","ViewBag→ViewModel (Admin), OCR Service extraction, CSS extraction"],
-  ["Mar 2026 M4","Full codebase audit — 48 issues tracked (21 fixed)"],
-];
-const TL_TARGET = [
-  ["Apr 2026 M1","Fix 5 Critical bugs (view name, hardcoded keys, Create circular)"],
-  ["Apr 2026 M1","Fix Security: file size validation, session cookie mismatch"],
-  ["Apr 2026 M2","Editor Recommendation pagination + IronOCR singleton refactor"],
-  ["Apr 2026 M2","BaseController refactor (UserController + EditorController)"],
-  ["Apr 2026 M3","EditorDashboardViewModel + UserDashboardViewModel"],
-  ["Apr 2026 M3","LogActivity extraction ke shared service"],
-  ["Apr 2026 M4","Clean up: Console.WriteLine → ILogger, TempData standardize"],
-  ["Apr 2026 M4","Unit Test AccessLogService"],
-  ["Mei 2026 M1","Remove dead code: CustomSignInManager, old RegisterEditor, TestOcr.cs"],
-  ["Mei 2026 M2","Production hardening: CORS, UseSession order, exception handling"],
-  ["Mei 2026 M3","Beta Testing"],
-  ["Mei 2026 M4","Go-Live readiness review"],
-];
-
-/* ================================================================
-   FEATURE LOGIC
-   ================================================================ */
-const CYCLE={"Selesai":"In Progress","In Progress":"Pending","Pending":"Selesai"};
-let statuses={};
-function loadState(){try{statuses=JSON.parse(localStorage.getItem("mpsStat2")||"{}");}catch(e){statuses={};}FEATURES.forEach((f,i)=>{if(!statuses[i])statuses[i]=f[2];});}
-function saveState(){localStorage.setItem("mpsStat2",JSON.stringify(statuses));}
-function recalc(){
-  const vals=Object.values(statuses),n=FEATURES.length,done=vals.filter(s=>s==="Selesai").length,wip=vals.filter(s=>s==="In Progress").length,pend=vals.filter(s=>s==="Pending").length,pct=Math.round(done/n*100);
-  document.getElementById("cTotal").textContent=n;document.getElementById("cDone").textContent=done;
-  document.getElementById("cPct").textContent=pct+"% dari total";document.getElementById("cWip").textContent=wip;
-  document.getElementById("cPend").textContent=pend;document.getElementById("pctLabel").textContent=pct+"%";
-  document.getElementById("progBar").style.width=pct+"%";document.title="MPSDataCenter — "+pct+"% selesai";
-  buildFeatureChart(done,wip,pend);
-}
-function bc(s){return s==="Selesai"?"done":s==="In Progress"?"wip":"pend";}
-function renderTable(){
-  document.getElementById("featBody").innerHTML=FEATURES.map((f,i)=>{const s=statuses[i];
-    return`<tr onclick="toggle(${i})"><td style="font-weight:500">${f[0]}</td><td style="color:var(--gray)">${f[1]}</td>
-    <td><span class="badge ${bc(s)}">${s}</span></td><td><span class="badge ${f[3]==="Tinggi"?"done":f[3]==="Medium"?"wip":"pend"}">${f[3]}</span></td>
-    <td style="color:var(--gray);font-size:.72rem">${f[4]}</td></tr>`;}).join("");
-}
-function toggle(i){statuses[i]=CYCLE[statuses[i]];saveState();renderTable();recalc();}
-function renderTimeline(){
-  document.getElementById("tlDone").innerHTML=TL_DONE.map(([p,t])=>`<div class="tl-item"><div class="tl-dot tl-dot-d"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`).join("");
-  document.getElementById("tlTarget").innerHTML=TL_TARGET.map(([p,t])=>`<div class="tl-item"><div class="tl-dot tl-dot-t"></div><div class="tl-period">${p}</div><div class="tl-task">${t}</div></div>`).join("");
-}
-
-/* ── Token UI */
+/* ── Token UI ── */
 function toggleTok(){const inp=document.getElementById("tokenInput"),eye=document.getElementById("tokEye");if(inp.type==="password"){inp.type="text";eye.textContent="🙈";}else{inp.type="password";eye.textContent="👁";}}
 function saveToken(tok){if(tok)localStorage.setItem("mpsToken",tok);const s=document.getElementById("tokSaved");s.style.display="inline";setTimeout(()=>s.style.display="none",2500);}
 
-/* ── Feature Donut */
-const DONUT_DATA=[{label:"Selesai",color:"#38ff01",bg:"#EAF3DE"},{label:"In Progress",color:"#fefb00",bg:"#FAEEDA"},{label:"Pending",color:"#ff1400",bg:"#FCEBEB"}];
-let featureChart=null;
-function buildFeatureChart(done,wip,pend){
-  const vals=[done,wip,pend],total=done+wip+pend;
-  document.getElementById("donutVal").textContent=done;
-  document.getElementById("donutLegend").innerHTML=DONUT_DATA.map((d,i)=>{const pct=total>0?Math.round(vals[i]/total*100):0;
-    return`<div style="display:flex;align-items:center;gap:.6rem"><div style="width:10px;height:10px;border-radius:2px;background:${d.color};flex-shrink:0"></div>
-    <div style="font-size:.75rem;color:#64748B;width:78px">${d.label}</div>
-    <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden"><div style="width:${pct}%;height:6px;background:${d.color};border-radius:100px;transition:width .8s ease"></div></div>
-    <div style="font-size:.75rem;font-weight:600;color:#0A2B57;min-width:22px;text-align:right">${vals[i]}</div>
-    <div style="font-size:.72rem;color:#64748B;min-width:32px;text-align:right">${pct}%</div></div>`;}).join("");
-  if(featureChart)featureChart.destroy();
-  featureChart=new Chart(document.getElementById("featureChart").getContext("2d"),{type:"doughnut",
-    data:{labels:DONUT_DATA.map(d=>d.label),datasets:[{data:vals,backgroundColor:DONUT_DATA.map(d=>d.color),borderColor:DONUT_DATA.map(d=>d.bg),borderWidth:3,hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} (${total>0?Math.round(c.parsed/total*100):0}%)`}}}}});
-}
-
-/* ── Commit Chart */
+/* ── Commit Chart ── */
 let commitChart=null;
-function buildChart(labels,data){if(commitChart)commitChart.destroy();
-  commitChart=new Chart(document.getElementById("commitChart").getContext("2d"),{type:"bar",
-    data:{labels,datasets:[{label:"Commits",data,backgroundColor:"#BBDEFB",borderRadius:3,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{ticks:{font:{size:9},maxRotation:45,color:"#888"},grid:{display:false}},y:{ticks:{font:{size:9},color:"#888",stepSize:1},beginAtZero:true,grid:{color:"rgba(0,0,0,0.05)"}}}}});
+function buildChart(labels,data){
+  if(commitChart)commitChart.destroy();
+  commitChart=new Chart(document.getElementById("commitChart").getContext("2d"),{
+    type:"bar",
+    data:{labels,datasets:[{label:"Commits",data,backgroundColor:"#60A5FA",hoverBackgroundColor:"#3B82F6",borderRadius:4,borderSkipped:false}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{font:{size:10},maxRotation:45,color:"#94A3B8"},grid:{display:false}},
+        y:{ticks:{font:{size:10},color:"#94A3B8",stepSize:1},beginAtZero:true,grid:{color:"rgba(0,0,0,0.04)"}}
+      }
+    }
+  });
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -498,44 +343,61 @@ function bsc(s){return s==="Fixed"?"b-fixed":s==="Bug"?"b-bug":s==="Belum Ada"?"
 function bpc(p){const l=p.toLowerCase();return l==="urgent"?"b-urgent":l==="tinggi"?"b-tinggi":l==="medium"?"b-medium":"b-rendah";}
 
 const CAT_META=[
-  {key:"Critical Bug",lbl:"Critical",clr:"#EF5350",bg:"#FFEBEE"},
-  {key:"Security",lbl:"Security",clr:"#FF9800",bg:"#FFF3E0"},
-  {key:"Performance",lbl:"Performance",clr:"#42A5F5",bg:"#E3F2FD"},
-  {key:"Missing Feature",lbl:"Missing",clr:"#AB47BC",bg:"#F3E5F6"},
-  {key:"Code Quality",lbl:"Quality",clr:"#26A69A",bg:"#E0F2F1"},
+  {key:"Critical Bug",lbl:"Critical",clr:"#EF4444",bg:"#FEE2E2"},
+  {key:"Security",lbl:"Security",clr:"#F59E0B",bg:"#FEF3C7"},
+  {key:"Performance",lbl:"Performance",clr:"#3B82F6",bg:"#DBEAFE"},
+  {key:"Missing Feature",lbl:"Missing",clr:"#8B5CF6",bg:"#EDE9FE"},
+  {key:"Code Quality",lbl:"Quality",clr:"#10B981",bg:"#D1FAE5"},
 ];
 const PRI_META=[
-  {key:"urgent",lbl:"Urgent",clr:"#E53935",bg:"#FFCDD2"},
-  {key:"tinggi",lbl:"Tinggi",clr:"#FF9800",bg:"#FFE0B2"},
-  {key:"medium",lbl:"Medium",clr:"#42A5F5",bg:"#BBDEFB"},
-  {key:"rendah",lbl:"Rendah",clr:"#90A4AE",bg:"#ECEFF1"},
+  {key:"urgent",lbl:"Urgent",clr:"#DC2626",bg:"#FEE2E2"},
+  {key:"tinggi",lbl:"Tinggi",clr:"#F59E0B",bg:"#FEF3C7"},
+  {key:"medium",lbl:"Medium",clr:"#3B82F6",bg:"#DBEAFE"},
+  {key:"rendah",lbl:"Rendah",clr:"#94A3B8",bg:"#F1F5F9"},
 ];
 
 function recalcBugs(){
   const n=BUG_CHECKLIST.length,fixed=Object.values(bugStat).filter(s=>s==="Fixed").length,unfixed=n-fixed,pct=Math.round(fixed/n*100);
   let urgent=0,tinggi=0,medlow=0;
-  BUG_CHECKLIST.forEach((b,i)=>{if(bugStat[i]==="Fixed")return;const p=b[3].toLowerCase();if(p==="urgent")urgent++;else if(p==="tinggi")tinggi++;else medlow++;});
-  document.getElementById("bTotal").textContent=n;document.getElementById("bFixed").textContent=fixed;
-  document.getElementById("bFixPct").textContent=pct+"% resolved";document.getElementById("bUrgent").textContent=urgent;
-  document.getElementById("bHigh").textContent=tinggi;document.getElementById("bMedLow").textContent=medlow;
-  document.getElementById("bPctLbl").textContent=pct+"%";document.getElementById("bProgBar").style.width=pct+"%";
+  
+  BUG_CHECKLIST.forEach((b,i)=>{
+    if(bugStat[i]==="Fixed")return;
+    const p=b[3].toLowerCase();
+    if(p==="urgent")urgent++;
+    else if(p==="tinggi")tinggi++;
+    else medlow++;
+  });
+  
+  document.getElementById("bTotal").textContent=n;
+  document.getElementById("bFixed").textContent=fixed;
+  document.getElementById("bFixPct").textContent=pct+"% resolved";
+  document.getElementById("bUrgent").textContent=urgent;
+  document.getElementById("bHigh").textContent=tinggi;
+  document.getElementById("bMedLow").textContent=medlow;
+  document.getElementById("bPctLbl").textContent=pct+"%";
+  document.getElementById("bProgBar").style.width=pct+"%";
   document.getElementById("bProgSum").textContent=fixed+" fixed / "+n+" total";
+  
   buildBugCharts(unfixed);
 }
 
 let bugCatC=null,bugPriC=null;
+
 function legendRow(m,val,total){
   const pct=total>0?Math.round(val/total*100):0;
-  return`<div style="display:flex;align-items:center;gap:.55rem">
-  <div style="width:10px;height:10px;border-radius:2px;background:${m.clr};flex-shrink:0"></div>
-  <div style="font-size:.73rem;color:#64748B;width:75px">${m.lbl}</div>
+  return`<div style="display:flex;align-items:center;gap:.6rem">
+  <div style="width:12px;height:12px;border-radius:3px;background:${m.clr};flex-shrink:0"></div>
+  <div style="font-size:.75rem;color:#64748B;width:75px;font-weight:500">${m.lbl}</div>
   <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden"><div style="width:${pct}%;height:6px;background:${m.clr};border-radius:100px;transition:width .8s ease"></div></div>
-  <div style="font-size:.73rem;font-weight:600;color:#0A2B57;min-width:18px;text-align:right">${val}</div></div>`;
+  <div style="font-size:.75rem;font-weight:700;color:#0A2B57;min-width:20px;text-align:right">${val}</div></div>`;
 }
+
 function mkDonut(canvasId,labels,data,colors,borders,tip){
-  return new Chart(document.getElementById(canvasId).getContext("2d"),{type:"doughnut",
-    data:{labels,datasets:[{data,backgroundColor:colors,borderColor:borders,borderWidth:3,hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} ${tip}`}}}}});
+  return new Chart(document.getElementById(canvasId).getContext("2d"),{
+    type:"doughnut",
+    data:{labels,datasets:[{data,backgroundColor:colors,borderColor:borders,borderWidth:4,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"75%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} ${tip}`}}}}
+  });
 }
 
 function buildBugCharts(unfixed){
@@ -558,71 +420,132 @@ function buildBugFilters(){
   const cats=["Semua",...new Set(BUG_CHECKLIST.map(b=>b[1]))];
   document.getElementById("bugFilterBar").innerHTML=cats.map(c=>{
     const cnt=c==="Semua"?BUG_CHECKLIST.length:BUG_CHECKLIST.filter(b=>b[1]===c).length;
-    return`<button class="fbtn${bugFilter===c?" active":""}" onclick="setBugFilter('${c}')">${c}<span class="fc">(${cnt})</span></button>`;}).join("");
+    return`<button class="fbtn${bugFilter===c?" active":""}" onclick="setBugFilter('${c}')">${c}<span class="fc">(${cnt})</span></button>`;
+  }).join("");
 }
-function setBugFilter(c){bugFilter=c;buildBugFilters();renderBugTable();}
+
+function setBugFilter(c){
+  bugFilter=c;
+  buildBugFilters();
+  renderBugTable();
+}
 
 const CAT_ORDER=["Critical Bug","Security","Performance","Missing Feature","Code Quality"];
 function renderBugTable(){
   const filtered=BUG_CHECKLIST.map((b,i)=>({b,i})).filter(({b})=>bugFilter==="Semua"||b[1]===bugFilter);
-  const groups={};filtered.forEach(({b,i})=>{if(!groups[b[1]])groups[b[1]]=[];groups[b[1]].push({b,i});});
+  const groups={};
+  filtered.forEach(({b,i})=>{if(!groups[b[1]])groups[b[1]]=[];groups[b[1]].push({b,i});});
   const keys=CAT_ORDER.filter(k=>groups[k]);
+  
   let html="";
   keys.forEach(cat=>{
     const cm=CAT_META.find(m=>m.key===cat)||{clr:"#64748B"};
-    if(bugFilter==="Semua")html+=`<tr class="cat-row"><td colspan="5" style="border-left:3px solid ${cm.clr}">${cat} <span style="font-weight:400;opacity:.6">(${groups[cat].length})</span></td></tr>`;
+    if(bugFilter==="Semua"){
+      html+=`<tr class="cat-row"><td colspan="5" style="border-left:4px solid ${cm.clr}">${cat} <span style="font-weight:500;opacity:.6;text-transform:none">(${groups[cat].length} issues)</span></td></tr>`;
+    }
     groups[cat].forEach(({b,i})=>{
       const s=bugStat[i],isFixed=s==="Fixed",ds=isFixed?"Fixed":b[2];
       html+=`<tr class="${isFixed?"fixed-row":""}" onclick="toggleBug(${i})">
-        <td style="font-weight:500">${b[0]}</td>
-        <td><span style="font-size:.66rem;color:${cm.clr};font-weight:600">${b[1]}</span></td>
+        <td style="font-weight:500;color:var(--dark)">${b[0]}</td>
+        <td><span style="font-size:.7rem;color:${cm.clr};font-weight:600">${b[1]}</span></td>
         <td><span class="badge ${bsc(ds)}">${ds}</span></td>
         <td><span class="badge ${bpc(b[3])}">${b[3]}</span></td>
-        <td style="color:var(--gray);font-size:.7rem;line-height:1.35">${b[4]}</td></tr>`;
+        <td style="color:var(--gray);font-size:.75rem;line-height:1.4">${b[4]}</td>
+      </tr>`;
     });
   });
   document.getElementById("bugBody").innerHTML=html;
 }
-function toggleBug(i){bugStat[i]=bugStat[i]==="Fixed"?BUG_CHECKLIST[i][2]:"Fixed";saveBugState();renderBugTable();recalcBugs();}
+
+function toggleBug(i){
+  bugStat[i]=bugStat[i]==="Fixed"?BUG_CHECKLIST[i][2]:"Fixed";
+  saveBugState();
+  renderBugTable();
+  recalcBugs();
+}
 
 /* ════════════════════════════════════════════════════════════════
    GITHUB FETCH
    ════════════════════════════════════════════════════════════════ */
 async function fetchGitHub(){
-  const repo=document.getElementById("repoInput").value.trim(),token=document.getElementById("tokenInput").value.trim();
-  if(!repo||!repo.includes("/")){document.getElementById("syncStatus").textContent="⚠ Format: owner/repo";return;}
+  const repo=document.getElementById("repoInput").value.trim();
+  const token=document.getElementById("tokenInput").value.trim();
+  
+  if(!repo||!repo.includes("/")){document.getElementById("syncStatus").textContent="⚠ Format harus: owner/repo";return;}
   if(!token){document.getElementById("syncStatus").textContent="⚠ Token diperlukan";document.getElementById("tokenInput").focus();return;}
-  document.getElementById("syncStatus").textContent="Mengambil data...";document.getElementById("chartStatus").textContent="";
-  const headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json"},since=new Date(Date.now()-30*86400000).toISOString();
+  
+  document.getElementById("syncStatus").textContent="Mengambil data dari GitHub...";
+  document.getElementById("chartStatus").textContent="";
+  
+  const headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json"};
+  const since=new Date(Date.now()-30*86400000).toISOString();
+  
   try{
     const res=await fetch(`https://api.github.com/repos/${repo}/commits?per_page=100&since=${since}`,{headers});
-    if(res.status===401)throw new Error("Token tidak valid");if(res.status===403)throw new Error("Tidak punya akses");
-    if(res.status===404)throw new Error("Repo tidak ditemukan");if(!res.ok)throw new Error("API error: "+res.status);
+    if(res.status===401)throw new Error("Token tidak valid");
+    if(res.status===403)throw new Error("Tidak punya akses (Forbidden)");
+    if(res.status===404)throw new Error("Repository tidak ditemukan");
+    if(!res.ok)throw new Error("API error: "+res.status);
+    
     const commits=await res.json();
-    const map={};for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);map[d.toISOString().slice(0,10)]=0;}
+    
+    // Group per hari untuk grafik
+    const map={};
+    for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);map[d.toISOString().slice(0,10)]=0;}
     commits.forEach(c=>{const k=c.commit.author.date.slice(0,10);if(map[k]!==undefined)map[k]++;});
     buildChart(Object.keys(map).map(k=>k.slice(5)),Object.values(map));
-    document.getElementById("chartStatus").textContent=commits.length+" commits dalam 30 hari";
+    
+    document.getElementById("chartStatus").textContent=`Total ${commits.length} commits dalam 30 hari terakhir`;
+    
+    // List commit terbaru
     document.getElementById("commitList").innerHTML=commits.slice(0,5).map(c=>{
-      const msg=c.commit.message.split("\n")[0].slice(0,80),name=c.commit.author.name||"?",
-        initials=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(),
-        dt=new Date(c.commit.author.date),diffS=Math.floor((Date.now()-dt)/1000),
-        when=diffS<60?diffS+"s lalu":diffS<3600?Math.floor(diffS/60)+"m lalu":diffS<86400?Math.floor(diffS/3600)+"j lalu":Math.floor(diffS/86400)+"h lalu";
-      return`<div class="commit-item"><div class="avatar">${initials}</div><div><div class="commit-msg">${msg}</div><div class="commit-meta">${when} · ${c.sha.slice(0,7)} · ${name}</div></div></div>`;}).join("");
-    localStorage.setItem("mpsRepo",repo);saveToken(token);document.getElementById("tokenInfo").style.display="none";
-    const ts=new Date().toLocaleString("id-ID");document.getElementById("syncStatus").textContent="✓ "+ts;
-    document.getElementById("lastUpdated").textContent="Last sync: "+ts+" · "+commits.length+" commits (30 hari)";
-  }catch(e){document.getElementById("syncStatus").textContent="✗ "+e.message;document.getElementById("chartStatus").textContent=e.message;}
+      const msg=c.commit.message.split("\n")[0].slice(0,85)+(c.commit.message.length>85?"...":"");
+      const name=c.commit.author.name||"?";
+      const initials=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+      const dt=new Date(c.commit.author.date);
+      const diffS=Math.floor((Date.now()-dt)/1000);
+      const when=diffS<60?diffS+"s lalu":diffS<3600?Math.floor(diffS/60)+"m lalu":diffS<86400?Math.floor(diffS/3600)+"j lalu":Math.floor(diffS/86400)+"h lalu";
+      
+      return`<div class="commit-item">
+        <div class="avatar">${initials}</div>
+        <div>
+          <div class="commit-msg">${msg}</div>
+          <div class="commit-meta">${when} &middot; <span style="font-family:monospace">${c.sha.slice(0,7)}</span> &middot; ${name}</div>
+        </div>
+      </div>`;
+    }).join("");
+    
+    // Save creds
+    localStorage.setItem("mpsRepo",repo);
+    saveToken(token);
+    document.getElementById("tokenInfo").style.display="none";
+    
+    const ts=new Date().toLocaleString("id-ID");
+    document.getElementById("syncStatus").textContent="✓ Sinkronisasi berhasil ("+ts+")";
+    document.getElementById("lastUpdated").innerHTML=`Last sync: <strong>${ts}</strong> &middot; ${commits.length} commits (30 hari)`;
+    
+  }catch(e){
+    document.getElementById("syncStatus").textContent="✗ "+e.message;
+    document.getElementById("chartStatus").textContent=e.message;
+  }
 }
 
 /* ════════════════════════════════════════════════════════════════
    INIT
    ════════════════════════════════════════════════════════════════ */
-loadState();recalc();renderTable();renderTimeline();
-loadBugState();buildBugFilters();renderBugTable();recalcBugs();
-const sr=localStorage.getItem("mpsRepo")||PROJECT.repo,st=localStorage.getItem("mpsToken")||"";
-if(sr)document.getElementById("repoInput").value=sr;
-if(st){document.getElementById("tokenInput").value=st;document.getElementById("tokSaved").style.display="inline";document.getElementById("tokenInfo").style.display="none";}
+loadBugState();
+buildBugFilters();
+renderBugTable();
+recalcBugs();
+
+const sr=localStorage.getItem("mpsRepo")||"";
+const st=localStorage.getItem("mpsToken")||"";
+if(sr) document.getElementById("repoInput").value=sr;
+if(st){
+  document.getElementById("tokenInput").value=st;
+  document.getElementById("tokSaved").style.display="inline";
+  document.getElementById("tokenInfo").style.display="none";
+}
 </script>
 </body>
 </html>
