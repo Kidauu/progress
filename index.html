@@ -3,549 +3,770 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MPSDataCenter — Bug Tracking Dashboard</title>
+<title>MPSDataCenter — Dashboard</title>
 <style>
-:root{--blue:#1976D2;--blue-light:#E3F2FD;--green:#2E7D32;--green-light:#E8F5E9;--amber:#E65100;--amber-light:#FFF3E0;--red:#C62828;--red-light:#FFEBEE;--dark:#0A2B57;--gray:#64748B;--border:#E2E8F0;--bg:#F8FAFC;--white:#FFFFFF;--r:14px;--rs:8px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--dark)}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#F8FAFC;color:#0A2B57;font-size:14px}
+button{font-family:inherit;cursor:pointer}
 
-/* ── Navbar ── */
-nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;min-height:64px;position:sticky;top:0;z-index:100;gap:1rem;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,0.02)}
-.nav-brand{font-size:1.05rem;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:.5rem;white-space:nowrap}
-.nav-brand svg{color:var(--blue)}
-.nav-controls{display:flex;align-items:flex-end;gap:.6rem;flex-wrap:wrap;padding:.5rem 0}
-.field-grp{display:flex;flex-direction:column;gap:4px}
-.field-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);font-weight:600}
-.inp{font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--dark);outline:none;height:34px;transition:border-color 0.2s}
-.inp:focus{border-color:var(--blue);background:var(--white)}
-.inp-repo{width:195px}
-.inp-token{width:210px;font-family:monospace;letter-spacing:1px}
-.tok-wrap{position:relative;display:flex;align-items:center}
-.tok-eye{position:absolute;right:8px;cursor:pointer;font-size:12px;color:var(--gray);user-select:none;line-height:1}
-.btn-sync{font-size:12px;padding:0 18px;height:34px;border:none;border-radius:var(--rs);background:var(--blue);color:#fff;cursor:pointer;font-weight:600;align-self:flex-end;white-space:nowrap;transition:background 0.2s}
-.btn-sync:hover{background:#1565c0}
-.sync-status{font-size:11px;color:var(--gray);align-self:flex-end;padding-bottom:8px;white-space:nowrap;font-weight:500}
+/* ─── NAV ─── */
+nav{background:#fff;border-bottom:1px solid #E2E8F0;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;min-height:54px;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.brand{font-size:13px;font-weight:600;color:#185FA5;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.nav-r{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;padding:8px 0}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fl{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:#64748B;font-weight:600}
+.fl .sv{color:#2E7D32;margin-left:4px;display:none}
+input.ni{font-size:12px;padding:5px 10px;border:1px solid #CBD5E1;border-radius:6px;background:#F8FAFC;color:#0A2B57;height:30px;outline:none}
+input.ni:focus{border-color:#185FA5;background:#fff}
+.ni-r{width:175px}.ni-t{width:195px;font-family:monospace}
+.tw{position:relative;display:flex;align-items:center}
+.te{position:absolute;right:8px;cursor:pointer;font-size:11px;color:#64748B;user-select:none}
+.bp{font-size:12px;padding:0 14px;height:30px;border:none;border-radius:6px;background:#185FA5;color:#fff;font-weight:600}
+.bp:hover{background:#1565C0}
+.sy{font-size:11px;color:#64748B;align-self:flex-end;padding-bottom:5px;white-space:nowrap}
 
-/* ── Layout ── */
-main{max-width:1200px;margin:0 auto;padding:2rem 1.5rem 3rem}
-.page-header{margin-bottom:1.5rem}
-.page-header h1{font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
-.page-header p{font-size:.85rem;color:var(--gray);margin-top:.3rem}
-.info-box{background:var(--blue-light);border:1px solid #BBDEFB;border-radius:var(--rs);padding:.8rem 1rem;font-size:.8rem;color:#0d47a1;margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+main{max-width:1200px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
 
-/* ── Cards ── */
-.cards-5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1rem;margin-bottom:1.25rem}
-.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
-.card-lbl{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-bottom:.4rem}
-.card-val{font-size:2rem;font-weight:700;line-height:1}
-.card-sub{font-size:.75rem;color:var(--gray);margin-top:.3rem}
-.c-blue{border-top:3px solid var(--blue)}.c-green{border-top:3px solid var(--green)}.c-amber{border-top:3px solid var(--amber)}.c-red{border-top:3px solid var(--red)}
+/* ─── SECTION HEADER ─── */
+.sh{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.sh-h{font-size:15px;font-weight:600;color:#0A2B57}
+.sh-s{font-size:12px;color:#64748B;margin-top:2px}
 
-/* ── Progress Panel ── */
-.prog-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
-.prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem}
-.prog-title{font-size:.9rem;font-weight:600}
-.prog-pct{font-size:1.5rem;font-weight:700}
-.prog-track{background:var(--bg);border-radius:100px;height:12px;overflow:hidden;margin-bottom:.4rem}
-.prog-fill{height:12px;border-radius:100px;transition:width 1s cubic-bezier(0.4, 0, 0.2, 1)}
-.prog-labels{display:flex;justify-content:space-between;font-size:.75rem;color:var(--gray);font-weight:500}
+/* ─── METRIC CARDS ─── */
+.g5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:1rem}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1rem}
+.mc{background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:1rem;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.mr::before{background:#E24B4A}.mg::before{background:#639922}.mu::before{background:#D32F2F}.ma::before{background:#BA7517}.mb::before{background:#378ADD}
+.ml{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:#64748B;margin-bottom:6px}
+.mv{font-size:22px;font-weight:700;line-height:1;margin-bottom:3px}
+.ms{font-size:11px;color:#64748B}
 
-/* ── Panels & Charts ── */
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
-.panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
-.panel-title{font-size:.9rem;font-weight:600;margin-bottom:.85rem;color:var(--dark)}
-.chart-wrap{position:relative;height:180px}
-.donut-wrap{display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
-.donut-chart-container{position:relative;width:180px;height:180px;flex-shrink:0}
-.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
-.donut-val{font-size:1.8rem;font-weight:700;line-height:1}
-.donut-lbl{font-size:.65rem;color:var(--gray);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
-.donut-leg{flex:1;display:flex;flex-direction:column;gap:.6rem;min-width:170px}
+/* ─── PROGRESS ─── */
+.pp{background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.pht{font-size:13px;font-weight:600}
+.php{font-size:16px;font-weight:700}
+.pt{background:#F1F5F9;border-radius:100px;height:8px;overflow:hidden;margin-bottom:5px}
+.pf{height:8px;border-radius:100px;transition:width 1s ease}
+.pl{display:flex;justify-content:space-between;font-size:11px;color:#64748B}
 
-/* ── Commits ── */
-.commit-item{display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0;border-top:1px solid var(--border)}
-.commit-item:first-child{border-top:none;padding-top:0}
-.avatar{width:28px;height:28px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--blue);flex-shrink:0;margin-top:2px}
-.commit-msg{font-size:.8rem;color:var(--dark);font-weight:500;line-height:1.4}
-.commit-meta{font-size:.7rem;color:var(--gray);margin-top:3px}
+/* ─── PANELS ─── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.cpr{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:1rem}
+.p{background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:1rem 1.25rem}
+.pt2{font-size:13px;font-weight:600;margin-bottom:1rem;color:#0A2B57}
 
-/* ── Table & Filters ── */
-.feat-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
-.feat-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
-.bug-filter{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
-.fbtn{font-size:.75rem;padding:5px 14px;border:1px solid var(--border);border-radius:100px;background:var(--white);color:var(--gray);cursor:pointer;font-weight:500;transition:all .2s ease}
-.fbtn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
-.fbtn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
-.fbtn .fc{font-size:.65rem;opacity:.7;margin-left:3px}
-table{width:100%;border-collapse:collapse;font-size:.8rem}
-th{text-align:left;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);padding:.6rem .75rem;border-bottom:2px solid var(--border)}
-td{padding:.65rem .75rem;border-bottom:1px solid var(--border);vertical-align:middle;transition:background 0.15s}
+/* ─── DONUT CHARTS ─── */
+.dw{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
+.dcw{position:relative;width:140px;height:140px;flex-shrink:0}
+.dce{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+.dcv{font-size:20px;font-weight:700;line-height:1}
+.dcs{font-size:11px;color:#64748B;margin-top:2px}
+.lg{display:flex;flex-direction:column;gap:7px;flex:1;min-width:120px}
+.lr{display:flex;align-items:center;gap:6px;font-size:11px}
+.ld{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.ln{color:#64748B;width:62px;flex-shrink:0}
+.lbw{flex:1;background:#F1F5F9;border-radius:100px;height:4px;overflow:hidden}
+.lb{height:4px;border-radius:100px;transition:width .8s ease}
+.lc{font-weight:600;min-width:14px;text-align:right;color:#0A2B57}
+
+/* ─── COMMIT ─── */
+.ch-w{position:relative;height:150px}
+.cs{font-size:11px;color:#64748B;text-align:center;margin-top:6px}
+.ci{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-top:1px solid #F1F5F9}
+.ci:first-child{border-top:none}
+.av{width:24px;height:24px;border-radius:50%;background:#DBEAFE;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#185FA5;flex-shrink:0;margin-top:1px}
+.cm{font-size:12px;font-weight:500;line-height:1.3;color:#0A2B57}
+.ca{font-size:11px;color:#64748B;margin-top:1px}
+
+/* ─── BUG TABLE ─── */
+.fp{background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem}
+.bf{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem}
+.fb{font-size:11px;padding:3px 10px;border:1px solid #CBD5E1;border-radius:100px;background:#fff;color:#64748B;font-weight:500}
+.fb:hover{border-color:#185FA5;color:#185FA5}
+.fb.ac{background:#185FA5;color:#fff;border-color:#185FA5}
+
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:#64748B;padding:5px 8px;border-bottom:1px solid #E2E8F0}
+td{padding:6px 8px;border-bottom:1px solid #F8FAFC;vertical-align:middle;color:#0A2B57}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--bg)}
-tr{cursor:pointer}
-.badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:600}
-.cat-row td{background:var(--bg)!important;padding:.4rem .75rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dark);border-bottom:1px solid var(--border);cursor:default}
-tr.fixed-row td{opacity:.5}
-tr.fixed-row td:first-child{text-decoration:line-through}
+tr.br:hover td{background:#F8FAFC;cursor:pointer}
+tr.cr td{background:#F8FAFC!important;padding:4px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:#94A3B8;cursor:default!important;border-bottom:1px solid #E2E8F0}
+tr.fr td{opacity:.4}
+tr.fr td:first-child{text-decoration:line-through}
 
-/* ── Badge Colors ── */
-.b-bug{background:#FFEBEE;color:#b71c1c}
-.b-fixed{background:var(--green-light);color:#1b5e20}
-.b-belum{background:#F3E5F6;color:#4a148c}
-.b-refac{background:#E0F2F1;color:#004d40}
-.b-urgent{background:#FFCDD2;color:#b71c1c;font-weight:700}
-.b-tinggi{background:var(--amber-light);color:#bf360c}
-.b-medium{background:var(--blue-light);color:#0d47a1}
-.b-rendah{background:var(--bg);color:var(--gray)}
+.bx{display:inline-block;padding:2px 7px;border-radius:100px;font-size:10px;font-weight:600}
+.x-bug{background:#FCEBEB;color:#791F1F}.x-fix{background:#EAF3DE;color:#27500A}.x-bel{background:#F3E5F6;color:#4a148c}.x-ref{background:#E0F2F1;color:#004d40}
+.x-urg{background:#FFCDD2;color:#b71c1c}.x-tig{background:#FFF3E0;color:#bf360c}.x-med{background:#E3F2FD;color:#0d47a1}.x-ren{background:#F1F5F9;color:#64748B}
+.x-cat{background:#E8EAF6;color:#283593}
 
-/* ── Footer ── */
-footer{text-align:center;font-size:.75rem;color:var(--gray);padding:1.5rem;border-top:1px solid var(--border);margin-top:1rem}
-footer a{color:var(--blue);text-decoration:none;font-weight:500}
-footer a:hover{text-decoration:underline}
+hr.sep{border:none;border-top:1px solid #E2E8F0;margin:2rem 0 1.5rem}
 
-@media(max-width:900px){.cards-5{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:768px){.cards-5{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.nav-controls{gap:.4rem}.inp-repo,.inp-token{width:140px}}
-@media(max-width:480px){.cards-5{grid-template-columns:1fr}}
+/* ─── TARGET SECTION ─── */
+.tgh{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem}
+.btn-add{font-size:12px;padding:7px 16px;border:none;border-radius:6px;background:#185FA5;color:#fff;font-weight:600}
+.btn-add:hover{background:#1565C0}
+
+.tsum-card{background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:.9rem 1rem;display:flex;align-items:center;gap:.75rem}
+.tdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.tnum{font-size:20px;font-weight:700;line-height:1;color:#0A2B57}
+.tlbl{font-size:11px;color:#64748B;margin-top:1px}
+
+/* ─── ADD/EDIT FORM ─── */
+.tform{background:#fff;border:1px solid #CBD5E1;border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:1rem;display:none}
+.tform.open{display:block}
+.form-title{font-size:13px;font-weight:600;color:#0A2B57;margin-bottom:1rem}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.fr1{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px}
+.fgrp{display:flex;flex-direction:column;gap:4px}
+.flbl{font-size:10px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.4px}
+.fi{font-size:13px;padding:7px 10px;border:1px solid #CBD5E1;border-radius:6px;background:#F8FAFC;color:#0A2B57;outline:none;font-family:inherit;width:100%}
+.fi:focus{border-color:#185FA5;background:#fff}
+textarea.fi{resize:vertical;min-height:65px}
+.fac{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+.bsv{font-size:12px;padding:6px 18px;border:none;border-radius:6px;background:#185FA5;color:#fff;font-weight:600}
+.bsv:hover{background:#1565C0}
+.bcn{font-size:12px;padding:6px 16px;border:1px solid #CBD5E1;border-radius:6px;background:transparent;color:#64748B}
+.bcn:hover{background:#F1F5F9}
+
+/* ─── TARGET CARDS ─── */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:10px}
+.tc{background:#fff;border:1px solid #E2E8F0;border-left:3px solid transparent;border-radius:10px;padding:1rem 1.1rem}
+.tc.done{opacity:.5}
+.tc.pi-u{border-left-color:#E24B4A}
+.tc.pi-t{border-left-color:#BA7517}
+.tc.pi-m{border-left-color:#378ADD}
+.tc.pi-r{border-left-color:#CBD5E1}
+.tctop{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:6px}
+.tct{font-size:13px;font-weight:600;line-height:1.35;color:#0A2B57}
+.tc.done .tct{text-decoration:line-through}
+.tca{display:flex;gap:2px;flex-shrink:0}
+.tcbtn{background:none;border:none;color:#94A3B8;font-size:12px;padding:2px 5px;border-radius:4px}
+.tcbtn:hover{background:#F1F5F9;color:#64748B}
+.tc-cat{font-size:10px;font-weight:600;color:#185FA5;background:#E3F2FD;padding:2px 7px;border-radius:100px;display:inline-block;margin-bottom:6px}
+.tcd{font-size:12px;color:#64748B;line-height:1.5;margin-bottom:10px}
+.tcm{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:auto}
+.tcdl{font-size:11px;color:#94A3B8}
+.tcdl.late{color:#E24B4A;font-weight:600}
+.tcdl.soon{color:#BA7517;font-weight:600}
+.tcsb{display:flex;gap:3px}
+.sbtn{font-size:10px;padding:2px 7px;border:1px solid #E2E8F0;border-radius:100px;background:transparent;color:#94A3B8}
+.sbtn:hover{border-color:#94A3B8;color:#64748B}
+.sbtn.sd{background:#EAF3DE;color:#27500A;border-color:#C0DD97}
+.sbtn.sw{background:#FFF3E0;color:#bf360c;border-color:#FAC775}
+.sbtn.sp{background:#F1F5F9;color:#475569;border-color:#CBD5E1}
+
+.emp{text-align:center;padding:2.5rem 1rem;color:#94A3B8;font-size:13px;border:1px dashed #CBD5E1;border-radius:10px;grid-column:1/-1}
+
+footer{text-align:center;font-size:11px;color:#94A3B8;padding:1.25rem;border-top:1px solid #E2E8F0;margin-top:.5rem}
+footer a{color:#185FA5;text-decoration:none}
+
+@media(max-width:900px){.g5{grid-template-columns:repeat(3,minmax(0,1fr))}.cpr{grid-template-columns:1fr}}
+@media(max-width:600px){.g5{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.fr2{grid-template-columns:1fr}.g3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-brand">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 10h16M4 14h8M4 18h6"/><rect x="14" y="12" width="8" height="8" rx="1.5"/></svg>
+  <div class="brand">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 10h16M4 14h8M4 18h6"/><rect x="14" y="12" width="8" height="8" rx="1.5"/></svg>
     MPSDataCenter
   </div>
-  <div class="nav-controls">
-    <div class="field-grp">
-      <div class="field-lbl">GitHub Repo</div>
-      <input class="inp inp-repo" id="repoInput" placeholder="owner/nama-repo" autocomplete="off">
+  <div class="nav-r">
+    <div class="fg">
+      <div class="fl">GitHub Repo</div>
+      <input class="ni ni-r" id="repoIn" placeholder="owner/nama-repo" autocomplete="off">
     </div>
-    <div class="field-grp">
-      <div class="field-lbl">Personal Access Token <span id="tokSaved" style="color:var(--green);font-weight:500;display:none">&#10003; tersimpan</span></div>
-      <div class="tok-wrap">
-        <input class="inp inp-token" id="tokenInput" type="password" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-        <span class="tok-eye" onclick="toggleTok()" id="tokEye">&#128065;</span>
+    <div class="fg">
+      <div class="fl">Token <span class="sv" id="tokSaved">&#10003; tersimpan</span></div>
+      <div class="tw">
+        <input class="ni ni-t" id="tokIn" type="password" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+        <span class="te" onclick="toggleTok()" id="tokEye">&#128065;</span>
       </div>
     </div>
-    <button class="btn-sync" onclick="fetchGitHub()">&#8635; Sync</button>
-    <span class="sync-status" id="syncStatus"></span>
+    <button class="bp" onclick="fetchGH()">&#8635; Sync</button>
+    <span class="sy" id="syncSt"></span>
   </div>
 </nav>
 
 <main>
-  <div class="page-header">
-    <h1>
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Bug Tracking & Code Review
-    </h1>
-    <p id="lastUpdated">Full codebase audit — 29 Mar 2026 &middot; Sync GitHub untuk melacak aktivitas repository.</p>
-  </div>
 
-  <div class="info-box" id="tokenInfo">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-    <span><strong>Token diperlukan</strong> untuk private repository. Token disimpan aman hanya di browser kamu (localStorage) dan tidak dikirim ke server manapun selain API GitHub.</span>
-  </div>
-
-  <div class="cards-5">
-    <div class="card c-red"><div class="card-lbl">Total Issues</div><div class="card-val" id="bTotal" style="color:var(--red)">—</div><div class="card-sub">ditemukan dalam audit</div></div>
-    <div class="card c-green"><div class="card-lbl">Resolved</div><div class="card-val" id="bFixed" style="color:var(--green)">—</div><div class="card-sub" id="bFixPct">— % completion</div></div>
-    <div class="card" style="border-top:3px solid #D32F2F"><div class="card-lbl">Urgent</div><div class="card-val" id="bUrgent" style="color:#C62828">—</div><div class="card-sub">memerlukan fix instan</div></div>
-    <div class="card c-amber"><div class="card-lbl">Tinggi</div><div class="card-val" id="bHigh" style="color:var(--amber)">—</div><div class="card-sub">fix sebelum deploy</div></div>
-    <div class="card c-blue"><div class="card-lbl">Medium + Low</div><div class="card-val" id="bMedLow" style="color:var(--blue)">—</div><div class="card-sub">tech-debt & perbaikan</div></div>
-  </div>
-
-  <div class="prog-panel">
-    <div class="prog-head"><span class="prog-title">Bug Resolution Progress</span><span class="prog-pct" id="bPctLbl" style="color:var(--green)">0%</span></div>
-    <div class="prog-track"><div class="prog-fill" id="bProgBar" style="width:0%;background:var(--green)"></div></div>
-    <div class="prog-labels"><span>0 resolved</span><span id="bProgSum">0 / 0</span><span>100%</span></div>
-  </div>
-
-  <div class="row2">
-    <div class="panel">
-      <div class="panel-title">Commit Activity — 30 Hari Terakhir</div>
-      <div class="chart-wrap"><canvas id="commitChart"></canvas></div>
-      <p id="chartStatus" style="font-size:.75rem;color:var(--gray);text-align:center;margin-top:.6rem">Sync repository untuk melihat grafik commit</p>
-    </div>
-    <div class="panel">
-      <div class="panel-title">Recent Commits</div>
-      <div id="commitList">
-        <p style="font-size:.8rem;color:var(--gray);text-align:center;padding-top:2rem">Sync GitHub untuk melihat riwayat commit terbaru.</p>
-      </div>
+  <!-- ══ BUG SECTION ══ -->
+  <div class="sh" style="margin-top:.25rem">
+    <div>
+      <div class="sh-h">Bug checklist &amp; code review</div>
+      <div class="sh-s">Audit penuh · 29 Mar 2026 · Klik baris untuk toggle fixed · auto-save di browser</div>
     </div>
   </div>
 
-  <div class="row2">
-    <div class="panel">
-      <div class="panel-title">Unresolved Issues by Category</div>
-      <div class="donut-wrap">
-        <div class="donut-chart-container">
-          <canvas id="bugCatChart"></canvas>
-          <div class="donut-center">
-            <div id="bugCatVal" class="donut-val" style="color:#C62828">—</div>
-            <div class="donut-lbl">unresolved</div>
-          </div>
+  <div class="g5">
+    <div class="mc mr"><div class="ml">Total issues</div><div class="mv" id="bTotal" style="color:#E24B4A">—</div><div class="ms">ditemukan</div></div>
+    <div class="mc mg"><div class="ml">Fixed</div><div class="mv" id="bFixed" style="color:#639922">—</div><div class="ms" id="bFpct">— %</div></div>
+    <div class="mc mu"><div class="ml">Urgent</div><div class="mv" id="bUrgent" style="color:#D32F2F">—</div><div class="ms">fix sekarang</div></div>
+    <div class="mc ma"><div class="ml">Tinggi</div><div class="mv" id="bHigh" style="color:#BA7517">—</div><div class="ms">sebelum deploy</div></div>
+    <div class="mc mb"><div class="ml">Medium + rendah</div><div class="mv" id="bML" style="color:#378ADD">—</div><div class="ms">fix kalau sempat</div></div>
+  </div>
+
+  <div class="pp">
+    <div class="ph"><span class="pht">Bug resolution progress</span><span class="php" id="bPctL" style="color:#639922">0%</span></div>
+    <div class="pt"><div class="pf" id="bPBar" style="width:0%;background:#639922"></div></div>
+    <div class="pl"><span>0 fixed</span><span id="bPSum">0 / 0</span><span>100%</span></div>
+  </div>
+
+  <div class="g2">
+    <div class="p">
+      <div class="pt2">Unfixed by category</div>
+      <div class="dw">
+        <div class="dcw"><canvas id="catChart"></canvas>
+          <div class="dce"><div class="dcv" id="catV" style="color:#E24B4A">—</div><div class="dcs">unfixed</div></div>
         </div>
-        <div id="bugCatLeg" class="donut-leg"></div>
+        <div class="lg" id="catLeg"></div>
       </div>
     </div>
-    <div class="panel">
-      <div class="panel-title">Unresolved Issues by Priority</div>
-      <div class="donut-wrap">
-        <div class="donut-chart-container">
-          <canvas id="bugPriChart"></canvas>
-          <div class="donut-center">
-            <div id="bugPriVal" class="donut-val" style="color:var(--dark)">—</div>
-            <div class="donut-lbl">unresolved</div>
-          </div>
+    <div class="p">
+      <div class="pt2">Unfixed by priority</div>
+      <div class="dw">
+        <div class="dcw"><canvas id="priChart"></canvas>
+          <div class="dce"><div class="dcv" id="priV" style="color:#0A2B57">—</div><div class="dcs">unfixed</div></div>
         </div>
-        <div id="bugPriLeg" class="donut-leg"></div>
+        <div class="lg" id="priLeg"></div>
       </div>
     </div>
   </div>
 
-  <div class="feat-panel">
-    <div class="feat-head">
-      <span class="panel-title" style="margin:0">Actionable Checklist</span>
-      <span style="font-size:.75rem;color:var(--gray);font-weight:500">Klik baris untuk toggle Fixed / Unfixed &middot; Progress tersimpan otomatis di browser</span>
+  <div class="cpr">
+    <div class="p">
+      <div class="pt2">Commit activity — 30 hari terakhir</div>
+      <div class="ch-w"><canvas id="commitChart"></canvas></div>
+      <div class="cs" id="cSt">Sync GitHub untuk melihat commit activity</div>
     </div>
-    <div class="bug-filter" id="bugFilterBar"></div>
-    <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:28%">Issue Description</th>
-            <th style="width:13%">Kategori</th>
-            <th style="width:9%">Status</th>
-            <th style="width:9%">Prioritas</th>
-            <th>Detail & Lokasi File</th>
-          </tr>
-        </thead>
-        <tbody id="bugBody"></tbody>
-      </table>
+    <div class="p">
+      <div class="pt2">Recent commits</div>
+      <div id="commitList"><p style="font-size:12px;color:#64748B">Sync untuk melihat commit terbaru.</p></div>
     </div>
   </div>
+
+  <div class="fp">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+      <span style="font-size:13px;font-weight:600;color:#0A2B57">Bug checklist</span>
+      <span style="font-size:11px;color:#64748B">Klik baris untuk toggle fixed · auto-save</span>
+    </div>
+    <div class="bf" id="bFilters"></div>
+    <table>
+      <thead><tr>
+        <th style="width:28%">Issue</th>
+        <th style="width:13%">Kategori</th>
+        <th style="width:9%">Status</th>
+        <th style="width:9%">Prioritas</th>
+        <th>Detail / lokasi</th>
+      </tr></thead>
+      <tbody id="bugBody"></tbody>
+    </table>
+  </div>
+
+  <!-- ══ SEPARATOR ══ -->
+  <hr class="sep">
+
+  <!-- ══ TARGET SECTION ══ -->
+  <div class="tgh">
+    <div>
+      <div class="sh-h">Target ke depan</div>
+      <div class="sh-s" style="margin-top:2px">Tulis dan pantau target pengembangan · auto-save di browser</div>
+    </div>
+    <button class="btn-add" onclick="openForm()">+ Tambah target</button>
+  </div>
+
+  <div class="g3">
+    <div class="tsum-card">
+      <div class="tdot" style="background:#94A3B8"></div>
+      <div><div class="tnum" id="tCPend">0</div><div class="tlbl">Pending</div></div>
+    </div>
+    <div class="tsum-card">
+      <div class="tdot" style="background:#BA7517"></div>
+      <div><div class="tnum" id="tCWip">0</div><div class="tlbl">In progress</div></div>
+    </div>
+    <div class="tsum-card">
+      <div class="tdot" style="background:#639922"></div>
+      <div><div class="tnum" id="tCDone">0</div><div class="tlbl">Selesai</div></div>
+    </div>
+  </div>
+
+  <div class="tform" id="tform">
+    <div class="form-title" id="formHd">Tambah target baru</div>
+    <div class="fr1">
+      <div class="fgrp">
+        <div class="flbl">Judul target *</div>
+        <input class="fi" id="fTitle" placeholder="cth. Implementasi unit test untuk AccessLogService">
+      </div>
+    </div>
+    <div class="fr2">
+      <div class="fgrp">
+        <div class="flbl">Deadline</div>
+        <input class="fi" type="date" id="fDeadline">
+      </div>
+      <div class="fgrp">
+        <div class="flbl">Prioritas</div>
+        <select class="fi" id="fPriority">
+          <option value="Urgent">Urgent</option>
+          <option value="Tinggi">Tinggi</option>
+          <option value="Medium" selected>Medium</option>
+          <option value="Rendah">Rendah</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr2">
+      <div class="fgrp">
+        <div class="flbl">Kategori</div>
+        <input class="fi" id="fCat" placeholder="cth. Backend, UX, Testing, Security">
+      </div>
+      <div class="fgrp">
+        <div class="flbl">Status</div>
+        <select class="fi" id="fStatus">
+          <option value="Pending" selected>Pending</option>
+          <option value="In Progress">In progress</option>
+          <option value="Selesai">Selesai</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr1">
+      <div class="fgrp">
+        <div class="flbl">Deskripsi / catatan</div>
+        <textarea class="fi" id="fDesc" rows="3" placeholder="Detail, konteks, atau langkah-langkah yang diperlukan..."></textarea>
+      </div>
+    </div>
+    <div class="fac">
+      <button class="bcn" onclick="closeForm()">Batal</button>
+      <button class="bsv" onclick="saveTarget()">Simpan target</button>
+    </div>
+  </div>
+
+  <div class="tgrid" id="tgrid"></div>
 
 </main>
 
 <footer>
-  MPSDataCenter Bug Tracking Dashboard &middot; <strong>Risky Hidayat</strong> &middot;
-  <a href="https://github.com" target="_blank">View on GitHub</a>
+  MPSDataCenter Progress Dashboard &middot; <strong>Risky Hidayat</strong> &middot;
+  <a href="https://github.com" target="_blank">github.com</a>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-/* ================================================================
-   DATA — BUG CHECKLIST (Full Audit 29 Mar 2026)
-   ================================================================ */
-const BUG_CHECKLIST = [
+/* ════════════════════════════════════════════════
+   BUG DATA
+════════════════════════════════════════════════ */
+const BUGS = [
+  // [name, category, defaultStatus, priority, detail]
+
   // ── Critical Bug (Fixed) ──
-  ["[FIXED] EditUser logic TERBALIK","Critical Bug","Fixed","Urgent","if(!Succeeded) tampil SUCCESS → logic dibalik — AdminController.cs"],
-  ["[FIXED] Duplicate Login/Logout di AdminController","Critical Bug","Fixed","Urgent","Konflik dengan AccountController → actions dihapus — AdminController.cs"],
-  ["[FIXED] Duplicate RegisterAdmin/RegisterEditor actions","Critical Bug","Fixed","Urgent","AccountController & AdminController clash → disambiguated — AccountController.cs & AdminController.cs"],
-  ["[FIXED] LINQ-to-SQL: AddHours().ToString() di Dashboard","Critical Bug","Fixed","Urgent","Npgsql translate error → materialize ToListAsync() dulu — AdminController.cs"],
-  ["[FIXED] LINQ-to-SQL: AddHours().ToString() di UserController","Critical Bug","Fixed","Urgent","Pattern sama → materialize dulu baru format — UserController.cs"],
-  ["[FIXED] Dead code setelah return di ParseTextFromOcr","Critical Bug","Fixed","Medium","Unreachable code setelah return model → dihapus — AdminController.cs"],
-  ["[FIXED] EditorController AccessLogs HARDCODED + PasswordHash exposed","Critical Bug","Fixed","Urgent","Data hardcoded & PasswordHash asli → dead code dihapus — EditorController.cs"],
+  ["[Fixed] EditUser logic terbalik","Critical Bug","Fixed","Urgent","if(!Succeeded) tampil SUCCESS — AdminController.cs"],
+  ["[Fixed] Duplicate Login/Logout di AdminController","Critical Bug","Fixed","Urgent","Konflik dengan AccountController — AdminController.cs"],
+  ["[Fixed] Duplicate RegisterAdmin/RegisterEditor","Critical Bug","Fixed","Urgent","AccountController & AdminController clash — AccountController.cs"],
+  ["[Fixed] LINQ-to-SQL AddHours().ToString() di Dashboard","Critical Bug","Fixed","Urgent","Npgsql translate error — AdminController.cs"],
+  ["[Fixed] LINQ-to-SQL AddHours().ToString() di UserController","Critical Bug","Fixed","Urgent","Pattern sama — UserController.cs"],
+  ["[Fixed] Dead code setelah return di ParseTextFromOcr","Critical Bug","Fixed","Medium","Unreachable code — AdminController.cs"],
+  ["[Fixed] EditorController AccessLogs hardcoded + PasswordHash exposed","Critical Bug","Fixed","Urgent","Data hardcoded & PasswordHash asli — EditorController.cs"],
 
   // ── Security (Fixed) ──
-  ["[FIXED] PasswordHash EXPOSED di EditorController","Security","Fixed","Urgent","PasswordHash dikirim ke view → masking diterapkan — EditorController.cs"],
-  ["[FIXED] CookieSecurePolicy = None","Security","Fixed","Tinggi","Production harus secure → diubah ke SameAsRequest — Program.cs"],
-  ["[FIXED] Password min length mismatch (6 vs 8)","Security","Fixed","Tinggi","ChangePassword cek <6 tapi Identity require 8 → aligned ke 8 — AdminController.cs"],
-  ["[FIXED] Missing [ValidateAntiForgeryToken] pada notification endpoints","Security","Fixed","Tinggi","GetNotifications, MarkRead tanpa CSRF → ditambahkan — AdminController.cs"],
-  ["[FIXED] BackupDatabase SQL injection risk","Security","Fixed","Medium","Single-quote escaping lemah → Escape() diperkuat — AdminController.cs"],
-  ["[FIXED] CORS origins hardcoded di Program.cs","Security","Fixed","Medium","Localhost origins hardcoded → dipindah ke appsettings.json — Program.cs"],
+  ["[Fixed] PasswordHash exposed di EditorController","Security","Fixed","Urgent","PasswordHash dikirim ke view — EditorController.cs"],
+  ["[Fixed] CookieSecurePolicy = None","Security","Fixed","Tinggi","Diubah ke SameAsRequest — Program.cs"],
+  ["[Fixed] Password min length mismatch (6 vs 8)","Security","Fixed","Tinggi","Aligned ke 8 — AdminController.cs"],
+  ["[Fixed] Missing [ValidateAntiForgeryToken] pada notification endpoints","Security","Fixed","Tinggi","AdminController.cs"],
+  ["[Fixed] BackupDatabase SQL injection risk","Security","Fixed","Medium","Escape() diperkuat — AdminController.cs"],
+  ["[Fixed] CORS origins hardcoded","Security","Fixed","Medium","Dipindah ke appsettings — Program.cs"],
 
   // ── Performance (Fixed) ──
-  ["[FIXED] N+1 query: Dashboard Active Sessions","Performance","Fixed","Tinggi","Loop users + query per user → single GroupBy query — AdminController.cs"],
-  ["[FIXED] N+1 query: AccessLogs 3N per user","Performance","Fixed","Tinggi","3 query per user → single bulk query — AdminController.cs"],
-  ["[FIXED] N+1 query: Role Distribution per user","Performance","Fixed","Medium","GetRolesAsync() per user → single UserRoles join — AdminController.cs"],
+  ["[Fixed] N+1 query: Dashboard Active Sessions","Performance","Fixed","Tinggi","Single GroupBy query — AdminController.cs"],
+  ["[Fixed] N+1 query: AccessLogs 3N per user","Performance","Fixed","Tinggi","Single bulk query — AdminController.cs"],
+  ["[Fixed] N+1 query: Role Distribution per user","Performance","Fixed","Medium","Single UserRoles join — AdminController.cs"],
 
   // ── Missing Feature (Fixed) ──
-  ["[FIXED] ForgotPassword/ResetPassword flow","Missing Feature","Fixed","Tinggi","Action tidak ada → Base64UrlEncode token + local redirect — AccountController.cs"],
-  ["[FIXED] ChangePassword untuk logged-in user","Missing Feature","Fixed","Tinggi","Action tidak ada → GET/POST + role-based redirect — AccountController.cs"],
+  ["[Fixed] ForgotPassword/ResetPassword flow","Missing Feature","Fixed","Tinggi","Base64UrlEncode token + local redirect — AccountController.cs"],
+  ["[Fixed] ChangePassword untuk logged-in user","Missing Feature","Fixed","Tinggi","GET/POST + role-based redirect — AccountController.cs"],
 
   // ── Code Quality (Fixed) ──
-  ["[FIXED] ViewBag → ViewModel Admin Dashboard","Code Quality","Fixed","Medium","31 ViewBag properties → AdminDashboardViewModel strongly-typed — AdminController.cs"],
-  ["[FIXED] OCR parsing methods extracted ke service","Code Quality","Fixed","Tinggi","Duplicate code → IOcrParsingService + OcrParsingService + 40+ xUnit tests"],
-  ["[FIXED] CSS extracted dari inline styles","Code Quality","Fixed","Medium","8 .cshtml files inline CSS → separate .css files"],
+  ["[Fixed] ViewBag → ViewModel Admin Dashboard","Code Quality","Fixed","Medium","AdminDashboardViewModel strongly-typed — AdminController.cs"],
+  ["[Fixed] OCR parsing methods extracted ke service","Code Quality","Fixed","Tinggi","IOcrParsingService + 40+ xUnit tests"],
+  ["[Fixed] CSS extracted dari inline styles","Code Quality","Fixed","Medium","8 .cshtml files → separate .css files"],
 
-  // ── Critical Bug (Unfixed) ──
-  ["Hardcoded IronOCR License Key di Program.cs","Critical Bug","Bug","Urgent","License key hardcoded sebagai fallback env var name. License EXPIRED 25 Mar 2026. Pindah ke appsettings/secrets — Program.cs:10-12"],
-  ["Hardcoded DB Credentials di appsettings + Program.cs","Critical Bug","Bug","Urgent","Password 'mps123456' plaintext di appsettings.json. Fallback 'yourpassword' di Program.cs. Gunakan User Secrets / env var — appsettings.json & Program.cs"],
-  ["EditRecommendation POST return view name SALAH","Critical Bug","Bug","Urgent","ModelState invalid → return View(\"EditRecommendation\", model) tapi GET return View(\"EditData\",...). ViewNotFound exception — AdminController.cs & EditorController.cs"],
-  ["RegisterEditor.cshtml (AuthLayout) POST ke controller salah","Critical Bug","Bug","Urgent","Form asp-controller=\"Account\" tapi action RegisterEditor di AdminController → 404 atau route salah — RegisterEditor.cshtml (versi _AuthLayout)"],
-  ["EditorController.Create() pakai NotMapped property circular","Critical Bug","Bug","Tinggi","Create() reference model.Unit & model.DisplayPlant (computed getter dari Plant) → circular, tidak akan set Plant benar. Harusnya UnitInput/PlantInput — EditorController.cs"],
+  // ══ NEW BUGS ══
 
-  // ── Security (Unfixed) ──
-  ["Session vs Auth Cookie SecurePolicy mismatch","Security","Bug","Tinggi","Session: CookieSecurePolicy.Always, Auth: SameAsRequest. Di HTTP dev session cookie gagal. Harus konsisten — Program.cs"],
-  ["CORS 'Production' policy masih placeholder","Security","Bug","Medium","CORS Production policy pakai 'https://yourdomain.com' placeholder. Ganti domain asli sebelum deploy — Program.cs"],
-  ["ForgotPassword langsung redirect tanpa email (bypass)","Security","Bug","Tinggi","Siapapun tahu email user bisa langsung reset password. OK local dev tapi harus ada guard/disable di production — AccountController.cs"],
-  ["No file size validation pada PDF upload","Security","Bug","Tinggi","AddData POST validasi extension saja, tidak ada max size. PDF besar → memory issue saat OCR — AdminController.cs & EditorController.cs"],
-  ["EditUser tidak update NormalizedUserName","Security","Bug","Medium","Set UserName & Email tapi NormalizedUserName tidak sinkron. Identity inconsistent saat login by username — AdminController.cs"],
+  // ── Critical Bug ──
+  ["Hardcoded IronOCR License Key di Program.cs","Critical Bug","Bug","Urgent","License EXPIRED 25 Mar 2026. Pindah ke appsettings/secrets — Program.cs:10-12"],
+  ["Hardcoded DB credentials di appsettings + Program.cs","Critical Bug","Bug","Urgent","Password 'mps123456' plaintext. Gunakan User Secrets / env var — appsettings.json & Program.cs"],
+  ["EditRecommendation POST return view name salah","Critical Bug","Bug","Urgent","ModelState invalid → View(\"EditRecommendation\") tapi GET return View(\"EditData\") — AdminController.cs & EditorController.cs"],
+  ["RegisterEditor.cshtml (AuthLayout) POST ke controller salah","Critical Bug","Bug","Urgent","Form asp-controller=\"Account\" tapi action di AdminController → 404 — RegisterEditor.cshtml"],
+  ["EditorController.Create() pakai NotMapped property circular","Critical Bug","Bug","Tinggi","model.Unit & model.DisplayPlant circular → harusnya UnitInput/PlantInput — EditorController.cs"],
 
-  // ── Performance (Unfixed) ──
-  ["Editor Recommendation list tanpa pagination","Performance","Bug","Tinggi","EditorController.Recommendation() load semua records ToListAsync() tanpa pagination. Admin & User sudah pakai PaginatedList — EditorController.cs"],
-  ["IronOCR diinisialisasi setiap request (constructor)","Performance","Bug","Tinggi","InitializeIronOcr() di constructor = init per request termasuk test read. Harus singleton/service — AdminController.cs & EditorController.cs"],
-  ["Startup loop semua users untuk fix LockoutEnabled","Performance","Bug","Medium","Program.cs loop allUsers cek LockoutEnabled setiap app start. Harusnya one-time migration saja — Program.cs"],
+  // ── Security ──
+  ["Session vs Auth Cookie SecurePolicy mismatch","Security","Bug","Tinggi","Session: Always, Auth: SameAsRequest. Inkonsisten — Program.cs"],
+  ["CORS 'Production' policy masih placeholder","Security","Bug","Medium","'https://yourdomain.com' placeholder — Program.cs"],
+  ["ForgotPassword langsung redirect tanpa email (bypass)","Security","Bug","Tinggi","Siapapun bisa reset password jika tahu email — AccountController.cs"],
+  ["No file size validation pada PDF upload","Security","Bug","Tinggi","Hanya validasi extension, tidak ada max size — AdminController.cs & EditorController.cs"],
+  ["EditUser tidak update NormalizedUserName","Security","Bug","Medium","UserName & Email diubah tapi NormalizedUserName tidak sinkron — AdminController.cs"],
 
-  // ── Code Quality (Unfixed) ──
-  ["Massive duplication: AdminController ≈ EditorController","Code Quality","Refactor","Tinggi","InitializeIronOcr, Extract*, Parse*, AddData, SaveData, EditRecommendation semua duplicate. Extract ke shared service/BaseController — AdminController.cs & EditorController.cs"],
-  ["Editor Dashboard masih ViewBag (belum ViewModel)","Code Quality","Refactor","Medium","Admin Dashboard sudah refactor ke AdminDashboardViewModel. Editor masih 15+ ViewBag properties — EditorController.cs & Dashboard.cshtml (Editor)"],
-  ["UserController Dashboard juga masih ViewBag","Code Quality","Refactor","Medium","Sama seperti Editor — perlu UserDashboardViewModel — UserController.cs"],
-  ["LogActivity() duplicated di 3 controllers","Code Quality","Refactor","Medium","Admin, Editor, User punya LogActivity() hampir identik. Extract ke BaseController/service — AdminController.cs, EditorController.cs, UserController.cs"],
-  ["CustomSignInManager.cs entirely commented out","Code Quality","Bug","Rendah","Seluruh file di-comment. Hapus dead code atau uncomment jika dipakai — CustomSignInManager.cs"],
-  ["Excessive Console.WriteLine debugging","Code Quality","Refactor","Medium","Ratusan Console.WriteLine + emoji. Ganti ILogger/Serilog untuk production — AdminController.cs, EditorController.cs, AccountController.cs, Program.cs"],
-  ["Magic string '37' di DownloadPdf GUID extraction","Code Quality","Bug","Rendah","dbFileName.Substring(37) untuk skip GUID. Magic number → buat constant/helper — AdminController.cs"],
-  ["Inconsistent TempData keys across controllers","Code Quality","Refactor","Medium","'ErrorMessage' vs 'Error', 'SuccessMessage' vs 'Success'. Standarisasi satu convention — semua Controllers"],
+  // ── Performance ──
+  ["Editor Recommendation list tanpa pagination","Performance","Bug","Tinggi","Load semua records ToListAsync() — EditorController.cs"],
+  ["IronOCR diinisialisasi setiap request (constructor)","Performance","Bug","Tinggi","InitializeIronOcr() di constructor = init per request — AdminController.cs & EditorController.cs"],
+  ["Startup loop semua users untuk fix LockoutEnabled","Performance","Bug","Medium","Loop allUsers setiap app start — Program.cs"],
+
+  // ── Code Quality ──
+  ["Massive duplication: AdminController ≈ EditorController","Code Quality","Refactor","Tinggi","InitializeIronOcr, Extract*, Parse*, AddData, SaveData semua duplicate — AdminController.cs & EditorController.cs"],
+  ["Editor Dashboard masih ViewBag (belum ViewModel)","Code Quality","Refactor","Medium","15+ ViewBag properties — EditorController.cs & Dashboard.cshtml (Editor)"],
+  ["UserController Dashboard juga masih ViewBag","Code Quality","Refactor","Medium","Perlu UserDashboardViewModel — UserController.cs"],
+  ["LogActivity() duplicated di 3 controllers","Code Quality","Refactor","Medium","Extract ke BaseController/service — AdminController.cs, EditorController.cs, UserController.cs"],
+  ["CustomSignInManager.cs entirely commented out","Code Quality","Bug","Rendah","Seluruh file di-comment — CustomSignInManager.cs"],
+  ["Excessive Console.WriteLine debugging","Code Quality","Refactor","Medium","Ratusan Console.WriteLine + emoji — ganti ILogger/Serilog — semua controllers"],
+  ["Magic string '37' di DownloadPdf GUID extraction","Code Quality","Bug","Rendah","dbFileName.Substring(37) magic number — AdminController.cs"],
+  ["Inconsistent TempData keys across controllers","Code Quality","Refactor","Medium","'ErrorMessage' vs 'Error', 'SuccessMessage' vs 'Success' — semua controllers"],
   ["Dua versi RegisterEditor.cshtml (layout berbeda)","Code Quality","Bug","Tinggi","Versi _AuthLayout (old) dan versi @section Styles (new). Hapus yang lama — RegisterEditor.cshtml"],
-  ["Settings.cshtml tulis '.NET 8.0' — seharusnya '.NET 10.0'","Code Quality","Bug","Rendah","Framework info hardcode '.NET 8.0' tapi .csproj target net10.0 — Settings.cshtml"],
-  ["Layout translation 'min 6 characters' → seharusnya 'min 8'","Code Quality","Bug","Medium","_Layout.cshtml translation 'Enter password (min 6 characters)' tapi RequiredLength=8 — _Layout.cshtml"],
 
-  // ── Missing Feature / Architecture (Unfixed) ──
-  ["AccessLogMiddleware logout detection unreliable","Missing Feature","Bug","Medium","Middleware call _next() dulu, baru cek IsAuthenticated. Pindah logging ke controller — AccessLogMiddleware.cs"],
-  ["UseSession() dipanggil setelah UseAuthorization()","Missing Feature","Bug","Tinggi","Middleware order salah. Pindahkan UseSession() sebelum Auth — Program.cs"],
-  ["Unit Test untuk AccessLogService belum dibuat","Missing Feature","Belum Ada","Medium","OcrParsingService sudah ada 40+ tests, tapi AccessLogService belum coverage — AccessLogService.cs"],
-  ["BaseController refactor belum selesai","Missing Feature","Belum Ada","Medium","BaseDataController.cs sudah dibuat, tapi UserController & EditorController belum extend — UserController.cs & EditorController.cs"],
+  // ── UX / Frontend ──
+  ["Settings.cshtml tulis '.NET 8.0' — seharusnya '.NET 10.0'","Code Quality","Bug","Rendah","Framework info hardcode — Settings.cshtml"],
+  ["Layout translation 'min 6 characters' → seharusnya 'min 8'","Code Quality","Bug","Medium","RequiredLength=8 tapi translation bilang 6 — _Layout.cshtml"],
+
+  // ── Missing Feature / Architecture ──
+  ["AccessLogMiddleware logout detection mungkin unreliable","Missing Feature","Bug","Medium","Middleware call _next() dulu, baru cek IsAuthenticated — AccessLogMiddleware.cs"],
+  ["UseSession() dipanggil setelah UseAuthorization()","Missing Feature","Bug","Tinggi","Session tidak tersedia di middleware sebelumnya — Program.cs"],
+  ["Unit Test untuk AccessLogService belum dibuat","Missing Feature","Belum Ada","Medium","OcrParsingService sudah 40+ tests — AccessLogService.cs"],
+  ["BaseController refactor belum selesai","Missing Feature","Belum Ada","Medium","UserController & EditorController belum extend — UserController.cs & EditorController.cs"],
 ];
 
-/* ── Token UI ── */
-function toggleTok(){const inp=document.getElementById("tokenInput"),eye=document.getElementById("tokEye");if(inp.type==="password"){inp.type="text";eye.textContent="🙈";}else{inp.type="password";eye.textContent="👁";}}
-function saveToken(tok){if(tok)localStorage.setItem("mpsToken",tok);const s=document.getElementById("tokSaved");s.style.display="inline";setTimeout(()=>s.style.display="none",2500);}
-
-/* ── Commit Chart ── */
-let commitChart=null;
-function buildChart(labels,data){
-  if(commitChart)commitChart.destroy();
-  commitChart=new Chart(document.getElementById("commitChart").getContext("2d"),{
-    type:"bar",
-    data:{labels,datasets:[{label:"Commits",data,backgroundColor:"#60A5FA",hoverBackgroundColor:"#3B82F6",borderRadius:4,borderSkipped:false}]},
-    options:{
-      responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{
-        x:{ticks:{font:{size:10},maxRotation:45,color:"#94A3B8"},grid:{display:false}},
-        y:{ticks:{font:{size:10},color:"#94A3B8",stepSize:1},beginAtZero:true,grid:{color:"rgba(0,0,0,0.04)"}}
-      }
-    }
-  });
-}
-
-/* ════════════════════════════════════════════════════════════════
-   BUG CHECKLIST LOGIC
-   ════════════════════════════════════════════════════════════════ */
-let bugStat={},bugFilter="Semua";
-function loadBugState(){
-  try{bugStat=JSON.parse(localStorage.getItem("mpsBugStat2")||"{}");}catch(e){bugStat={};}
-  BUG_CHECKLIST.forEach((b,i)=>{if(!bugStat[i])bugStat[i]=b[2];});
-}
-function saveBugState(){localStorage.setItem("mpsBugStat2",JSON.stringify(bugStat));}
-
-function bsc(s){return s==="Fixed"?"b-fixed":s==="Bug"?"b-bug":s==="Belum Ada"?"b-belum":s==="Refactor"?"b-refac":"pend";}
-function bpc(p){const l=p.toLowerCase();return l==="urgent"?"b-urgent":l==="tinggi"?"b-tinggi":l==="medium"?"b-medium":"b-rendah";}
-
+/* ════════════════════════════════════════════════
+   CHART META
+════════════════════════════════════════════════ */
 const CAT_META=[
-  {key:"Critical Bug",lbl:"Critical",clr:"#EF4444",bg:"#FEE2E2"},
-  {key:"Security",lbl:"Security",clr:"#F59E0B",bg:"#FEF3C7"},
-  {key:"Performance",lbl:"Performance",clr:"#3B82F6",bg:"#DBEAFE"},
-  {key:"Missing Feature",lbl:"Missing",clr:"#8B5CF6",bg:"#EDE9FE"},
-  {key:"Code Quality",lbl:"Quality",clr:"#10B981",bg:"#D1FAE5"},
+  {key:"Critical Bug",  lbl:"Critical",    clr:"#E24B4A"},
+  {key:"Security",      lbl:"Security",    clr:"#BA7517"},
+  {key:"Performance",   lbl:"Performance", clr:"#378ADD"},
+  {key:"Missing Feature",lbl:"Missing",   clr:"#7F77DD"},
+  {key:"Code Quality",  lbl:"Quality",    clr:"#1D9E75"},
 ];
 const PRI_META=[
-  {key:"urgent",lbl:"Urgent",clr:"#DC2626",bg:"#FEE2E2"},
-  {key:"tinggi",lbl:"Tinggi",clr:"#F59E0B",bg:"#FEF3C7"},
-  {key:"medium",lbl:"Medium",clr:"#3B82F6",bg:"#DBEAFE"},
-  {key:"rendah",lbl:"Rendah",clr:"#94A3B8",bg:"#F1F5F9"},
+  {key:"urgent", lbl:"Urgent", clr:"#D32F2F"},
+  {key:"tinggi", lbl:"Tinggi", clr:"#BA7517"},
+  {key:"medium", lbl:"Medium", clr:"#378ADD"},
+  {key:"rendah", lbl:"Rendah", clr:"#90A4AE"},
 ];
+const CAT_ORDER=["Critical Bug","Security","Performance","Missing Feature","Code Quality"];
 
-function recalcBugs(){
-  const n=BUG_CHECKLIST.length,fixed=Object.values(bugStat).filter(s=>s==="Fixed").length,unfixed=n-fixed,pct=Math.round(fixed/n*100);
+/* ════════════════════════════════════════════════
+   BUG STATE
+════════════════════════════════════════════════ */
+let bugStat={}, bugFilter="Semua";
+
+function loadBug(){
+  try{bugStat=JSON.parse(localStorage.getItem("mpsBugStat2")||"{}");}catch(e){bugStat={};}
+  BUGS.forEach((b,i)=>{if(!bugStat[i])bugStat[i]=b[2];});
+}
+function saveBug(){localStorage.setItem("mpsBugStat2",JSON.stringify(bugStat));}
+
+function bsc(s){return s==="Fixed"?"x-fix":s==="Bug"?"x-bug":s==="Belum Ada"?"x-bel":"x-ref";}
+function bpc(p){const l=p.toLowerCase();return l==="urgent"?"x-urg":l==="tinggi"?"x-tig":l==="medium"?"x-med":"x-ren";}
+
+function recalcBug(){
+  const n=BUGS.length;
+  const fixed=Object.values(bugStat).filter(s=>s==="Fixed").length;
+  const unfixed=n-fixed;
+  const pct=Math.round(fixed/n*100);
   let urgent=0,tinggi=0,medlow=0;
-  
-  BUG_CHECKLIST.forEach((b,i)=>{
+  BUGS.forEach((b,i)=>{
     if(bugStat[i]==="Fixed")return;
     const p=b[3].toLowerCase();
-    if(p==="urgent")urgent++;
-    else if(p==="tinggi")tinggi++;
-    else medlow++;
+    if(p==="urgent")urgent++;else if(p==="tinggi")tinggi++;else medlow++;
   });
-  
   document.getElementById("bTotal").textContent=n;
   document.getElementById("bFixed").textContent=fixed;
-  document.getElementById("bFixPct").textContent=pct+"% resolved";
+  document.getElementById("bFpct").textContent=pct+"% resolved";
   document.getElementById("bUrgent").textContent=urgent;
   document.getElementById("bHigh").textContent=tinggi;
-  document.getElementById("bMedLow").textContent=medlow;
-  document.getElementById("bPctLbl").textContent=pct+"%";
-  document.getElementById("bProgBar").style.width=pct+"%";
-  document.getElementById("bProgSum").textContent=fixed+" fixed / "+n+" total";
-  
+  document.getElementById("bML").textContent=medlow;
+  document.getElementById("bPctL").textContent=pct+"%";
+  document.getElementById("bPBar").style.width=pct+"%";
+  document.getElementById("bPSum").textContent=fixed+" fixed / "+n+" total";
   buildBugCharts(unfixed);
 }
 
-let bugCatC=null,bugPriC=null;
-
-function legendRow(m,val,total){
-  const pct=total>0?Math.round(val/total*100):0;
-  return`<div style="display:flex;align-items:center;gap:.6rem">
-  <div style="width:12px;height:12px;border-radius:3px;background:${m.clr};flex-shrink:0"></div>
-  <div style="font-size:.75rem;color:#64748B;width:75px;font-weight:500">${m.lbl}</div>
-  <div style="flex:1;background:#F1F5F9;border-radius:100px;height:6px;overflow:hidden"><div style="width:${pct}%;height:6px;background:${m.clr};border-radius:100px;transition:width .8s ease"></div></div>
-  <div style="font-size:.75rem;font-weight:700;color:#0A2B57;min-width:20px;text-align:right">${val}</div></div>`;
+let catC=null, priC=null;
+function legRow(m,val,tot){
+  const pct=tot>0?Math.round(val/tot*100):0;
+  return`<div class="lr"><div class="ld" style="background:${m.clr}"></div><div class="ln">${m.lbl}</div>
+  <div class="lbw"><div class="lb" style="width:${pct}%;background:${m.clr}"></div></div>
+  <div class="lc">${val}</div></div>`;
 }
-
-function mkDonut(canvasId,labels,data,colors,borders,tip){
-  return new Chart(document.getElementById(canvasId).getContext("2d"),{
+function mkDonut(id,labels,data,colors){
+  return new Chart(document.getElementById(id).getContext("2d"),{
     type:"doughnut",
-    data:{labels,datasets:[{data,backgroundColor:colors,borderColor:borders,borderWidth:4,hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:"75%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} ${tip}`}}}}
+    data:{labels,datasets:[{data,backgroundColor:colors,borderColor:"#fff",borderWidth:3,hoverOffset:5}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed}`}}}}
   });
 }
 
 function buildBugCharts(unfixed){
-  const catVals=CAT_META.map(m=>{let c=0;BUG_CHECKLIST.forEach((b,i)=>{if(bugStat[i]!=="Fixed"&&b[1]===m.key)c++;});return c;});
+  const catVals=CAT_META.map(m=>{let c=0;BUGS.forEach((b,i)=>{if(bugStat[i]!=="Fixed"&&b[1]===m.key)c++;});return c;});
   const catTot=catVals.reduce((a,b)=>a+b,0)||1;
-  document.getElementById("bugCatVal").textContent=unfixed;
-  document.getElementById("bugCatLeg").innerHTML=CAT_META.map((m,i)=>legendRow(m,catVals[i],catTot)).join("");
-  if(bugCatC)bugCatC.destroy();
-  bugCatC=mkDonut("bugCatChart",CAT_META.map(m=>m.lbl),catVals,CAT_META.map(m=>m.clr),CAT_META.map(m=>m.bg),"unfixed");
+  document.getElementById("catV").textContent=unfixed;
+  document.getElementById("catLeg").innerHTML=CAT_META.map((m,i)=>legRow(m,catVals[i],catTot)).join("");
+  if(catC)catC.destroy();
+  catC=mkDonut("catChart",CAT_META.map(m=>m.lbl),catVals,CAT_META.map(m=>m.clr));
 
-  const priVals=PRI_META.map(m=>{let c=0;BUG_CHECKLIST.forEach((b,i)=>{if(bugStat[i]!=="Fixed"&&b[3].toLowerCase()===m.key)c++;});return c;});
+  const priVals=PRI_META.map(m=>{let c=0;BUGS.forEach((b,i)=>{if(bugStat[i]!=="Fixed"&&b[3].toLowerCase()===m.key)c++;});return c;});
   const priTot=priVals.reduce((a,b)=>a+b,0)||1;
-  document.getElementById("bugPriVal").textContent=unfixed;
-  document.getElementById("bugPriLeg").innerHTML=PRI_META.map((m,i)=>legendRow(m,priVals[i],priTot)).join("");
-  if(bugPriC)bugPriC.destroy();
-  bugPriC=mkDonut("bugPriChart",PRI_META.map(m=>m.lbl),priVals,PRI_META.map(m=>m.clr),PRI_META.map(m=>m.bg),"unfixed");
+  document.getElementById("priV").textContent=unfixed;
+  document.getElementById("priLeg").innerHTML=PRI_META.map((m,i)=>legRow(m,priVals[i],priTot)).join("");
+  if(priC)priC.destroy();
+  priC=mkDonut("priChart",PRI_META.map(m=>m.lbl),priVals,PRI_META.map(m=>m.clr));
 }
 
-function buildBugFilters(){
-  const cats=["Semua",...new Set(BUG_CHECKLIST.map(b=>b[1]))];
-  document.getElementById("bugFilterBar").innerHTML=cats.map(c=>{
-    const cnt=c==="Semua"?BUG_CHECKLIST.length:BUG_CHECKLIST.filter(b=>b[1]===c).length;
-    return`<button class="fbtn${bugFilter===c?" active":""}" onclick="setBugFilter('${c}')">${c}<span class="fc">(${cnt})</span></button>`;
+function buildFilters(){
+  const cats=["Semua",...CAT_ORDER];
+  document.getElementById("bFilters").innerHTML=cats.map(c=>{
+    const cnt=c==="Semua"?BUGS.length:BUGS.filter(b=>b[1]===c).length;
+    return`<button class="fb${bugFilter===c?" ac":""}" onclick="setFilter('${c}')">${c} <span style="opacity:.55;font-size:10px">(${cnt})</span></button>`;
   }).join("");
 }
+function setFilter(c){bugFilter=c;buildFilters();renderBugTable();}
 
-function setBugFilter(c){
-  bugFilter=c;
-  buildBugFilters();
-  renderBugTable();
-}
-
-const CAT_ORDER=["Critical Bug","Security","Performance","Missing Feature","Code Quality"];
 function renderBugTable(){
-  const filtered=BUG_CHECKLIST.map((b,i)=>({b,i})).filter(({b})=>bugFilter==="Semua"||b[1]===bugFilter);
-  const groups={};
-  filtered.forEach(({b,i})=>{if(!groups[b[1]])groups[b[1]]=[];groups[b[1]].push({b,i});});
+  const filtered=BUGS.map((b,i)=>({b,i})).filter(({b})=>bugFilter==="Semua"||b[1]===bugFilter);
+  const groups={};filtered.forEach(({b,i})=>{if(!groups[b[1]])groups[b[1]]=[];groups[b[1]].push({b,i});});
   const keys=CAT_ORDER.filter(k=>groups[k]);
-  
   let html="";
   keys.forEach(cat=>{
     const cm=CAT_META.find(m=>m.key===cat)||{clr:"#64748B"};
     if(bugFilter==="Semua"){
-      html+=`<tr class="cat-row"><td colspan="5" style="border-left:4px solid ${cm.clr}">${cat} <span style="font-weight:500;opacity:.6;text-transform:none">(${groups[cat].length} issues)</span></td></tr>`;
+      html+=`<tr class="cr"><td colspan="5" style="border-left:2px solid ${cm.clr};padding-left:10px">${cat} <span style="opacity:.5;font-weight:400">(${groups[cat].length})</span></td></tr>`;
     }
     groups[cat].forEach(({b,i})=>{
       const s=bugStat[i],isFixed=s==="Fixed",ds=isFixed?"Fixed":b[2];
-      html+=`<tr class="${isFixed?"fixed-row":""}" onclick="toggleBug(${i})">
-        <td style="font-weight:500;color:var(--dark)">${b[0]}</td>
-        <td><span style="font-size:.7rem;color:${cm.clr};font-weight:600">${b[1]}</span></td>
-        <td><span class="badge ${bsc(ds)}">${ds}</span></td>
-        <td><span class="badge ${bpc(b[3])}">${b[3]}</span></td>
-        <td style="color:var(--gray);font-size:.75rem;line-height:1.4">${b[4]}</td>
+      html+=`<tr class="br${isFixed?" fr":""}" onclick="toggleBug(${i})">
+        <td style="font-weight:500">${b[0]}</td>
+        <td><span style="font-size:10px;font-weight:600;color:${cm.clr}">${b[1]}</span></td>
+        <td><span class="bx ${bsc(ds)}">${ds}</span></td>
+        <td><span class="bx ${bpc(b[3])}">${b[3]}</span></td>
+        <td style="color:#64748B;font-size:11px;line-height:1.4">${b[4]}</td>
       </tr>`;
     });
   });
   document.getElementById("bugBody").innerHTML=html;
 }
-
 function toggleBug(i){
-  bugStat[i]=bugStat[i]==="Fixed"?BUG_CHECKLIST[i][2]:"Fixed";
-  saveBugState();
-  renderBugTable();
-  recalcBugs();
+  bugStat[i]=bugStat[i]==="Fixed"?BUGS[i][2]:"Fixed";
+  saveBug();renderBugTable();recalcBug();
 }
 
-/* ════════════════════════════════════════════════════════════════
-   GITHUB FETCH
-   ════════════════════════════════════════════════════════════════ */
-async function fetchGitHub(){
-  const repo=document.getElementById("repoInput").value.trim();
-  const token=document.getElementById("tokenInput").value.trim();
-  
-  if(!repo||!repo.includes("/")){document.getElementById("syncStatus").textContent="⚠ Format harus: owner/repo";return;}
-  if(!token){document.getElementById("syncStatus").textContent="⚠ Token diperlukan";document.getElementById("tokenInput").focus();return;}
-  
-  document.getElementById("syncStatus").textContent="Mengambil data dari GitHub...";
-  document.getElementById("chartStatus").textContent="";
-  
+/* ════════════════════════════════════════════════
+   TARGET SYSTEM
+════════════════════════════════════════════════ */
+let targets=[], editId=null;
+
+function loadTargets(){try{targets=JSON.parse(localStorage.getItem("mpsTargets3")||"[]");}catch(e){targets=[];}}
+function saveTargets(){localStorage.setItem("mpsTargets3",JSON.stringify(targets));}
+
+function openForm(id=null){
+  editId=id;
+  const el=document.getElementById("tform");
+  document.getElementById("formHd").textContent=id!==null?"Edit target":"Tambah target baru";
+  if(id!==null){
+    const t=targets.find(x=>x.id===id);
+    if(!t)return;
+    document.getElementById("fTitle").value=t.title;
+    document.getElementById("fDeadline").value=t.deadline||"";
+    document.getElementById("fPriority").value=t.priority;
+    document.getElementById("fCat").value=t.category||"";
+    document.getElementById("fStatus").value=t.status;
+    document.getElementById("fDesc").value=t.desc||"";
+  } else {
+    document.getElementById("fTitle").value="";
+    document.getElementById("fDeadline").value="";
+    document.getElementById("fPriority").value="Medium";
+    document.getElementById("fCat").value="";
+    document.getElementById("fStatus").value="Pending";
+    document.getElementById("fDesc").value="";
+  }
+  el.classList.add("open");
+  setTimeout(()=>document.getElementById("fTitle").focus(),50);
+  el.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function closeForm(){
+  document.getElementById("tform").classList.remove("open");
+  editId=null;
+}
+
+function saveTarget(){
+  const title=document.getElementById("fTitle").value.trim();
+  if(!title){document.getElementById("fTitle").focus();return;}
+  const t={
+    id:editId!==null?editId:Date.now(),
+    title,
+    deadline:document.getElementById("fDeadline").value,
+    priority:document.getElementById("fPriority").value,
+    category:document.getElementById("fCat").value.trim(),
+    status:document.getElementById("fStatus").value,
+    desc:document.getElementById("fDesc").value.trim(),
+    createdAt:editId!==null?(targets.find(x=>x.id===editId)?.createdAt||Date.now()):Date.now()
+  };
+  if(editId!==null){targets=targets.map(x=>x.id===editId?t:x);}
+  else{targets.push(t);}
+  saveTargets();closeForm();renderTargets();
+}
+
+function deleteTarget(id){
+  if(!confirm("Hapus target ini?"))return;
+  targets=targets.filter(x=>x.id!==id);
+  saveTargets();renderTargets();
+}
+
+function setStatus(id,status){
+  targets=targets.map(x=>x.id===id?{...x,status}:x);
+  saveTargets();renderTargets();
+}
+
+const PI_CLS={Urgent:"pi-u",Tinggi:"pi-t",Medium:"pi-m",Rendah:"pi-r"};
+
+function fmtDate(s){
+  if(!s)return"";
+  const d=new Date(s+"T00:00:00");
+  return d.toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"});
+}
+
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+function renderTargets(){
+  const today=new Date().toISOString().split("T")[0];
+  const soon=new Date(Date.now()+7*86400000).toISOString().split("T")[0];
+
+  const statusOrder={Pending:0,"In Progress":1,Selesai:2};
+  const sorted=[...targets].sort((a,b)=>{
+    if(statusOrder[a.status]!==statusOrder[b.status])return statusOrder[a.status]-statusOrder[b.status];
+    if(a.deadline&&b.deadline)return a.deadline.localeCompare(b.deadline);
+    return a.deadline?-1:b.deadline?1:0;
+  });
+
+  document.getElementById("tCPend").textContent=targets.filter(t=>t.status==="Pending").length;
+  document.getElementById("tCWip").textContent=targets.filter(t=>t.status==="In Progress").length;
+  document.getElementById("tCDone").textContent=targets.filter(t=>t.status==="Selesai").length;
+
+  if(!sorted.length){
+    document.getElementById("tgrid").innerHTML='<div class="emp">Belum ada target &middot; klik &ldquo;+ Tambah target&rdquo; untuk mulai</div>';
+    return;
+  }
+
+  document.getElementById("tgrid").innerHTML=sorted.map(t=>{
+    const isDone=t.status==="Selesai";
+    const isLate=t.deadline&&t.deadline<today&&!isDone;
+    const isSoon=t.deadline&&t.deadline<=soon&&t.deadline>=today&&!isDone;
+    let dlClass="",dlLabel="";
+    if(t.deadline){
+      if(isLate){dlClass=" late";dlLabel="Terlambat: "+fmtDate(t.deadline);}
+      else if(isSoon){dlClass=" soon";dlLabel="Segera: "+fmtDate(t.deadline);}
+      else{dlLabel="Deadline: "+fmtDate(t.deadline);}
+    }
+
+    return`<div class="tc ${PI_CLS[t.priority]||"pi-r"}${isDone?" done":""}">
+      <div class="tctop">
+        <div class="tct">${esc(t.title)}</div>
+        <div class="tca">
+          <button class="tcbtn" onclick="openForm(${t.id})" title="Edit">&#9998;</button>
+          <button class="tcbtn" onclick="deleteTarget(${t.id})" title="Hapus">&#215;</button>
+        </div>
+      </div>
+      ${t.category?`<div><span class="tc-cat">${esc(t.category)}</span></div>`:""}
+      ${t.desc?`<div class="tcd">${esc(t.desc)}</div>`:""}
+      <div class="tcm">
+        <div class="tcdl${dlClass}">${dlLabel}</div>
+        <div class="tcsb">
+          <button class="sbtn${t.status==="Pending"?" sp":""}" onclick="setStatus(${t.id},'Pending')">Pending</button>
+          <button class="sbtn${t.status==="In Progress"?" sw":""}" onclick="setStatus(${t.id},'In Progress')">WIP</button>
+          <button class="sbtn${t.status==="Selesai"?" sd":""}" onclick="setStatus(${t.id},'Selesai')">Selesai</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ════════════════════════════════════════════════
+   GITHUB SYNC
+════════════════════════════════════════════════ */
+let commitC=null;
+
+function toggleTok(){
+  const inp=document.getElementById("tokIn"),eye=document.getElementById("tokEye");
+  inp.type=inp.type==="password"?"text":"password";
+  eye.textContent=inp.type==="password"?"👁":"🙈";
+}
+
+function buildCommitChart(labels,data){
+  if(commitC)commitC.destroy();
+  commitC=new Chart(document.getElementById("commitChart").getContext("2d"),{
+    type:"bar",
+    data:{labels,datasets:[{label:"Commits",data,backgroundColor:"#BBDEFB",borderRadius:3,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed} commits`}}},
+      scales:{
+        x:{ticks:{font:{size:9},maxRotation:45,color:"#94A3B8"},grid:{display:false}},
+        y:{ticks:{font:{size:9},color:"#94A3B8",stepSize:1,precision:0},beginAtZero:true,grid:{color:"rgba(0,0,0,0.04)"}}
+      }
+    }
+  });
+}
+
+async function fetchGH(){
+  const repo=document.getElementById("repoIn").value.trim();
+  const token=document.getElementById("tokIn").value.trim();
+  if(!repo||!repo.includes("/")){document.getElementById("syncSt").textContent="⚠ Format: owner/repo";return;}
+  if(!token){document.getElementById("syncSt").textContent="⚠ Token diperlukan";return;}
+  document.getElementById("syncSt").textContent="Mengambil data...";
   const headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json"};
   const since=new Date(Date.now()-30*86400000).toISOString();
-  
   try{
     const res=await fetch(`https://api.github.com/repos/${repo}/commits?per_page=100&since=${since}`,{headers});
     if(res.status===401)throw new Error("Token tidak valid");
-    if(res.status===403)throw new Error("Tidak punya akses (Forbidden)");
-    if(res.status===404)throw new Error("Repository tidak ditemukan");
+    if(res.status===403)throw new Error("Tidak punya akses");
+    if(res.status===404)throw new Error("Repo tidak ditemukan");
     if(!res.ok)throw new Error("API error: "+res.status);
-    
     const commits=await res.json();
-    
-    // Group per hari untuk grafik
+
     const map={};
     for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);map[d.toISOString().slice(0,10)]=0;}
-    commits.forEach(c=>{const k=c.commit.author.date.slice(0,10);if(map[k]!==undefined)map[k]++;});
-    buildChart(Object.keys(map).map(k=>k.slice(5)),Object.values(map));
-    
-    document.getElementById("chartStatus").textContent=`Total ${commits.length} commits dalam 30 hari terakhir`;
-    
-    // List commit terbaru
+    commits.forEach(c=>{const k=c.commit.author.date.slice(0,10);if(k in map)map[k]++;});
+    buildCommitChart(Object.keys(map).map(k=>k.slice(5)),Object.values(map));
+    document.getElementById("cSt").textContent=commits.length+" commits dalam 30 hari";
+
     document.getElementById("commitList").innerHTML=commits.slice(0,5).map(c=>{
-      const msg=c.commit.message.split("\n")[0].slice(0,85)+(c.commit.message.length>85?"...":"");
+      const msg=c.commit.message.split("\n")[0].slice(0,72);
       const name=c.commit.author.name||"?";
-      const initials=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+      const ini=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
       const dt=new Date(c.commit.author.date);
-      const diffS=Math.floor((Date.now()-dt)/1000);
-      const when=diffS<60?diffS+"s lalu":diffS<3600?Math.floor(diffS/60)+"m lalu":diffS<86400?Math.floor(diffS/3600)+"j lalu":Math.floor(diffS/86400)+"h lalu";
-      
-      return`<div class="commit-item">
-        <div class="avatar">${initials}</div>
-        <div>
-          <div class="commit-msg">${msg}</div>
-          <div class="commit-meta">${when} &middot; <span style="font-family:monospace">${c.sha.slice(0,7)}</span> &middot; ${name}</div>
-        </div>
-      </div>`;
+      const diff=Math.floor((Date.now()-dt)/1000);
+      const when=diff<60?diff+"s":diff<3600?Math.floor(diff/60)+"m":diff<86400?Math.floor(diff/3600)+"j":Math.floor(diff/86400)+"h";
+      return`<div class="ci"><div class="av">${ini}</div><div><div class="cm">${esc(msg)}</div><div class="ca">${when} · ${c.sha.slice(0,7)} · ${name}</div></div></div>`;
     }).join("");
-    
-    // Save creds
+
     localStorage.setItem("mpsRepo",repo);
-    saveToken(token);
-    document.getElementById("tokenInfo").style.display="none";
-    
+    localStorage.setItem("mpsToken",token);
+    document.getElementById("tokSaved").style.display="inline";
     const ts=new Date().toLocaleString("id-ID");
-    document.getElementById("syncStatus").textContent="✓ Sinkronisasi berhasil ("+ts+")";
-    document.getElementById("lastUpdated").innerHTML=`Last sync: <strong>${ts}</strong> &middot; ${commits.length} commits (30 hari)`;
-    
+    document.getElementById("syncSt").textContent="&#10003; "+ts;
   }catch(e){
-    document.getElementById("syncStatus").textContent="✗ "+e.message;
-    document.getElementById("chartStatus").textContent=e.message;
+    document.getElementById("syncSt").textContent="&#215; "+e.message;
   }
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════
    INIT
-   ════════════════════════════════════════════════════════════════ */
-loadBugState();
-buildBugFilters();
-renderBugTable();
-recalcBugs();
+════════════════════════════════════════════════ */
+loadBug();buildFilters();renderBugTable();recalcBug();
+loadTargets();renderTargets();
 
-const sr=localStorage.getItem("mpsRepo")||"";
-const st=localStorage.getItem("mpsToken")||"";
-if(sr) document.getElementById("repoInput").value=sr;
-if(st){
-  document.getElementById("tokenInput").value=st;
-  document.getElementById("tokSaved").style.display="inline";
-  document.getElementById("tokenInfo").style.display="none";
-}
+const sr=localStorage.getItem("mpsRepo")||"",st=localStorage.getItem("mpsToken")||"";
+if(sr)document.getElementById("repoIn").value=sr;
+if(st){document.getElementById("tokIn").value=st;document.getElementById("tokSaved").style.display="inline";}
+
+// Enter to save form
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&document.getElementById("tform").classList.contains("open"))closeForm();
+});
 </script>
 </body>
 </html>
