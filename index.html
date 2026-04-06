@@ -95,6 +95,7 @@ tr.br:hover td{background:#F8FAFC;cursor:pointer}
 tr.cr td{background:#F8FAFC!important;padding:4px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:#94A3B8;cursor:default!important;border-bottom:1px solid #E2E8F0}
 tr.fr td{opacity:.4}
 tr.fr td:first-child{text-decoration:line-through}
+tr.new-bug td:first-child::after{content:" NEW";font-size:9px;font-weight:700;background:#FFF3E0;color:#bf360c;border:1px solid #FAC775;border-radius:100px;padding:1px 5px;margin-left:6px;vertical-align:middle}
 
 .bx{display:inline-block;padding:2px 7px;border-radius:100px;font-size:10px;font-weight:600}
 .x-bug{background:#FCEBEB;color:#791F1F}.x-fix{background:#EAF3DE;color:#27500A}.x-bel{background:#F3E5F6;color:#4a148c}.x-ref{background:#E0F2F1;color:#004d40}
@@ -250,7 +251,7 @@ footer a{color:#185FA5;text-decoration:none}
   <div class="fp">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
       <span style="font-size:13px;font-weight:600;color:#0A2B57">Bug checklist</span>
-      <span style="font-size:11px;color:#64748B">Klik baris untuk toggle fixed · auto-save</span>
+      <span style="font-size:11px;color:#64748B">Klik baris untuk toggle fixed · auto-save · <span style="background:#FFF3E0;color:#bf360c;border:1px solid #FAC775;border-radius:100px;padding:1px 6px;font-weight:600">NEW</span> = baru ditambahkan</span>
     </div>
     <div class="bf" id="bFilters"></div>
     <table>
@@ -354,10 +355,9 @@ footer a{color:#185FA5;text-decoration:none}
 <script>
 /* ════════════════════════════════════════════════
    BUG DATA
+   Format: [name, category, defaultStatus, priority, detail, isNew?]
 ════════════════════════════════════════════════ */
 const BUGS = [
-  // [name, category, defaultStatus, priority, detail]
-
   // ── Critical Bug (Fixed) ──
   ["[Fixed] EditUser logic terbalik","Critical Bug","Fixed","Urgent","if(!Succeeded) tampil SUCCESS — AdminController.cs"],
   ["[Fixed] Duplicate Login/Logout di AdminController","Critical Bug","Fixed","Urgent","Konflik dengan AccountController — AdminController.cs"],
@@ -367,6 +367,18 @@ const BUGS = [
   ["[Fixed] Dead code setelah return di ParseTextFromOcr","Critical Bug","Fixed","Medium","Unreachable code — AdminController.cs"],
   ["[Fixed] EditorController AccessLogs hardcoded + PasswordHash exposed","Critical Bug","Fixed","Urgent","Data hardcoded & PasswordHash asli — EditorController.cs"],
 
+  // ── Critical Bug (Open) ──
+  ["Hardcoded IronOCR License Key di Program.cs","Critical Bug","Bug","Urgent","License EXPIRED 25 Mar 2026. Pindah ke appsettings/secrets — Program.cs:10-12"],
+  ["Hardcoded DB credentials di appsettings + Program.cs","Critical Bug","Bug","Urgent","Password 'mps123456' plaintext. Gunakan User Secrets / env var — appsettings.json & Program.cs"],
+  ["EditRecommendation POST return view name salah","Critical Bug","Bug","Urgent","ModelState invalid → View(\"EditRecommendation\") tapi GET return View(\"EditData\") — AdminController.cs & EditorController.cs"],
+  ["RegisterEditor.cshtml (AuthLayout) POST ke controller salah","Critical Bug","Bug","Urgent","Form asp-controller=\"Account\" tapi action di AdminController → 404 — RegisterEditor.cshtml"],
+  ["EditorController.Create() pakai NotMapped property circular","Critical Bug","Bug","Tinggi","model.Unit & model.DisplayPlant circular → harusnya UnitInput/PlantInput. Patch sudah diberikan, belum diapply — EditorController.cs"],
+
+  // ── Critical Bug (Open) — BARU ──
+  ["ViewBag pagination null","Critical Bug","Bug","Urgent","AdminController, EditorController, UserController belum set ViewBag.PageIndex/TotalPages/TotalCount sebelum return View(vm) di Recommendation action",true],
+  ["EditorController belum migrasi ke IOcrExtractionService","Critical Bug","Bug","Urgent","Masih punya IronTesseract _ocr + 6 private method duplikat. IOcrExtractionService sudah di-register di DI tapi belum di-inject ke EditorController",true],
+  ["TempData key tidak konsisten — AccountController","Critical Bug","Bug","Urgent","AccountController pakai TempData[\"SuccessMessage\"], semua controller lain pakai TempData[\"Success\"]. Login/Register/Settings views baca \"SuccessMessage\" — pesan sukses tidak muncul di beberapa halaman",true],
+
   // ── Security (Fixed) ──
   ["[Fixed] PasswordHash exposed di EditorController","Security","Fixed","Urgent","PasswordHash dikirim ke view — EditorController.cs"],
   ["[Fixed] CookieSecurePolicy = None","Security","Fixed","Tinggi","Diubah ke SameAsRequest — Program.cs"],
@@ -375,42 +387,32 @@ const BUGS = [
   ["[Fixed] BackupDatabase SQL injection risk","Security","Fixed","Medium","Escape() diperkuat — AdminController.cs"],
   ["[Fixed] CORS origins hardcoded","Security","Fixed","Medium","Dipindah ke appsettings — Program.cs"],
 
-  // ── Performance (Fixed) ──
-  ["[Fixed] N+1 query: Dashboard Active Sessions","Performance","Fixed","Tinggi","Single GroupBy query — AdminController.cs"],
-  ["[Fixed] N+1 query: AccessLogs 3N per user","Performance","Fixed","Tinggi","Single bulk query — AdminController.cs"],
-  ["[Fixed] N+1 query: Role Distribution per user","Performance","Fixed","Medium","Single UserRoles join — AdminController.cs"],
-
-  // ── Missing Feature (Fixed) ──
-  ["[Fixed] ForgotPassword/ResetPassword flow","Missing Feature","Fixed","Tinggi","Base64UrlEncode token + local redirect — AccountController.cs"],
-  ["[Fixed] ChangePassword untuk logged-in user","Missing Feature","Fixed","Tinggi","GET/POST + role-based redirect — AccountController.cs"],
-
-  // ── Code Quality (Fixed) ──
-  ["[Fixed] ViewBag → ViewModel Admin Dashboard","Code Quality","Fixed","Medium","AdminDashboardViewModel strongly-typed — AdminController.cs"],
-  ["[Fixed] OCR parsing methods extracted ke service","Code Quality","Fixed","Tinggi","IOcrParsingService + 40+ xUnit tests"],
-  ["[Fixed] CSS extracted dari inline styles","Code Quality","Fixed","Medium","8 .cshtml files → separate .css files"],
-
-  // ══ NEW BUGS ══
-
-  // ── Critical Bug ──
-  ["Hardcoded IronOCR License Key di Program.cs","Critical Bug","Bug","Urgent","License EXPIRED 25 Mar 2026. Pindah ke appsettings/secrets — Program.cs:10-12"],
-  ["Hardcoded DB credentials di appsettings + Program.cs","Critical Bug","Bug","Urgent","Password 'mps123456' plaintext. Gunakan User Secrets / env var — appsettings.json & Program.cs"],
-  ["EditRecommendation POST return view name salah","Critical Bug","Bug","Urgent","ModelState invalid → View(\"EditRecommendation\") tapi GET return View(\"EditData\") — AdminController.cs & EditorController.cs"],
-  ["RegisterEditor.cshtml (AuthLayout) POST ke controller salah","Critical Bug","Bug","Urgent","Form asp-controller=\"Account\" tapi action di AdminController → 404 — RegisterEditor.cshtml"],
-  ["EditorController.Create() pakai NotMapped property circular","Critical Bug","Bug","Tinggi","model.Unit & model.DisplayPlant circular → harusnya UnitInput/PlantInput — EditorController.cs"],
-
-  // ── Security ──
+  // ── Security (Open) ──
   ["Session vs Auth Cookie SecurePolicy mismatch","Security","Bug","Tinggi","Session: Always, Auth: SameAsRequest. Inkonsisten — Program.cs"],
   ["CORS 'Production' policy masih placeholder","Security","Bug","Medium","'https://yourdomain.com' placeholder — Program.cs"],
   ["ForgotPassword langsung redirect tanpa email (bypass)","Security","Bug","Tinggi","Siapapun bisa reset password jika tahu email — AccountController.cs"],
   ["No file size validation pada PDF upload","Security","Bug","Tinggi","Hanya validasi extension, tidak ada max size — AdminController.cs & EditorController.cs"],
   ["EditUser tidak update NormalizedUserName","Security","Bug","Medium","UserName & Email diubah tapi NormalizedUserName tidak sinkron — AdminController.cs"],
 
-  // ── Performance ──
+  // ── Performance (Fixed) ──
+  ["[Fixed] N+1 query: Dashboard Active Sessions","Performance","Fixed","Tinggi","Single GroupBy query — AdminController.cs"],
+  ["[Fixed] N+1 query: AccessLogs 3N per user","Performance","Fixed","Tinggi","Single bulk query — AdminController.cs"],
+  ["[Fixed] N+1 query: Role Distribution per user","Performance","Fixed","Medium","Single UserRoles join — AdminController.cs"],
+
+  // ── Performance (Open) ──
   ["Editor Recommendation list tanpa pagination","Performance","Bug","Tinggi","Load semua records ToListAsync() — EditorController.cs"],
   ["IronOCR diinisialisasi setiap request (constructor)","Performance","Bug","Tinggi","InitializeIronOcr() di constructor = init per request — AdminController.cs & EditorController.cs"],
   ["Startup loop semua users untuk fix LockoutEnabled","Performance","Bug","Medium","Loop allUsers setiap app start — Program.cs"],
 
-  // ── Code Quality ──
+  // ── Performance (Open) — BARU ──
+  ["NpgsqlConnection dispose bug di AdminController.Settings","Performance","Bug","Tinggi","Pattern conn.Open/Close manual berisiko connection tidak ditutup saat exception — AdminController.cs",true],
+
+  // ── Code Quality (Fixed) ──
+  ["[Fixed] ViewBag → ViewModel Admin Dashboard","Code Quality","Fixed","Medium","AdminDashboardViewModel strongly-typed — AdminController.cs"],
+  ["[Fixed] OCR parsing methods extracted ke service","Code Quality","Fixed","Tinggi","IOcrParsingService + 40+ xUnit tests"],
+  ["[Fixed] CSS extracted dari inline styles","Code Quality","Fixed","Medium","8 .cshtml files → separate .css files"],
+
+  // ── Code Quality (Open) ──
   ["Massive duplication: AdminController ≈ EditorController","Code Quality","Refactor","Tinggi","InitializeIronOcr, Extract*, Parse*, AddData, SaveData semua duplicate — AdminController.cs & EditorController.cs"],
   ["Editor Dashboard masih ViewBag (belum ViewModel)","Code Quality","Refactor","Medium","15+ ViewBag properties — EditorController.cs & Dashboard.cshtml (Editor)"],
   ["UserController Dashboard juga masih ViewBag","Code Quality","Refactor","Medium","Perlu UserDashboardViewModel — UserController.cs"],
@@ -420,12 +422,18 @@ const BUGS = [
   ["Magic string '37' di DownloadPdf GUID extraction","Code Quality","Bug","Rendah","dbFileName.Substring(37) magic number — AdminController.cs"],
   ["Inconsistent TempData keys across controllers","Code Quality","Refactor","Medium","'ErrorMessage' vs 'Error', 'SuccessMessage' vs 'Success' — semua controllers"],
   ["Dua versi RegisterEditor.cshtml (layout berbeda)","Code Quality","Bug","Tinggi","Versi _AuthLayout (old) dan versi @section Styles (new). Hapus yang lama — RegisterEditor.cshtml"],
-
-  // ── UX / Frontend ──
   ["Settings.cshtml tulis '.NET 8.0' — seharusnya '.NET 10.0'","Code Quality","Bug","Rendah","Framework info hardcode — Settings.cshtml"],
   ["Layout translation 'min 6 characters' → seharusnya 'min 8'","Code Quality","Bug","Medium","RequiredLength=8 tapi translation bilang 6 — _Layout.cshtml"],
 
-  // ── Missing Feature / Architecture ──
+  // ── Code Quality (Open) — BARU ──
+  ["appsettings.json masih ada expired IronOCR key (belum dikosongkan)","Code Quality","Bug","Medium","LicenseKey field masih isi key lama, harusnya dikosongkan / placeholder saja — appsettings.json",true],
+  ["IOcrEngineService constructor pakai Console.WriteLine bukan ILogger","Code Quality","Refactor","Rendah","Singleton tidak bisa inject ILogger<T> langsung — gunakan ILoggerFactory — IOcrEngineService.cs",true],
+
+  // ── Missing Feature (Fixed) ──
+  ["[Fixed] ForgotPassword/ResetPassword flow","Missing Feature","Fixed","Tinggi","Base64UrlEncode token + local redirect — AccountController.cs"],
+  ["[Fixed] ChangePassword untuk logged-in user","Missing Feature","Fixed","Tinggi","GET/POST + role-based redirect — AccountController.cs"],
+
+  // ── Missing Feature (Open) ──
   ["AccessLogMiddleware logout detection mungkin unreliable","Missing Feature","Bug","Medium","Middleware call _next() dulu, baru cek IsAuthenticated — AccessLogMiddleware.cs"],
   ["UseSession() dipanggil setelah UseAuthorization()","Missing Feature","Bug","Tinggi","Session tidak tersedia di middleware sebelumnya — Program.cs"],
   ["Unit Test untuk AccessLogService belum dibuat","Missing Feature","Belum Ada","Medium","OcrParsingService sudah 40+ tests — AccessLogService.cs"],
@@ -436,11 +444,11 @@ const BUGS = [
    CHART META
 ════════════════════════════════════════════════ */
 const CAT_META=[
-  {key:"Critical Bug",  lbl:"Critical",    clr:"#E24B4A"},
-  {key:"Security",      lbl:"Security",    clr:"#BA7517"},
-  {key:"Performance",   lbl:"Performance", clr:"#378ADD"},
-  {key:"Missing Feature",lbl:"Missing",   clr:"#7F77DD"},
-  {key:"Code Quality",  lbl:"Quality",    clr:"#1D9E75"},
+  {key:"Critical Bug",   lbl:"Critical",    clr:"#E24B4A"},
+  {key:"Security",       lbl:"Security",    clr:"#BA7517"},
+  {key:"Performance",    lbl:"Performance", clr:"#378ADD"},
+  {key:"Missing Feature",lbl:"Missing",     clr:"#7F77DD"},
+  {key:"Code Quality",   lbl:"Quality",     clr:"#1D9E75"},
 ];
 const PRI_META=[
   {key:"urgent", lbl:"Urgent", clr:"#D32F2F"},
@@ -539,7 +547,8 @@ function renderBugTable(){
     }
     groups[cat].forEach(({b,i})=>{
       const s=bugStat[i],isFixed=s==="Fixed",ds=isFixed?"Fixed":b[2];
-      html+=`<tr class="br${isFixed?" fr":""}" onclick="toggleBug(${i})">
+      const isNew=b[5]===true;
+      html+=`<tr class="br${isFixed?" fr":""}${isNew?" new-bug":""}" onclick="toggleBug(${i})">
         <td style="font-weight:500">${b[0]}</td>
         <td><span style="font-size:10px;font-weight:600;color:${cm.clr}">${b[1]}</span></td>
         <td><span class="bx ${bsc(ds)}">${ds}</span></td>
@@ -747,9 +756,9 @@ async function fetchGH(){
     localStorage.setItem("mpsToken",token);
     document.getElementById("tokSaved").style.display="inline";
     const ts=new Date().toLocaleString("id-ID");
-    document.getElementById("syncSt").textContent="&#10003; "+ts;
+    document.getElementById("syncSt").textContent="✓ "+ts;
   }catch(e){
-    document.getElementById("syncSt").textContent="&#215; "+e.message;
+    document.getElementById("syncSt").textContent="✕ "+e.message;
   }
 }
 
@@ -763,7 +772,6 @@ const sr=localStorage.getItem("mpsRepo")||"",st=localStorage.getItem("mpsToken")
 if(sr)document.getElementById("repoIn").value=sr;
 if(st){document.getElementById("tokIn").value=st;document.getElementById("tokSaved").style.display="inline";}
 
-// Enter to save form
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&document.getElementById("tform").classList.contains("open"))closeForm();
 });
